@@ -1,28 +1,39 @@
 import './App.css';
-import Budget from "./components/Budget";
 import {BrowserRouter as Router, Link, Route, Routes} from "react-router-dom";
 import {FaCalendarAlt, FaDoorOpen} from "react-icons/all";
+import Budget from "./components/Budget";
 
 function App() {
     return (
         <Router>
             <div className="App">
                 <header>
-                    <nav>
-                        <ul>
-                            <li>
-                                <Link to="budget" className="btn btn-header">
+                    <nav className="navbar has-shadow is-primary">
+                        <div className="navbar-brand">
+                            <Link className="navbar-item" to="/">
+                                <img alt="EasyAct" src="logo.png"/>
+                            </Link>
+                            <div className="navbar-item">
+                                <small>云预算: 从996到财务自由</small>
+                            </div>
+                            <div className="navbar-burger burger">
+                                <span/>
+                                <span/>
+                                <span/>
+                            </div>
+                        </div>
+                        <div className="navbar-menu">
+                            <div className="navbar-start">
+                                <Link to="budget" className="navbar-item">
                                     <FaCalendarAlt/>
                                     <span>预算</span>
                                 </Link>
-                            </li>
-                            <li>
-                                <Link to="target" className="btn btn-header">
+                                <Link to="target" className="navbar-item">
                                     <FaDoorOpen/>
                                     <span>目标</span>
                                 </Link>
-                            </li>
-                        </ul>
+                            </div>
+                        </div>
                     </nav>
 
                     {/*<UserPicker/>*/}

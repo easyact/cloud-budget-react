@@ -1,57 +1,70 @@
-import '../App.css';
+import Kpi from "./budget/Kpi";
+import Progress from "./budget/Progress";
+
+function Asset() {
+    return null;
+}
+
+function Liability() {
+    return null;
+}
+
+function Statement() {
+    return null;
+}
 
 function Budget() {
     return (
         <div>
-            {/*<div class="level is-mobile">*/}
-            {/*    <div class="level-item has-text-centered">*/}
-            {/*        <cb-kpi></cb-kpi>*/}
-            {/*    </div>*/}
-            {/*    <div class="level-item has-text-centered">*/}
-            {/*        <cb-progress></cb-progress>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-            {/*<div class="columns">*/}
-            {/*    <fieldset class="column">*/}
-            {/*        <div class="panel">*/}
-            {/*            <cb-asset></cb-asset>*/}
-            {/*        </div>*/}
-            {/*        <div class="panel">*/}
-            {/*            <cb-liability></cb-liability>*/}
-            {/*        </div>*/}
-            {/*    </fieldset>*/}
-            {/*    <fieldset class="column">*/}
-            {/*        <div class="panel">*/}
-            {/*            <cb-statement></cb-statement>*/}
-            {/*        </div>*/}
-            {/*        <div class=" panel">*/}
-            {/*            <cb-statement title=" 支出"></cb-statement>*/}
-            {/*        </div>*/}
-            {/*    </fieldset>*/}
-            {/*</div>*/}
-            {/*<div class=" field is-grouped is-grouped-multiline">*/}
-            {/*    <div class=" field has-addons control">*/}
-            {/*        <p class=" control is-expanded">*/}
-            {/*            <input id="ver" class="input is-small"/>*/}
-            {/*        </p>*/}
-            {/*        <p class=" control">*/}
-            {/*            <button type=" submit" class=" button is-info is-small">*/}
-            {/*                分支*/}
-            {/*            </button>*/}
-            {/*        </p>*/}
-            {/*    </div>*/}
-            {/*    <div class=" control">*/}
-            {/*        <button class="button is-small">*/}
-            {/*            导出*/}
-            {/*        </button>*/}
-            {/*    </div>*/}
-            {/*    <div class="control">*/}
-            {/*        <button class=" button is-small">*/}
-            {/*            导入*/}
-            {/*        </button>*/}
-            {/*        <input id="file-input" type=" file" name=" name" style={{display: 'none'}}/>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+            <div className="level is-mobile">
+                <div className="level-item has-text-centered">
+                    <Kpi/>
+                </div>
+                <div className="level-item has-text-centered">
+                    <Progress/>
+                </div>
+            </div>
+            <div className="columns">
+                <fieldset className="column">
+                    <div className="panel">
+                        <Asset/>
+                    </div>
+                    <div className="panel">
+                        <Liability/>
+                    </div>
+                </fieldset>
+                <fieldset className="column">
+                    <div className="panel">
+                        <Statement/>
+                    </div>
+                    <div className=" panel">
+                        <Statement title=" 支出"/>
+                    </div>
+                </fieldset>
+            </div>
+            <div className=" field is-grouped is-grouped-multiline">
+                <div className=" field has-addons control">
+                    <p className=" control is-expanded">
+                        <input id="ver" className="input is-small"/>
+                    </p>
+                    <p className=" control">
+                        <button type=" submit" className=" button is-info is-small">
+                            分支
+                        </button>
+                    </p>
+                </div>
+                <div className=" control">
+                    <button className="button is-small">
+                        导出
+                    </button>
+                </div>
+                <div className="control">
+                    <button className=" button is-small">
+                        导入
+                    </button>
+                    <input id="file-input" type=" file" name=" name" style={{display: 'none'}}/>
+                </div>
+            </div>
         </div>
     );
 }
