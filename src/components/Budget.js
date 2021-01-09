@@ -1,9 +1,5 @@
 import Kpi from "./budget/Kpi";
-import Progress from "./budget/Progress";
-
-function Asset() {
-    return null;
-}
+import {Asset} from "./budget/Asset";
 
 function Liability() {
     return null;
