@@ -20,9 +20,9 @@ function Budget() {
                 <div className="level-item has-text-centered">
                     <Kpi/>
                 </div>
-                <div className="level-item has-text-centered">
-                    <Progress/>
-                </div>
+                {/*<div className="level-item has-text-centered">*/}
+                {/*    <Progress/>*/}
+                {/*</div>*/}
             </div>
             <div className="columns">
                 <fieldset className="column">

@@ -1,7 +1,8 @@
 function Kpi() {
     return (
         <div>
-            KPI
+            <p className="heading">被动收入/支出</p>
+            <p className="title">0/29598.67</p>
         </div>
     );
 }
