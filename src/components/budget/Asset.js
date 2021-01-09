@@ -1,3 +1,5 @@
+import {FaEdit, FaPlus, FaSave, FaTrash} from "react-icons/all";
+
 export function Asset() {
     let title = "资产";
     let item = {disabled: false};
@@ -30,8 +32,7 @@ export function Asset() {
                             <div className="field has-addons">
                                 <div className="control">
                                     <button className="button is-small is-success" onClick="add()">
-                                        <i className="fas fa-plus">
-                                        </i>
+                                        <FaPlus/>
                                     </button>
                                 </div>
                             </div>
@@ -62,19 +63,18 @@ export function Asset() {
                         <td>
                             <div className=" field has-addons">
                                 <div className=" control">
-                                    <button className=" button is-small"><i className=" fas fa-save">
-                                    </i></button>
+                                    <button className=" button is-small">
+                                        <FaSave/>
+                                    </button>
                                 </div>
                                 <div className=" control">
                                     <button className=" button is-small" onClick={" item.enable()"}>
-                                        <i className="fas fa-edit">
-                                        </i>
+                                        <FaEdit/>
                                     </button>
                                 </div>
                                 <div className="control">
                                     <button className="button is-small" onClick={"rm(item)"}>
-                                        <i className="fas fa-trash">
-                                        </i>
+                                        <FaTrash/>
                                     </button>
                                 </div>
                             </div>
