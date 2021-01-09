@@ -1,8 +1,10 @@
 import Kpi from "./budget/Kpi";
 import {Asset} from "./budget/Asset";
+import List from "./budget/List";
 
 function Liability() {
-    return null;
+    return (<List title="负债" hint="不断从你口袋掏钱出来" columns={[
+        {title: '条目', type: 'text'}, {title: '总数', type: 'number'}, {title: '已还', type: 'number'}]}/>);
 }
 
 function Statement() {
