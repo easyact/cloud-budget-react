@@ -26,7 +26,7 @@ function Budget() {
             <div className="columns">
                 <fieldset className="column">
                     <div className="panel">
-                        <List items={budget.assets} setItems={setBudget}/>
+                        <List items={budget?.assets} setItems={setBudget}/>
                     </div>
                     <div className="panel">
                         <Liability/>

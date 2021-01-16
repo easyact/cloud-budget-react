@@ -19,16 +19,6 @@ const environment = {
     production: process.env.NODE_ENV && process.env.NODE_ENV !== 'development'
 }
 
-export class Budget {
-    assets
-    liabilities
-
-    constructor(assets, liabilities) {
-        this.assets = assets
-        this.liabilities = liabilities
-    }
-}
-
 export function useBudget(userId = 'default', version = 'current') {
     const [budget, setBudget] = useState()
     if (!environment.production) {
