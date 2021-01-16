@@ -30,14 +30,14 @@ export default function List({
                 <table className="table is-hoverable is-fullwidth is-narrow">
                     <thead>
                     <tr>
-                        {columns.map(c => (<th>{c.title}</th>))}
+                        {columns.map(c => (<th key={c.title}>{c.title}</th>))}
                         <th/>
                     </tr>
                     </thead>
                     <tfoot>
                     <tr>
                         {columns.map(c => (
-                            <td>
+                            <td key={c.title}>
                                 <input type={c.type} className="input is-small"/>
                             </td>
                         ))}
@@ -63,29 +63,27 @@ export default function List({
                     </tr>
                     </tfoot>
                     <tbody>
-                    {items.map(({editing = false, value}) => (
-                        <tr>
-                            {columns.map(c => {
-                                let td = editing ? <input type={c.type} className="input is-small"/> : value;
-                                return (
-                                    <td>{td}</td>
-                                )
-                            })}
+                    {items.map(({editing = false, value}, index) => (
+                        <tr key={index}>
+                            {columns.map(c => (
+                                <td key={c.title + index}>{editing ?
+                                    <input type={c.type} className="input is-small"/> : value}</td>
+                            ))}
 
-                            <td>
+                            <td key={`td${index}`}>
                                 <div className="field has-addons">
                                     {editing ? (
-                                        <div class="control">
+                                        <div className="control">
                                             <button className="button is-small" onClick={update}><FaSave/></button>
                                         </div>) : (
                                         <div>
-                                            <div class="control">
+                                            <div className="control">
                                                 <button className="button is-small" onClick={() => editing = true}>
                                                     <FaEdit/>
                                                 </button>
                                             </div>
-                                            <div class="control">
-                                                <button class="button is-small" onClick={rm}><FaTrash/></button>
+                                            <div className="control">
+                                                <button className="button is-small" onClick={rm}><FaTrash/></button>
                                             </div>
                                         </div>
                                     )}
