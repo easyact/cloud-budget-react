@@ -1,5 +1,4 @@
 import Kpi from "./budget/Kpi";
-import {Asset} from "./budget/Asset";
 import List from "./budget/List";
 
 function Liability() {
@@ -25,7 +24,7 @@ function Budget() {
             <div className="columns">
                 <fieldset className="column">
                     <div className="panel">
-                        <Asset/>
+                        <List/>
                     </div>
                     <div className="panel">
                         <Liability/>

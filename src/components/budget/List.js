@@ -1,4 +1,4 @@
-import {FaPlus} from "react-icons/all";
+import {FaEdit, FaPlus, FaSave, FaTrash} from "react-icons/all";
 import {useState} from "react"
 
 export default function List({
@@ -13,6 +13,13 @@ export default function List({
 
     function add() {
         setItems([...items, {}])
+    }
+
+    function update() {
+
+    }
+
+    function rm() {
     }
 
     // let sum = 0;
@@ -56,7 +63,7 @@ export default function List({
                     </tr>
                     </tfoot>
                     <tbody>
-                    {items.map(({editing = false, value = 'test'}) => (
+                    {items.map(({editing = false, value}) => (
                         <tr>
                             {columns.map(c => {
                                 let td = editing ? <input type={c.type} className="input is-small"/> : value;
@@ -64,6 +71,26 @@ export default function List({
                                     <td>{td}</td>
                                 )
                             })}
+
+                            <td>
+                                <div className="field has-addons">
+                                    {editing ? (
+                                        <div class="control">
+                                            <button className="button is-small" onClick={update}><FaSave/></button>
+                                        </div>) : (
+                                        <div>
+                                            <div class="control">
+                                                <button className="button is-small" onClick={() => editing = true}>
+                                                    <FaEdit/>
+                                                </button>
+                                            </div>
+                                            <div class="control">
+                                                <button class="button is-small" onClick={rm}><FaTrash/></button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </td>
                         </tr>
                     ))}
                     </tbody>
