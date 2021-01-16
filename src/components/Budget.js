@@ -1,5 +1,6 @@
 import Kpi from "./budget/Kpi";
 import List from "./budget/List";
+import {useBudget} from './budget/useBudget'
 
 function Liability() {
     return (<List title="负债" hint="不断从你口袋掏钱出来" columns={[
@@ -11,6 +12,7 @@ function Statement() {
 }
 
 function Budget() {
+    const [budget, setBudget] = useBudget()
     return (
         <div>
             <div className="level is-mobile">
@@ -24,7 +26,7 @@ function Budget() {
             <div className="columns">
                 <fieldset className="column">
                     <div className="panel">
-                        <List/>
+                        <List items={budget.assets} setItems={setBudget}/>
                     </div>
                     <div className="panel">
                         <Liability/>

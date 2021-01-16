@@ -1,5 +1,4 @@
-import {FaEdit, FaPlus, FaSave, FaTrash} from "react-icons/all";
-import {useState} from "react"
+import {FaEdit, FaPlus, FaSave, FaTrash} from 'react-icons/all'
 
 function Item(index, columns, editing, value, update, rm) {
     return <tr key={index}>
@@ -27,7 +26,7 @@ function Item(index, columns, editing, value, update, rm) {
                 )}
             </div>
         </td>
-    </tr>;
+    </tr>
 }
 
 export default function List({
@@ -36,9 +35,10 @@ export default function List({
                                  columns = [
                                      {title: '项目', type: 'text'},
                                      {title: '价值', type: 'number'},
-                                     {title: '首付', type: 'number'}]
+                                     {title: '首付', type: 'number'}],
+                                 items = [],
+                                 setItems = arr => items = arr
                              }) {
-    const [items, setItems] = useState(() => []);
 
     function add() {
         setItems([...items, {}])
