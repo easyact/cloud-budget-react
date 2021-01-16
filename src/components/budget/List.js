@@ -1,6 +1,35 @@
 import {FaEdit, FaPlus, FaSave, FaTrash} from "react-icons/all";
 import {useState} from "react"
 
+function Item(index, columns, editing, value, update, rm) {
+    return <tr key={index}>
+        {columns.map(c => (
+            <td key={c.title + index}>{editing ?
+                <input type={c.type} className="input is-small"/> : value}</td>
+        ))}
+
+        <td key={`td${index}`}>
+            <div className="field has-addons">
+                {editing ? (
+                    <div className="control">
+                        <button className="button is-small" onClick={update}><FaSave/></button>
+                    </div>) : (
+                    <div>
+                        <div className="control">
+                            <button className="button is-small" onClick={() => editing = true}>
+                                <FaEdit/>
+                            </button>
+                        </div>
+                        <div className="control">
+                            <button className="button is-small" onClick={rm}><FaTrash/></button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </td>
+    </tr>;
+}
+
 export default function List({
                                  title = '资产',
                                  hint = '产生被动收入',
@@ -63,34 +92,7 @@ export default function List({
                     </tr>
                     </tfoot>
                     <tbody>
-                    {items.map(({editing = false, value}, index) => (
-                        <tr key={index}>
-                            {columns.map(c => (
-                                <td key={c.title + index}>{editing ?
-                                    <input type={c.type} className="input is-small"/> : value}</td>
-                            ))}
-
-                            <td key={`td${index}`}>
-                                <div className="field has-addons">
-                                    {editing ? (
-                                        <div className="control">
-                                            <button className="button is-small" onClick={update}><FaSave/></button>
-                                        </div>) : (
-                                        <div>
-                                            <div className="control">
-                                                <button className="button is-small" onClick={() => editing = true}>
-                                                    <FaEdit/>
-                                                </button>
-                                            </div>
-                                            <div className="control">
-                                                <button className="button is-small" onClick={rm}><FaTrash/></button>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                    {items.map(({editing = false, value}, index) => Item(index, columns, editing, value, update, rm))}
                     </tbody>
                 </table>
             </div>
