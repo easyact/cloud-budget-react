@@ -6,7 +6,6 @@ function Item(index, columns, {
     editing = false,
     ...value
 }, update, rm) {
-    // console.log('Item', index, columns, editing, value, update, rm)
     return <tr key={index}>
         {columns.map(c => (
             <td key={c.title + index}>{editing ?
@@ -21,17 +20,15 @@ function Item(index, columns, {
                     <div className="control">
                         <button className="button is-small" onClick={update}><FaSave/></button>
                     </div>) : (
-                    <div>
-                        <div className="control">
-                            <button className="button is-small" onClick={() => editing = true}>
-                                <FaEdit/>
-                            </button>
-                        </div>
-                        <div className="control">
-                            <button className="button is-small" onClick={rm}><FaTrash/></button>
-                        </div>
+                    <div className="control">
+                        <button className="button is-small" onClick={() => editing = true}>
+                            <FaEdit/>
+                        </button>
                     </div>
                 )}
+                <div className="control">
+                    <button className="button is-small" onClick={() => rm(index)}><FaTrash/></button>
+                </div>
             </div>
         </td>
     </tr>
@@ -48,8 +45,6 @@ export default function List({
                                  items = [],
                                  setItems = arr => items = arr
                              }) {
-    // const adding = useRef(columns.reduce((previousValue, {title, type}) =>
-    //     bind(title, () => initValue[type])(previousValue), {}))
     const adding = {}
     for (const c of columns) {
         const initValueElement = initValue[c.type]
@@ -66,7 +61,9 @@ export default function List({
 
     }
 
-    function rm() {
+    function rm(e) {
+        console.log('rm', e)
+        setItems(R.remove(e, 1, items))
     }
 
     // let sum = 0;
