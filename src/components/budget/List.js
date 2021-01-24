@@ -1,11 +1,9 @@
 import {FaEdit, FaPlus, FaSave, FaTrash} from 'react-icons/all'
-import {useRef} from 'react'
+import {useRef, useState} from 'react'
 import * as R from 'ramda'
 
-function Item(index, columns, {
-    editing = false,
-    ...value
-}, update, rm) {
+export function Item({index, columns, value, update, rm}) {
+    const [editing, setEditing] = useState(false)
     return <tr key={index}>
         {columns.map(c => (
             <td key={c.title + index}>{editing ?
@@ -21,7 +19,7 @@ function Item(index, columns, {
                         <button className="button is-small" onClick={update}><FaSave/></button>
                     </div>) : (
                     <div className="control">
-                        <button className="button is-small" onClick={() => editing = true}>
+                        <button className="button is-small" onClick={() => setEditing(true)}>
                             <FaEdit/>
                         </button>
                     </div>
@@ -107,7 +105,9 @@ export default function List({
                     </tr>
                     </tfoot>
                     <tbody>
-                    {items.map((value, index) => Item(index, columns, value, update, rm))}
+                    {items.map((value, index) => (
+                        <Item key={index} index={index} columns={columns} value={value} update={update} rm={rm}/>
+                    ))}
                     </tbody>
                 </table>
             </div>
