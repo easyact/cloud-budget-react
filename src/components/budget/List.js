@@ -1,10 +1,18 @@
 import {FaEdit, FaPlus, FaSave, FaTrash} from 'react-icons/all'
+import {useRef} from 'react'
+import * as R from 'ramda'
 
-function Item(index, columns, editing, value, update, rm) {
+function Item(index, columns, {
+    editing = false,
+    ...value
+}, update, rm) {
+    // console.log('Item', index, columns, editing, value, update, rm)
     return <tr key={index}>
         {columns.map(c => (
             <td key={c.title + index}>{editing ?
-                <input type={c.type} className="input is-small"/> : value}</td>
+                <input type={c.type} className="input is-small" defaultValue={value[c.title]}/> :
+                value[c.title]}
+            </td>
         ))}
 
         <td key={`td${index}`}>
@@ -29,6 +37,7 @@ function Item(index, columns, editing, value, update, rm) {
     </tr>
 }
 
+const initValue = {text: '空', number: 0}
 export default function List({
                                  title = '资产',
                                  hint = '产生被动收入',
@@ -39,9 +48,18 @@ export default function List({
                                  items = [],
                                  setItems = arr => items = arr
                              }) {
+    // const adding = useRef(columns.reduce((previousValue, {title, type}) =>
+    //     bind(title, () => initValue[type])(previousValue), {}))
+    const adding = {}
+    for (const c of columns) {
+        const initValueElement = initValue[c.type]
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        adding[c.title] = useRef(initValueElement)
+    }
 
     function add() {
-        setItems([...items, {}])
+        console.log('List add', adding)
+        setItems([...items, R.mapObjIndexed(r => r.current.value)(adding)])
     }
 
     function update() {
@@ -67,7 +85,7 @@ export default function List({
                     <tr>
                         {columns.map(c => (
                             <td key={c.title}>
-                                <input type={c.type} className="input is-small"/>
+                                <input type={c.type} className="input is-small" ref={adding[c.title]}/>
                             </td>
                         ))}
                         <th>
@@ -92,7 +110,7 @@ export default function List({
                     </tr>
                     </tfoot>
                     <tbody>
-                    {items.map(({editing = false, value}, index) => Item(index, columns, editing, value, update, rm))}
+                    {items.map((value, index) => Item(index, columns, value, update, rm))}
                     </tbody>
                 </table>
             </div>

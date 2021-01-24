@@ -11,9 +11,9 @@ export function useAssets(user: string, version: string) {
         task().then(O.map(setAssets))
     }, [repo, user, version])
 
-    function updateAssets(assets: any) {
-        service.setAsset(user, version, assets)(repo)().then(() => setAssets(assets))
-    }
+    useEffect(() => {
+        service.setAsset(user, version, assets)(repo)()
+    }, [user, version, assets, repo])
 
-    return [assets, updateAssets]
+    return [assets, setAssets]
 }

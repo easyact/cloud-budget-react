@@ -17,7 +17,7 @@ export class BudgetRepositoryLocalStorage implements BudgetRepository {
         fromIO)
 
     setAssets = (user: string, version: string, v: any) => pipe(
-        setItem(getKey(user, version), v),
+        setItem(getKey(user, version), JSON.stringify(v)),
         fromIO)
 
     // liabilities(user: string, version: string): Promise<any[]> {

@@ -21,7 +21,8 @@ const environment = {
 
 export function useBudget(userId = 'default', version = 'current') {
     const [budget, setBudget] = useState()
-    if (!environment.production) {
+    if (environment.production) {
+        console.log('Production now!')
         db.settings({
             host: 'xhcxjz8nw8.execute-api.ap-southeast-1.amazonaws.com/db',
             experimentalForceLongPolling: true
