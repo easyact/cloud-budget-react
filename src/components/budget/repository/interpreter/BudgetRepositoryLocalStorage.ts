@@ -12,8 +12,8 @@ function getKey(user: string, version: string) {
 }
 
 export class BudgetRepositoryLocalStorage implements BudgetRepository {
-    assets = (user: string, version: string) => pipe(
-        optionIO.map(getItem(getKey(user, version)), s => JSON.parse(s)),
+    getAssets = (user: string, version: string) => pipe(
+        optionIO.map(getItem(getKey(user, version)), JSON.parse),
         fromIO)
 
     setAssets = (user: string, version: string, v: any) => pipe(
@@ -29,3 +29,5 @@ export class BudgetRepositoryLocalStorage implements BudgetRepository {
     // }
 
 }
+
+export default new BudgetRepositoryLocalStorage()
