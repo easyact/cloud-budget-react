@@ -1,6 +1,7 @@
 import {FaEdit, FaPlus, FaSave, FaTrash} from 'react-icons/all'
 import {useRef, useState} from 'react'
 import * as R from 'ramda'
+import {flow} from 'fp-ts/es6/function'
 
 export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(false)
@@ -16,7 +17,10 @@ export function Item({index, columns, value, update, rm}) {
             <div className="field has-addons">
                 {editing ? (
                     <div className="control">
-                        <button className="button is-small" onClick={update}><FaSave/></button>
+                        <button className="button is-small" onClick={flow(
+                            () => setEditing(false),
+                            update)}><FaSave/>
+                        </button>
                     </div>) : (
                     <div className="control">
                         <button className="button is-small" onClick={() => setEditing(true)}>
