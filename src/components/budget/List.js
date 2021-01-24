@@ -5,10 +5,16 @@ import {flow} from 'fp-ts/es6/function'
 
 export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(false)
+    const adding = {}
+    for (const c of columns) {
+        const initValueElement = initValue[c.type]
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        adding[c.title] = useRef(initValueElement)
+    }
     return <tr key={index}>
         {columns.map(c => (
             <td key={c.title + index}>{editing ?
-                <input type={c.type} className="input is-small" defaultValue={value[c.title]}/> :
+                <input type={c.type} className="input is-small" defaultValue={value[c.title]} ref={adding[c.title]}/> :
                 value[c.title]}
             </td>
         ))}
@@ -19,7 +25,7 @@ export function Item({index, columns, value, update, rm}) {
                     <div className="control">
                         <button className="button is-small" onClick={flow(
                             () => setEditing(false),
-                            update)}><FaSave/>
+                            () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))}><FaSave/>
                         </button>
                     </div>) : (
                     <div className="control">
@@ -59,13 +65,14 @@ export default function List({
         setItems([...items, R.mapObjIndexed(r => r.current.value)(adding)])
     }
 
-    function update() {
-
+    function update(id, v) {
+        console.log('update', id, v)
+        setItems(R.update(id, v, items))
     }
 
-    function rm(e) {
-        console.log('rm', e)
-        setItems(R.remove(e, 1, items))
+    function rm(id) {
+        console.log('rm', id)
+        setItems(R.remove(id, 1, items))
     }
 
     // let sum = 0;
