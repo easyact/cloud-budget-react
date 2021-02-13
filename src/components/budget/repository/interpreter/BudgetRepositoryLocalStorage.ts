@@ -7,20 +7,17 @@ import {pipe} from 'fp-ts/function'
 import * as R from 'ramda'
 
 const MIO = getOptionM(IO.Monad)
+
 // const MT = getOptionM(T.task)
 
 function getKey(user: string, version: string) {
-    return `${user}.${version}`;
+    return `${user}.${version}`
 }
 
 export class BudgetRepositoryLocalStorage implements BudgetRepository {
-    getAssets = (user: string, version: string) => pipe(
-        MIO.map(getItem(getKey(user, version)), JSON.parse),
-        T.fromIO)
+    getAssets = (user: string, version: string) => this.getList(user, version, 'assets')
 
-    setAssets = (user: string, version: string, v: any) => pipe(
-        setItem(getKey(user, version), JSON.stringify(v)),
-        T.fromIO)
+    setAssets = (user: string, version: string, v: any) => this.setList(user, version, 'assets', v)
 
     getList = (user: string, version: string, name: string) => pipe(
         MIO.map(getItem(getKey(user, version)), JSON.parse),
