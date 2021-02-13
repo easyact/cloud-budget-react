@@ -1,8 +1,10 @@
-import {Task} from "fp-ts/Task";
-import {Option} from "fp-ts/Option";
+import {Task} from 'fp-ts/Task'
+import {Option} from 'fp-ts/Option'
 
 export interface BudgetRepository {
-    // query(user: string, version: string): Task<Budget | null>
+    getList(user: string, version: string, name: string): Task<Option<any>>
+
+    setList(user: string, version: string, name: string, v: any): Task<void>
 
     getAssets(user: string, version: string): Task<Option<any>>
 
