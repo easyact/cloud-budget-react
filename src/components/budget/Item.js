@@ -22,19 +22,17 @@ export function Item({index, columns, value, update, rm}) {
 
         <td key={`td${index}`}>
             <div className="field has-addons">
-                {editing ? (
-                    <div className="control">
-                        <button className="button is-small" onClick={flow(
-                            () => setEditing(false),
-                            () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))}><FaSave/>
-                        </button>
-                    </div>) : (
-                    <div className="control">
-                        <button className="button is-small" onClick={() => setEditing(true)}>
-                            <FaEdit/>
-                        </button>
-                    </div>
-                )}
+                {editing ? <div className="control">
+                    <button className="button is-small" onClick={flow(
+                        () => setEditing(false),
+                        () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))}><FaSave/>
+                    </button>
+                </div> : <div className="control">
+                    <button className="button is-small" onClick={() => setEditing(true)}>
+                        <FaEdit/>
+                    </button>
+                </div>
+                }
                 <div className="control">
                     <button className="button is-small" onClick={() => rm(index)}><FaTrash/></button>
                 </div>
