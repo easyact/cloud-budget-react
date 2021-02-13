@@ -1,6 +1,6 @@
 import Kpi from './budget/Kpi'
 import List from './budget/List'
-import {useAssets} from './budget/useAssets'
+import {useAssets} from './budget/useList'
 
 function Liability() {
     return (<List title="负债" hint="不断从你口袋掏钱出来" columns={[
