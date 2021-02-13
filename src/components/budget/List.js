@@ -1,48 +1,9 @@
-import {FaEdit, FaPlus, FaSave, FaTrash} from 'react-icons/all'
-import {useRef, useState} from 'react'
+import {FaPlus} from 'react-icons/all'
+import {useRef} from 'react'
 import * as R from 'ramda'
-import {flow} from 'fp-ts/es6/function'
+import {Item} from './Item'
 
-export function Item({index, columns, value, update, rm}) {
-    const [editing, setEditing] = useState(false)
-    const adding = {}
-    for (const c of columns) {
-        const initValueElement = initValue[c.type]
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        adding[c.title] = useRef(initValueElement)
-    }
-    return <tr key={index}>
-        {columns.map(c => (
-            <td key={c.title + index}>{editing ?
-                <input type={c.type} className="input is-small" defaultValue={value[c.title]} ref={adding[c.title]}/> :
-                value[c.title]}
-            </td>
-        ))}
-
-        <td key={`td${index}`}>
-            <div className="field has-addons">
-                {editing ? (
-                    <div className="control">
-                        <button className="button is-small" onClick={flow(
-                            () => setEditing(false),
-                            () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))}><FaSave/>
-                        </button>
-                    </div>) : (
-                    <div className="control">
-                        <button className="button is-small" onClick={() => setEditing(true)}>
-                            <FaEdit/>
-                        </button>
-                    </div>
-                )}
-                <div className="control">
-                    <button className="button is-small" onClick={() => rm(index)}><FaTrash/></button>
-                </div>
-            </div>
-        </td>
-    </tr>
-}
-
-const initValue = {text: '空', number: 0}
+export const initValue = {text: '空', number: 0}
 export default function List({
                                  title = '资产',
                                  hint = '产生被动收入',
@@ -116,9 +77,9 @@ export default function List({
                     </tr>
                     </tfoot>
                     <tbody>
-                    {items.map((value, index) => (
+                    {items.map((value, index) =>
                         <Item key={index} index={index} columns={columns} value={value} update={update} rm={rm}/>
-                    ))}
+                    )}
                     </tbody>
                 </table>
             </div>
