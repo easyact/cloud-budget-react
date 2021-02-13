@@ -12,6 +12,9 @@ export function Item({index, columns, value, update, rm}) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         adding[c.title] = useRef(initValueElement)
     }
+    const save = flow(
+        () => setEditing(false),
+        () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))
     return <tr key={index}>
         {columns.map(c => (
             <td key={c.title + index}>{editing ?
@@ -23,9 +26,8 @@ export function Item({index, columns, value, update, rm}) {
         <td key={`td${index}`}>
             <div className="field has-addons">
                 {editing ? <div className="control">
-                    <button className="button is-small" onClick={flow(
-                        () => setEditing(false),
-                        () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))}><FaSave/>
+                    <button className="button is-small" onClick={save}>
+                        <FaSave/>
                     </button>
                 </div> : <div className="control">
                     <button className="button is-small" onClick={() => setEditing(true)}>
