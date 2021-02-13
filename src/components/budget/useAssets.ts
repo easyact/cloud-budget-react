@@ -1,13 +1,13 @@
 import {useEffect, useState} from 'react'
 import service from './service/interpreter/BudgetServiceInterpreter'
 import {useRepo} from './useRepo'
-import * as O from "fp-ts/Option";
+import * as O from 'fp-ts/Option'
 
 export function useAssets(user: string, version: string) {
     const [assets, setAssets] = useState([])
     const repo = useRepo()
     useEffect(() => {
-        const task = service.getAsset(user, version)(repo)
+        const task = service.getList(user, version, 'assets')(repo)
         task().then(O.map(setAssets))
     }, [repo, user, version])
 
