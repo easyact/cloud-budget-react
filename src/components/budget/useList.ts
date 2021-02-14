@@ -12,7 +12,7 @@ export function useList(user: string, version: string, name: ItemType = 'assets'
         const task = service.getList(user, version, name)(repo)
         task()
             .then(R.tap(x => console.log('useList.got list', x)))
-            .then(O.map(setList))
+            .then(O.fold(() => console.warn('useList.got none of', name), setList))
     }, [repo, name, user, version])
 
     useEffect(() => {

@@ -1,6 +1,7 @@
 import {BudgetRepository} from '../BudgetRepository'
 import {getItem, setItem} from 'fp-ts-local-storage'
 import * as T from 'fp-ts/Task'
+import * as O from 'fp-ts/Option'
 import {getOptionM} from 'fp-ts/OptionT'
 import * as IO from 'fp-ts/IO'
 import {pipe} from 'fp-ts/function'
@@ -25,6 +26,7 @@ export class BudgetRepositoryLocalStorage implements BudgetRepository {
     )
     patchBudgetList = (user: string, version: string, name: string, v: any) => pipe(
         this.getBudget(user, version),
+        T.map(O.getOrElse(() => ({}))),
         T.map(({[name]: t, ...rest}: any) => ({...rest, [name]: v})),
         T.chain(json => this.setBudget(user, version, json)),
     )
