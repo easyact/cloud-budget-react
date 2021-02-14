@@ -24,6 +24,7 @@ export default function List({
     function add() {
         console.log('List add', adding)
         setItems([...items, R.mapObjIndexed(r => r.current.value)(adding)])
+        columns.map(c => c.title).forEach(t => adding[t].current.value = null)
     }
 
     function update(id, v) {
