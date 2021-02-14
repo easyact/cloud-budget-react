@@ -1,10 +1,9 @@
 import {BudgetRepository} from '../BudgetRepository'
 import {getItem, setItem} from 'fp-ts-local-storage'
-import T from 'fp-ts/Task'
+import * as T from 'fp-ts/Task'
 import {getOptionM} from 'fp-ts/OptionT'
 import * as IO from 'fp-ts/IO'
 import {pipe} from 'fp-ts/function'
-import * as R from 'ramda'
 
 const MIO = getOptionM(IO.Monad)
 
@@ -15,21 +14,20 @@ function getKey(user: string, version: string) {
 }
 
 export class BudgetRepositoryLocalStorage implements BudgetRepository {
-    getAssets = (user: string, version: string) => this.getList(user, version, 'assets')
-
-    setAssets = (user: string, version: string, v: any) => this.setList(user, version, 'assets', v)
-
-    getList = (user: string, version: string, name: string) => pipe(
+    getBudget = (user: string, version: string) => pipe(
         MIO.map(getItem(getKey(user, version)), JSON.parse),
         T.fromIO,
-        T.map(R.prop<any>(name)))
+    )
 
-    setList = (user: string, version: string, name: string, v: any) => pipe(
-        this.getList(user, version, name),
+    setBudget = (user: string, version: string, v: any) => pipe(
+        setItem(getKey(user, version), JSON.stringify(v)),
+        T.fromIO,
+    )
+    patchBudgetList = (user: string, version: string, name: string, v: any) => pipe(
+        this.getBudget(user, version),
         T.map(({[name]: t, ...rest}: any) => ({...rest, [name]: v})),
-        JSON.stringify,
-        jsonString => setItem(getKey(user, version), jsonString),
-        T.fromIO)
+        T.chain(json => this.setBudget(user, version, json)),
+    )
 
     // liabilities(user: string, version: string): Promise<any[]> {
     //     return Promise.resolve([]);

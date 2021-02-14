@@ -1,18 +1,19 @@
 import Kpi from './budget/Kpi'
 import List from './budget/List'
-import {useAssets} from './budget/useList'
+import {useList} from './budget/useList'
 
 function Liability() {
-    return (<List title="负债" hint="不断从你口袋掏钱出来" columns={[
-        {title: '条目', type: 'text'}, {title: '总数', type: 'number'}, {title: '已还', type: 'number'}]}/>);
+    const [liabilities, setLiabilities] = useList('default', 'current', 'liabilities')
+    return <List title="负债" hint="不断从你口袋掏钱出来" items={liabilities} setItems={setLiabilities}
+                 columns={[{title: '条目', type: 'text'}, {title: '总数', type: 'number'}, {title: '已还', type: 'number'}]}/>
 }
 
 function Statement() {
-    return null;
+    return null
 }
 
 function Budget() {
-    const [asserts, setAsserts] = useAssets('default', 'current')
+    const [asserts, setAsserts] = useList('default', 'current')
     return (
         <div>
             <div className="level is-mobile">
@@ -65,7 +66,7 @@ function Budget() {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default Budget;
+export default Budget
