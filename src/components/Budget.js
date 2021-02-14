@@ -8,8 +8,18 @@ function Liability() {
                  columns={[{title: '条目', type: 'text'}, {title: '总数', type: 'number'}, {title: '已还', type: 'number'}]}/>
 }
 
-function Statement() {
-    return null
+function Incomes() {
+    const [items, setItems] = useList('default', 'current', 'incomes')
+    //条目	数额	周期
+    return <List title="收入" hint="每月" items={items} setItems={setItems}
+                 columns={[{title: '条目', type: 'text'}, {title: '数额', type: 'number'}, {title: '周期', type: 'text'}]}/>
+}
+
+function Expenses() {
+    const [items, setItems] = useList('default', 'current', 'expenses')
+    //条目	数额	周期
+    return <List title="支出" hint="每月" items={items} setItems={setItems}
+                 columns={[{title: '条目', type: 'text'}, {title: '数额', type: 'number'}, {title: '周期', type: 'text'}]}/>
 }
 
 function Budget() {
@@ -26,20 +36,12 @@ function Budget() {
             </div>
             <div className="columns">
                 <fieldset className="column">
-                    <div className="panel">
-                        <List items={asserts} setItems={setAsserts}/>
-                    </div>
-                    <div className="panel">
-                        <Liability/>
-                    </div>
+                    <div className="panel"><List items={asserts} setItems={setAsserts}/></div>
+                    <div className="panel"><Liability/></div>
                 </fieldset>
                 <fieldset className="column">
-                    <div className="panel">
-                        <Statement/>
-                    </div>
-                    <div className=" panel">
-                        <Statement title=" 支出"/>
-                    </div>
+                    <div className="panel"><Incomes/></div>
+                    <div className=" panel"><Expenses/></div>
                 </fieldset>
             </div>
             <div className=" field is-grouped is-grouped-multiline">
