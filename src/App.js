@@ -3,8 +3,10 @@ import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
 import {FaCalendarAlt, FaDoorOpen} from 'react-icons/all'
 import Budget from './components/Budget'
 import {LandingPage} from './components/LandingPage'
+import {useState} from 'react'
 
 function App() {
+    const [active, setActive] = useState(false)
     return <Router>
         <div className="App">
             <header>
@@ -16,13 +18,14 @@ function App() {
                         <div className="navbar-item">
                             <small>云预算: 从996到财务自由</small>
                         </div>
-                        <div className="navbar-burger burger">
+                        <div onClick={() => setActive(!active)}
+                             className={`navbar-burger burger ${active ? 'is-active' : null}`}>
                             <span/>
                             <span/>
                             <span/>
                         </div>
                     </div>
-                    <div className="navbar-menu">
+                    <div className={`navbar-menu ${active ? 'is-active' : null}`}>
                         <div className="navbar-start">
                             <Link to="budget" className="navbar-item">
                                 <FaCalendarAlt/>
