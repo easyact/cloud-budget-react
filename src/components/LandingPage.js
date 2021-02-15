@@ -1,21 +1,7 @@
-import {useEffect} from 'react'
+import useScript from '../hooks/useScript'
 
 export function LandingPage() {
-
-    // <script src="https://jinshuju.net/f/KdziDP/embedded.js?inner_redirect=false&banner=show&background=white&height=1326"/>
-    useEffect(() => {
-        const script = document.createElement('script');
-
-        script.src = "https://jinshuju.net/f/KdziDP/embedded.js?inner_redirect=false&banner=show&background=white&height=1326";
-        script.async = true;
-
-        document.body.appendChild(script);
-
-        return () => {
-            document.body.removeChild(script);
-        }
-    }, []);
-
+    useScript('https://jinshuju.net/f/KdziDP/embedded.js?inner_redirect=false&banner=show&background=white&height=1326')
     return <section className="hero is-light is-bold">
         {/*<div className="hero-body">*/}
         {/*    <div className="container">*/}
