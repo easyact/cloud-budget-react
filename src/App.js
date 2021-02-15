@@ -2,7 +2,7 @@ import './App.css'
 import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
 import {FaCalendarAlt, FaDoorOpen} from 'react-icons/all'
 import Budget from './components/Budget'
-import {LandingPage} from './LandingPage'
+import {LandingPage} from './components/LandingPage'
 
 function App() {
     return (
