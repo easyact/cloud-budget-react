@@ -1,6 +1,6 @@
 import './App.css'
 import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
-import {FaCalendarAlt, FaDoorOpen} from 'react-icons/all'
+import {FaCalendarAlt, FaDoorOpen, FaSync} from 'react-icons/all'
 import Budget from './components/Budget'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
@@ -34,6 +34,10 @@ function App() {
                             <Link to="target" className="navbar-item">
                                 <FaDoorOpen/>
                                 <span>目标</span>
+                            </Link>
+                            <Link to="sync" className="navbar-item">
+                                <FaSync/>
+                                <span>同步至云端</span>
                             </Link>
                         </div>
                     </div>
