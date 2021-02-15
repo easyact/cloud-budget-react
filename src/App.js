@@ -1,9 +1,10 @@
 import './App.css'
 import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
-import {FaCalendarAlt, FaDoorOpen, FaSync} from 'react-icons/all'
+import {FaCalendarAlt, FaSync} from 'react-icons/all'
 import Budget from './components/Budget'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
+import {Login} from './components/Login'
 
 function App() {
     const [active, setActive] = useState(false)
@@ -31,10 +32,10 @@ function App() {
                                 <FaCalendarAlt/>
                                 <span>预算</span>
                             </Link>
-                            <Link to="target" className="navbar-item">
-                                <FaDoorOpen/>
-                                <span>目标</span>
-                            </Link>
+                            {/*<Link to="target" className="navbar-item">*/}
+                            {/*    <FaDoorOpen/>*/}
+                            {/*    <span>目标</span>*/}
+                            {/*</Link>*/}
                             <Link to="sync" className="navbar-item">
                                 <FaSync/>
                                 <span>同步至云端</span>
@@ -50,6 +51,7 @@ function App() {
                 <Route path="" element={<LandingPage/>}/>
                 <Route path="budget" element={<Budget/>}/>
                 <Route path="target" element={<Budget/>}/>
+                <Route path="sync" element={<Login/>}/>
             </Routes>
         </div>
     </Router>
