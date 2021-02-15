@@ -1,7 +1,8 @@
-import './App.css';
-import {BrowserRouter as Router, Link, Route, Routes} from "react-router-dom";
-import {FaCalendarAlt, FaDoorOpen} from "react-icons/all";
-import Budget from "./components/Budget";
+import './App.css'
+import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
+import {FaCalendarAlt, FaDoorOpen} from 'react-icons/all'
+import Budget from './components/Budget'
+import {LandingPage} from './LandingPage'
 
 function App() {
     return (
@@ -11,7 +12,7 @@ function App() {
                     <nav className="navbar has-shadow is-primary">
                         <div className="navbar-brand">
                             <Link className="navbar-item" to="/">
-                                <img alt="EasyAct" src="logo.png"/>
+                                <img alt="EasyAct" src={'logo.png'}/>
                             </Link>
                             <div className="navbar-item">
                                 <small>云预算: 从996到财务自由</small>
@@ -40,13 +41,14 @@ function App() {
                 </header>
 
                 <Routes>
+                    <Route path="" element={<LandingPage/>}/>
                     <Route path="budget" element={<Budget/>}/>
                     <Route path="target" element={<Budget/>}/>
                 </Routes>
             </div>
         </Router>
         // <Budget></Budget>
-    );
+    )
 }
 
-export default App;
+export default App

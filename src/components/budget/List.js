@@ -71,7 +71,7 @@ export default function List({
                             总{title}
                         </td>
                         <td>
-                            ¥{0}
+                            ¥{R.sum(items.map(item => item[columns[1].title]))}
                         </td>
                         <td>
                         </td>
