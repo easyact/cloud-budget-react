@@ -1,10 +1,10 @@
 import './App.css'
 import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
-import {FaCalendarAlt, FaSync} from 'react-icons/all'
+import {FaBug, FaCalendarAlt, FaSignOutAlt, FaSync, FaUserCircle} from 'react-icons/all'
 import Budget from './components/Budget'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
-import {Login} from './components/Login'
+import LoginButton from './auth/LoginButton'
 
 function App() {
     const [active, setActive] = useState(false)
@@ -41,6 +41,43 @@ function App() {
                                 <span>同步至云端</span>
                             </Link>
                         </div>
+                        <div className="navbar-end"> {(true) ?
+                            <div className="navbar-item field is-grouped is-grouped-multiline">
+                                <p className="control">
+                                    <LoginButton/>
+                                </p>
+                                <p className="control">
+                                    <button className="button">
+                                        注册
+                                    </button>
+                                </p>
+                            </div>
+                            : <div className="navbar-item has-dropdown is-hoverable">
+                                <div className="navbar-link">
+                                    {'user.username'}
+                                </div>
+                                <div className="navbar-dropdown">
+                                    <Link to="/user" className="navbar-item">
+                                        <div>
+                                            <FaUserCircle className="is-small"/> 个人信息
+                                        </div>
+                                    </Link>
+                                    <Link to="https://jinshuju.net/f/JXBXK2" className="navbar-item">
+                                        <div>
+                                            <FaBug className="is-small"/>
+                                            上报bug
+                                        </div>
+                                    </Link>
+                                    <button className="navbar-item" onClick={function logout() {
+                                    }}>
+                                        <div>
+                                            <FaSignOutAlt className="is-small"/> 登出
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        </div>
                     </div>
                 </nav>
 
@@ -51,7 +88,7 @@ function App() {
                 <Route path="" element={<LandingPage/>}/>
                 <Route path="budget" element={<Budget/>}/>
                 <Route path="target" element={<Budget/>}/>
-                <Route path="sync" element={<Login/>}/>
+                {/*<Route path="sync" element={<Login/>}/>*/}
             </Routes>
         </div>
     </Router>
