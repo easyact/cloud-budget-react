@@ -12,7 +12,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "bulma": "^0.9.1",
-    "firebase": "^8.2.3",
+    "firebase": "^8.2.4",
     "fp-ts": "^2.9.3",
     "fp-ts-local-storage": "^1.0.3",
     "history": "^5.0.0",
