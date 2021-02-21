@@ -42,7 +42,7 @@ export default function List({
         <div className="panel">
             <p className="panel-heading">{title}<small className="has-text-grey">{hint}</small></p>
             <div className="panel-block table-container">
-                <table className="table is-hoverable is-fullwidth is-narrow">
+                <table className="table is-hoverable is-fullwidth is-narrow is-striped is-narrow">
                     <thead>
                     <tr>
                         {columns.map(c => (<th key={c.title}>{c.title}</th>))}

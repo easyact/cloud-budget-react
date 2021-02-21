@@ -1,6 +1,7 @@
 import Kpi from './budget/Kpi'
 import List from './budget/List'
 import {useList} from './budget/useList'
+import * as R from 'ramda'
 
 function Liability() {
     const [liabilities, setLiabilities] = useList('default', 'current', 'liabilities')
@@ -8,27 +9,30 @@ function Liability() {
                  columns={[{title: '条目', type: 'text'}, {title: '总数', type: 'number'}, {title: '已还', type: 'number'}]}/>
 }
 
+const AMOUNT = '数额'
+
 function Incomes() {
     const [items, setItems] = useList('default', 'current', 'incomes')
     //条目	数额	周期
     return <List title="收入" hint="每月" items={items} setItems={setItems}
-                 columns={[{title: '条目', type: 'text'}, {title: '数额', type: 'number'}, {title: '周期', type: 'text'}]}/>
+                 columns={[{title: '条目', type: 'text'}, {title: AMOUNT, type: 'number'}, {title: '周期', type: 'text'}]}/>
 }
 
 function Expenses() {
     const [items, setItems] = useList('default', 'current', 'expenses')
     //条目	数额	周期
     return <List title="支出" hint="每月" items={items} setItems={setItems}
-                 columns={[{title: '条目', type: 'text'}, {title: '数额', type: 'number'}, {title: '周期', type: 'text'}]}/>
+                 columns={[{title: '条目', type: 'text'}, {title: AMOUNT, type: 'number'}, {title: '周期', type: 'text'}]}/>
 }
 
 function Budget() {
-    const [asserts, setAsserts] = useList('default', 'current')
+    const [assets, setAssets] = useList('default', 'current')
+    const [expenses] = useList('default', 'current', 'expenses')
     return (
         <div>
             <div className="level is-mobile">
                 <div className="level-item has-text-centered">
-                    <Kpi/>
+                    <Kpi value={`0/${R.sum(expenses.map(e => e[AMOUNT]))}`}/>
                 </div>
                 {/*<div className="level-item has-text-centered">*/}
                 {/*    <Progress/>*/}
@@ -36,7 +40,7 @@ function Budget() {
             </div>
             <div className="columns">
                 <fieldset className="column">
-                    <div className="panel"><List items={asserts} setItems={setAsserts}/></div>
+                    <div className="panel"><List items={assets} setItems={setAssets}/></div>
                     <div className="panel"><Liability/></div>
                 </fieldset>
                 <fieldset className="column">

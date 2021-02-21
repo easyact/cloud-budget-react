@@ -1,10 +1,10 @@
-function Kpi() {
+function Kpi({name = '被动收入/支出', value = 0 / 29598.67}) {
     return (
         <div>
-            <p className="heading">被动收入/支出</p>
-            <p className="title">0/29598.67</p>
+            <p className="heading">{name}</p>
+            <p className="title">{value}</p>
         </div>
-    );
+    )
 }
 
-export default Kpi;
+export default Kpi

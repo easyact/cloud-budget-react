@@ -13,16 +13,17 @@ const Profile = () => {
     }
 
     return isAuthenticated ? <div className="navbar-item has-dropdown is-hoverable">
-        <div className="navbar-link" style={{'margin-right': '150px'}}>
+        <div className="navbar-link" style={{'margin-left': '100px'}}>
             {user.name}
         </div>
         <div className="navbar-dropdown">
-            <img src={user.picture} alt={user.name}/>
-            <div>{user.email}</div>
+            <img className="navbar-item" src={user.picture} alt={user.name}/>
+            <div className="navbar-item">{user.email}</div>
             <a href="https://jinshuju.net/f/JXBXK2" className="navbar-item" target="_blank" rel="noreferrer">
                 <FaBug className="is-small"/>
                 上报bug
             </a>
+            <hr className="navbar-divider"/>
             <LogoutButton className="navbar-item">
                 <FaSignOutAlt className="is-small"/> 登出
             </LogoutButton>
