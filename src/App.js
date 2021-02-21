@@ -5,9 +5,21 @@ import Budget from './components/Budget'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
 import Profile from './auth/Profile'
+import {useAuth0} from '@auth0/auth0-react'
+import LoginButton from './auth/LoginButton'
+
+function Sync() {
+    return <div className="hero is-light">
+        <div className="hero-body">
+            <p>登录后即可同步至云端</p>
+            <LoginButton/>
+        </div>
+    </div>
+}
 
 function App() {
     const [active, setActive] = useState(false)
+    const {isAuthenticated} = useAuth0()
     return <Router>
         <div className="App">
             <header>
@@ -36,10 +48,10 @@ function App() {
                             {/*    <FaDoorOpen/>*/}
                             {/*    <span>目标</span>*/}
                             {/*</Link>*/}
-                            <Link to="sync" className="navbar-item">
+                            {isAuthenticated ? null : <Link to="sync" className="navbar-item">
                                 <FaSync/>
                                 <span>同步至云端</span>
-                            </Link>
+                            </Link>}
                         </div>
                         <div className="navbar-end"><Profile/></div>
                     </div>
@@ -52,7 +64,7 @@ function App() {
                 <Route path="" element={<LandingPage/>}/>
                 <Route path="budget" element={<Budget/>}/>
                 <Route path="target" element={<Budget/>}/>
-                {/*<Route path="sync" element={<Login/>}/>*/}
+                <Route path="sync" element={<Sync/>}/>
             </Routes>
         </div>
     </Router>
