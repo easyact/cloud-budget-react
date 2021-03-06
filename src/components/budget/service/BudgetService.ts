@@ -1,8 +1,8 @@
 import {BudgetRepository} from '../repository/BudgetRepository'
-import {ReaderTask} from 'fp-ts/ReaderTask'
 import {Option} from 'fp-ts/Option'
+import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 
-export type BudgetOp<A> = ReaderTask<BudgetRepository, A>
+export type BudgetOp<A> = ReaderTaskEither<BudgetRepository, any, A>
 
 export interface BudgetService {
     getAsset(user: string, version: string): BudgetOp<Option<any>>

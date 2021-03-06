@@ -48,29 +48,29 @@ function Budget() {
                     <div className=" panel"><Expenses/></div>
                 </fieldset>
             </div>
-            <div className=" field is-grouped is-grouped-multiline">
-                <div className=" field has-addons control">
-                    <p className=" control is-expanded">
-                        <input id="ver" className="input is-small"/>
-                    </p>
-                    <p className=" control">
-                        <button type=" submit" className=" button is-info is-small">
-                            分支
-                        </button>
-                    </p>
-                </div>
-                <div className=" control">
-                    <button className="button is-small">
-                        导出
-                    </button>
-                </div>
-                <div className="control">
-                    <button className=" button is-small">
-                        导入
-                    </button>
-                    <input id="file-input" type=" file" name=" name" style={{display: 'none'}}/>
-                </div>
-            </div>
+            {/*<div className=" field is-grouped is-grouped-multiline">*/}
+            {/*    <div className=" field has-addons control">*/}
+            {/*        <p className=" control is-expanded">*/}
+            {/*            <input id="ver" className="input is-small"/>*/}
+            {/*        </p>*/}
+            {/*        <p className=" control">*/}
+            {/*            <button type=" submit" className=" button is-info is-small">*/}
+            {/*                分支*/}
+            {/*            </button>*/}
+            {/*        </p>*/}
+            {/*    </div>*/}
+            {/*    <div className=" control">*/}
+            {/*        <button className="button is-small">*/}
+            {/*            导出*/}
+            {/*        </button>*/}
+            {/*    </div>*/}
+            {/*    <div className="control">*/}
+            {/*        <button className=" button is-small">*/}
+            {/*            导入*/}
+            {/*        </button>*/}
+            {/*        <input id="file-input" type=" file" name=" name" style={{display: 'none'}}/>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
         </div>
     )
 }

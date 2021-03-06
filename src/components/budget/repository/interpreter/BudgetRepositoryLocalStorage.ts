@@ -1,6 +1,6 @@
 import {BudgetRepository} from '../BudgetRepository'
 import {getItem, setItem} from 'fp-ts-local-storage'
-import * as T from 'fp-ts/Task'
+import * as T from 'fp-ts/TaskEither'
 import * as O from 'fp-ts/Option'
 import {getOptionM} from 'fp-ts/OptionT'
 import * as IO from 'fp-ts/IO'
@@ -17,12 +17,12 @@ function getKey(user: string, version: string) {
 export class BudgetRepositoryLocalStorage implements BudgetRepository {
     getBudget = (user: string, version: string) => pipe(
         MIO.map(getItem(getKey(user, version)), JSON.parse),
-        T.fromIO,
+        T.rightIO,
     )
 
     setBudget = (user: string, version: string, v: any) => pipe(
         setItem(getKey(user, version), JSON.stringify(v)),
-        T.fromIO,
+        T.rightIO,
     )
     patchBudgetList = (user: string, version: string, name: string, v: any) => pipe(
         this.getBudget(user, version),

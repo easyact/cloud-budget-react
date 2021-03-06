@@ -1,8 +1,6 @@
 import {BudgetOp, BudgetService} from '../BudgetService'
 import {asks} from 'fp-ts/Reader'
-import {BudgetRepository} from '../../repository/BudgetRepository'
-import * as T from 'fp-ts/Task'
-import {Task} from 'fp-ts/Task'
+import * as T from 'fp-ts/TaskEither'
 import * as O from 'fp-ts/Option'
 import {Option} from 'fp-ts/Option'
 import {pipe} from 'fp-ts/function'
@@ -25,7 +23,8 @@ export class BudgetServiceInterpreter implements BudgetService {
         T.map(O.map(b => b[name]))
     ))
 
-    setList = (user: string, version: string, name: ItemType, v: any = []): BudgetOp<void> => asks<BudgetRepository, Task<void>>(repo => repo.patchBudgetList(user, version, name, v))
+    setList = (user: string, version: string, name: ItemType, v: any = []): BudgetOp<void> => asks(repo =>
+        repo.patchBudgetList(user, version, name, v))
 }
 
 export default new BudgetServiceInterpreter()

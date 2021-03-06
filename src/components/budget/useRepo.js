@@ -12,6 +12,8 @@ export function RepoProvider({children}) {
 }
 
 export function useRepo() {
+    // TODO 登录后走数据库
+    // const {isAuthenticated} = useAuth0()
 
     const repo = useContext(RepoContext)
 

@@ -1,7 +1,6 @@
 import {BudgetRepository} from '../BudgetRepository'
-import {Task} from 'fp-ts/Task'
+import * as _ from 'fp-ts/TaskEither'
 import * as O from 'fp-ts/Option'
-import {Option} from 'fp-ts/Option'
 import firebase from 'firebase/app'
 // Initialize Cloud Firestore through Firebase
 firebase.initializeApp({
@@ -21,22 +20,25 @@ if (environment.production) {
         experimentalForceLongPolling: true
     })
 }
+const rootDoc = db.collection('projects').doc('cb')
+
+function getDoc(userId: string, version: string) {
+    return rootDoc
+        .collection('users').doc(userId)
+        .collection('statements').doc(version)
+}
 
 export class BudgetRepositoryFirebase implements BudgetRepository {
-    getBudget(userId = 'default', version = 'current'): Task<Option<any>> {
-        return () => db.collection('projects').doc('cb')
-            .collection('users').doc(userId)
-            .collection('statements').doc(version)
-            .get()
-            .then(doc => doc.exists ? O.some(doc.data()) : O.none)
-    }
 
-    patchBudgetList(userId = 'default', version = 'current', name: string, v: any): Task<void> {
-        return undefined
-    }
+    getBudget = (userId = 'default', version = 'current') => _.fromTask(() => getDoc(userId, version)
+        .get()
+        .then(doc => doc.exists ? O.some(doc.data()) : O.none)
+    )
 
-    setBudget(userId = 'default', version = 'current', v: any): Task<void> {
-        return undefined
-    }
+    patchBudgetList = (userId = 'default', version = 'current', name: string, v: any) => _.fromTask(
+        () => getDoc(userId, version).update({[name]: v}))
+
+    setBudget = (userId = 'default', version = 'current', v: any) => _.fromTask(
+        () => getDoc(userId, version).set(v))
 
 }
