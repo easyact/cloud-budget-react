@@ -15,6 +15,7 @@ enum ItemTypes {
 export type ItemType = keyof typeof ItemTypes
 
 export class BudgetServiceInterpreter implements BudgetService {
+    setBudget = (user: string, version: string, v: any): BudgetOp<void> => asks(repo => repo.setBudget(user, version, v))
     getAsset = (user: string, version: string) => this.getList(user, version, 'assets')
     setAsset = (user: string, version: string, v: any) => this.setList(user, version, 'assets', v)
 

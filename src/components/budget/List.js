@@ -8,9 +8,9 @@ export default function List({
                                  title = '资产',
                                  hint = '产生被动收入',
                                  columns = [
-                                     {title: '项目', type: 'text'},
-                                     {title: '价值', type: 'number'},
-                                     {title: '首付', type: 'number'}],
+                                     {title: '项目', type: 'text', key: 'name'},
+                                     {title: '价值', type: 'number', key: 'amount'},
+                                     {title: '首付', type: 'number', key: 'downPayment'}],
                                  items = [],
                                  setItems = arr => items = arr
                              }) {
@@ -18,13 +18,13 @@ export default function List({
     for (const c of columns) {
         const initValueElement = initValue[c.type]
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        adding[c.title] = useRef(initValueElement)
+        adding[c.key] = useRef(initValueElement)
     }
 
     function add() {
         console.log('List add', adding)
         setItems([...items, R.mapObjIndexed(r => r.current.value)(adding)])
-        columns.map(c => c.title).forEach(t => adding[t].current.value = null)
+        columns.map(c => c.key).forEach(t => adding[t].current.value = null)
     }
 
     function update(id, v) {
@@ -45,15 +45,15 @@ export default function List({
                 <table className="table is-hoverable is-fullwidth is-narrow is-striped is-narrow">
                     <thead>
                     <tr>
-                        {columns.map(c => (<th key={c.title}>{c.title}</th>))}
+                        {columns.map(c => (<th key={c.key}>{c.title}</th>))}
                         <th/>
                     </tr>
                     </thead>
                     <tfoot>
                     <tr>
                         {columns.map(c => (
-                            <td key={c.title}>
-                                <input type={c.type} className="input is-small" ref={adding[c.title]}/>
+                            <td key={c.key}>
+                                <input type={c.type} className="input is-small" ref={adding[c.key]}/>
                             </td>
                         ))}
                         <th>
@@ -71,7 +71,7 @@ export default function List({
                             总{title}
                         </td>
                         <td>
-                            ¥{R.sum(items.map(item => item[columns[1].title]))}
+                            ¥{R.sum(items.map(item => item[columns[1].key]))}
                         </td>
                         <td>
                         </td>

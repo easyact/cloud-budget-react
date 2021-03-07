@@ -5,6 +5,8 @@ import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 export type BudgetOp<A> = ReaderTaskEither<BudgetRepository, any, A>
 
 export interface BudgetService {
+    setBudget: (user: string, version: string, v: any) => BudgetOp<void>
+
     getAsset(user: string, version: string): BudgetOp<Option<any>>
 
     setAsset(user: string, version: string, v: any): BudgetOp<void>

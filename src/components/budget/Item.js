@@ -10,15 +10,15 @@ export function Item({index, columns, value, update, rm}) {
     for (const c of columns) {
         const initValueElement = initValue[c.type]
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        adding[c.title] = useRef(initValueElement)
+        adding[c.key] = useRef(initValueElement)
     }
     const save = flow(
         () => setEditing(false),
         () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))
-    const tds = columns.map(c => <td key={c.title + index}>{
+    const tds = columns.map(c => <td key={c.key + index}>{
         editing ?
-            <input type={c.type} className="input is-small" defaultValue={value[c.title]} ref={adding[c.title]}/> :
-            value[c.title]
+            <input type={c.type} className="input is-small" defaultValue={value[c.key]} ref={adding[c.key]}/> :
+            value[c.key]
     }</td>)
     return <tr key={index}>
         {tds}
