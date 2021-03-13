@@ -29,7 +29,7 @@ function Expenses() {
 function Budget() {
     const [assets, setAssets] = useList('default', 'current')
     const [expenses] = useList('default', 'current', 'expenses')
-    const {setBudget} = useBudget('default', 'current')
+    const {saveBudget} = useBudget('default', 'current')
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -40,7 +40,7 @@ function Budget() {
         reader.onload = readerEvent => {
             const content = readerEvent.target.result // this is the content!
             console.log(content)
-            setBudget(JSON.parse(content))
+            saveBudget(JSON.parse(content))
         }
     }
 

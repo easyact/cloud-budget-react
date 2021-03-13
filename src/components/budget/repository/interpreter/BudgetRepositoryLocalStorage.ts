@@ -5,6 +5,7 @@ import * as O from 'fp-ts/Option'
 import {getOptionM} from 'fp-ts/OptionT'
 import * as IO from 'fp-ts/IO'
 import {pipe} from 'fp-ts/function'
+import {log} from '../../../log'
 
 const MIO = getOptionM(IO.Monad)
 
@@ -21,12 +22,15 @@ export class BudgetRepositoryLocalStorage implements BudgetRepository {
     )
 
     setBudget = (user: string, version: string, v: any) => pipe(
-        setItem(getKey(user, version), JSON.stringify(v)),
+        JSON.stringify(v),
+        log('BudgetRepositoryLocalStorage.setBudget'),
+        x => setItem(getKey(user, version), x),
         T.rightIO,
     )
     patchBudgetList = (user: string, version: string, name: string, v: any) => pipe(
         this.getBudget(user, version),
         T.map(O.getOrElse(() => ({}))),
+        T.map(log('patchBudgetList.getBudget')),
         T.map(({[name]: t, ...rest}: any) => ({...rest, [name]: v})),
         T.chain(json => this.setBudget(user, version, json)),
     )

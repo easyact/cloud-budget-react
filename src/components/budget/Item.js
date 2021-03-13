@@ -3,8 +3,11 @@ import {flow} from 'fp-ts/es6/function'
 import * as R from 'ramda'
 import {FaEdit, FaSave, FaTrash} from 'react-icons/all'
 import {initValue} from './List'
+import {log} from '../log'
 
 export function Item({index, columns, value, update, rm}) {
+    log('Item')(value)
+    delete value.duration //TODO
     const [editing, setEditing] = useState(false)
     const adding = {}
     for (const c of columns) {

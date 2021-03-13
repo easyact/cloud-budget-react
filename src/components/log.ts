@@ -1,1 +1,4 @@
-export const log = (key: any) => (message: any) => console.log(key, message)
+export const log = <T>(key: any) => (obj: T) => {
+    console.log(key, obj)
+    return obj
+}
