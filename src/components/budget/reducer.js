@@ -1,9 +1,15 @@
-function kpi(budget) {
-    return {expenses: 0}
-}
+import * as R from 'ramda'
+
+const kpi = budget => ({
+    expenses: R.pipe(
+        R.defaultTo([]),
+        R.map(R.prop('amount')),
+        R.sum
+    )(budget.expenses)
+})
 
 export default function reducer(state, action) {
-    console.log('reducering', state, action)
+    console.log('reducing', state, action)
     switch (action.type) {
         case 'CREATE_ITEM':
             return { /* unchanged */}
