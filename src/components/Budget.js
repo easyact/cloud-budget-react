@@ -3,11 +3,17 @@ import List from './budget/List'
 import {useList} from './budget/useList'
 import * as R from 'ramda'
 import {useBudget} from './budget/useBudget'
+import {useReducer} from 'react'
+import reducer from './budget/reducer'
 
 function Liability() {
     const [liabilities, setLiabilities] = useList('default', 'current', 'liabilities')
     return <List title="负债" hint="不断从你口袋掏钱出来" items={liabilities} setItems={setLiabilities}
-                 columns={[{title: '条目', type: 'text', key: 'name'}, {title: '总数', type: 'number', key: 'amount'}, {title: '已还', type: 'number', key: 'amortized'}]}/>
+                 columns={[{title: '条目', type: 'text', key: 'name'}, {
+                     title: '总数',
+                     type: 'number',
+                     key: 'amount'
+                 }, {title: '已还', type: 'number', key: 'amortized'}]}/>
 }
 
 const AMOUNT = '数额'
@@ -16,18 +22,28 @@ function Incomes() {
     const [items, setItems] = useList('default', 'current', 'incomes')
     //条目	数额	周期
     return <List title="收入" hint="每月" items={items} setItems={setItems}
-                 columns={[{title: '条目', type: 'text', key: 'name'}, {title: AMOUNT, type: 'number', key: 'amount'}, {title: '周期', type: 'text', key: 'duration'}]}/>
+                 columns={[{title: '条目', type: 'text', key: 'name'}, {
+                     title: AMOUNT,
+                     type: 'number',
+                     key: 'amount'
+                 }, {title: '周期', type: 'text', key: 'duration'}]}/>
 }
 
 function Expenses() {
     const [items, setItems] = useList('default', 'current', 'expenses')
     //条目	数额	周期
     return <List title="支出" hint="每月" items={items} setItems={setItems}
-                 columns={[{title: '条目', type: 'text', key: 'name'}, {title: AMOUNT, type: 'number', key: 'amount'}, {title: '周期', type: 'text', key: 'duration'}]}/>
+                 columns={[{title: '条目', type: 'text', key: 'name'}, {
+                     title: AMOUNT,
+                     type: 'number',
+                     key: 'amount'
+                 }, {title: '周期', type: 'text', key: 'duration'}]}/>
 }
 
 function Budget() {
-    const [assets, setAssets] = useList('default', 'current')
+    const [{budget, isLoading}, dispatch] = useReducer(reducer,
+        () => ({budget: {}, error: false, isLoading: false, kpi: {}}))
+    // const [assets, setAssets] = useList('default', 'current')
     const [expenses] = useList('default', 'current', 'expenses')
     const {saveBudget} = useBudget('default', 'current')
 
@@ -44,6 +60,9 @@ function Budget() {
         }
     }
 
+    let setAssets = (items) => {
+        dispatch({type: 'UPDATE_BUDGET_REQUEST', payload: {...budget, assets: items}})
+    }
     return (
         <div>
             <div className="level is-mobile">
@@ -57,7 +76,7 @@ function Budget() {
             </div>
             <div className="columns">
                 <fieldset className="column">
-                    <div className="panel"><List items={assets} setItems={setAssets}/></div>
+                    <div className="panel"><List items={budget.assets} setItems={setAssets}/></div>
                     <div className="panel"><Liability/></div>
                 </fieldset>
                 <fieldset className="column">
