@@ -1,5 +1,4 @@
-import * as T from 'fp-ts/TaskEither'
-import * as O from 'fp-ts/Option'
+import * as TE from 'fp-ts/TaskEither'
 import {flow, pipe} from 'fp-ts/function'
 import {log} from '../../../log'
 import {BudgetRepositoryV2} from '../BudgetRepositoryV2'
@@ -11,14 +10,15 @@ export class BudgetRepositoryLocalStorageV2 implements BudgetRepositoryV2 {
     getBudget = flow(
         getKey,
         getItem,
-        T.fromIO,
-        T.map(O.fold(() => ({}), JSON.parse)),
+        TE.fromIO,
+        TE.chain(TE.fromOption(() => 'none')),
+        TE.map(JSON.parse)
     )
 
     setBudget = (user: string, version: string, v: any) => pipe(
         JSON.stringify(v),
         log('BudgetRepositoryLocalStorage.setBudget'),
         x => setItem(getKey(user, version), x),
-        T.fromIO,
+        TE.fromIO,
     )
 }
