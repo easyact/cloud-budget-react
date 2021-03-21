@@ -11,7 +11,7 @@ export class BudgetRepositoryLocalStorageV2 implements BudgetRepositoryV2 {
         getKey,
         getItem,
         TE.fromIO,
-        TE.chain(TE.fromOption(() => 'none')),
+        TE.chain(TE.fromOption(() => '不存在预算')),
         TE.map(JSON.parse)
     )
 
