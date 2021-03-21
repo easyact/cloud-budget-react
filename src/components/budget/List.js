@@ -4,16 +4,18 @@ import * as R from 'ramda'
 import {Item} from './Item'
 
 export const initValue = {text: '空', number: 0}
-export default function List({
-                                 title = '资产',
-                                 hint = '产生被动收入',
-                                 columns = [
-                                     {title: '项目', type: 'text', key: 'name'},
-                                     {title: '价值', type: 'number', key: 'amount'},
-                                     {title: '首付', type: 'number', key: 'downPayment'}],
-                                 items = [],
-                                 setItems = arr => items = arr
-                             }) {
+export default function List(
+    {
+        title = '资产',
+        hint = '产生被动收入',
+        columns = [
+            {title: '项目', type: 'text', key: 'name'},
+            {title: '价值', type: 'number', key: 'amount'},
+            {title: '首付', type: 'number', key: 'downPayment'}],
+        items = [],
+        setItems = arr => items = arr
+    }
+) {
     const adding = {}
     for (const c of columns) {
         const initValueElement = initValue[c.type]

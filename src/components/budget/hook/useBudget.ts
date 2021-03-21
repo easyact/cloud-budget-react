@@ -21,5 +21,14 @@ export default function useBudget(repo: BudgetRepositoryV2, user: string, versio
             })
         ))
     }, [repo, user, version])
+    // useEffect(() => {
+    //     repo.setBudget(user, version, state.budget)().then(E.fold(
+    //         e => dispatch({
+    //             type: 'FETCH_BUDGET_ERROR',
+    //             payload: e
+    //         }),
+    //         () => console.log('Saved budget', state.budget)
+    //     ))
+    // }, [repo, user, version, state])
     return [state, dispatch]
 }

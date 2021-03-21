@@ -5,7 +5,7 @@ import * as O from 'fp-ts/Option'
 import {getOptionM} from 'fp-ts/OptionT'
 import * as IO from 'fp-ts/IO'
 import {pipe} from 'fp-ts/function'
-import {log} from '../../../log'
+import log from '../../../log'
 
 const MIO = getOptionM(IO.Monad)
 

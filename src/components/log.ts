@@ -1,4 +1,6 @@
-export const log = <T>(key: any) => (obj: T) => {
-    console.log(key, obj)
-    return obj
+export default function log<T>(key: any) {
+    return (obj: T) => {
+        console.log(key, obj)
+        return obj
+    }
 }

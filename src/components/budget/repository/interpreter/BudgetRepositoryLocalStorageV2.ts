@@ -1,6 +1,6 @@
 import * as TE from 'fp-ts/TaskEither'
 import {flow, pipe} from 'fp-ts/function'
-import {log} from '../../../log'
+import log from '../../../log'
 import {BudgetRepositoryV2} from '../BudgetRepositoryV2'
 import {getItem, setItem} from 'fp-ts-local-storage'
 

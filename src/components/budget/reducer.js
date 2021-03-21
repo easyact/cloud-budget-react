@@ -1,12 +1,17 @@
 import * as R from 'ramda'
+import log from '../log'
 
-const kpi = budget => ({
-    expenses: R.pipe(
-        R.defaultTo([]),
-        R.map(R.prop('amount')),
-        R.sum
-    )(budget.expenses)
-})
+const kpi = R.pipe(
+    R.prop('expenses'),
+    log('prop expenses'),
+    R.defaultTo([]),
+    log('defaultTo'),
+    R.map(R.prop('amount')),
+    log('props'),
+    R.sum,
+    log('sum'),
+    R.assoc('expenses', R.__, {})
+)
 
 export default function reducer(state, action) {
     console.log('reducing', state, action)
@@ -16,6 +21,7 @@ export default function reducer(state, action) {
         case 'UPDATE_BUDGET_REQUEST':
             return {
                 ...state,
+                budget: action.payload,
                 isLoading: true,
             }
         case 'DELETE_ITEM':
@@ -26,7 +32,7 @@ export default function reducer(state, action) {
                 ...state,
                 isLoading: true,
                 error: false,
-                budget: {}
+                // budget: {}
             }
 
         case 'FETCH_BUDGET_SUCCESS':
