@@ -28,14 +28,15 @@ export function Item({index, columns, value, update, rm}) {
         <td key={`td${index}`}>
             <div className="field has-addons">
                 {editing ? <div className="control">
-                    <button className="button is-small" onClick={save}>
-                        <FaSave/>
-                    </button>
-                </div> : <div className="control">
-                    <button className="button is-small" onClick={() => setEditing(true)}>
-                        <FaEdit/>
-                    </button>
-                </div>
+                        <button className="button is-small" onClick={save}>
+                            <FaSave/>
+                        </button>
+                    </div>
+                    : <div className="control">
+                        <button className="button is-small" onClick={() => setEditing(true)}>
+                            <FaEdit/>
+                        </button>
+                    </div>
                 }
                 <div className="control">
                     <button className="button is-small" onClick={() => rm(index)}><FaTrash/></button>
