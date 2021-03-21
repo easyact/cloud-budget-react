@@ -3,6 +3,7 @@ function kpi(budget) {
 }
 
 export default function reducer(state, action) {
+    console.log('reducering', state, action)
     switch (action.type) {
         case 'CREATE_ITEM':
             return { /* unchanged */}

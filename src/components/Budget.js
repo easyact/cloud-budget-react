@@ -1,51 +1,14 @@
-import Kpi from './budget/Kpi'
 import List from './budget/List'
-import {useList} from './budget/useList'
-import * as R from 'ramda'
-import {useBudget} from './budget/useBudget'
-import {useReducer} from 'react'
-import reducer from './budget/reducer'
-
-function Liability() {
-    const [liabilities, setLiabilities] = useList('default', 'current', 'liabilities')
-    return <List title="负债" hint="不断从你口袋掏钱出来" items={liabilities} setItems={setLiabilities}
-                 columns={[{title: '条目', type: 'text', key: 'name'}, {
-                     title: '总数',
-                     type: 'number',
-                     key: 'amount'
-                 }, {title: '已还', type: 'number', key: 'amortized'}]}/>
-}
+import useBudget from './budget/hook/useBudget'
 
 const AMOUNT = '数额'
 
-function Incomes() {
-    const [items, setItems] = useList('default', 'current', 'incomes')
-    //条目	数额	周期
-    return <List title="收入" hint="每月" items={items} setItems={setItems}
-                 columns={[{title: '条目', type: 'text', key: 'name'}, {
-                     title: AMOUNT,
-                     type: 'number',
-                     key: 'amount'
-                 }, {title: '周期', type: 'text', key: 'duration'}]}/>
-}
+function Budget({repo}) {
+    const [{budget = {}}, dispatch] = useBudget(repo, 'default', 'current')
 
-function Expenses() {
-    const [items, setItems] = useList('default', 'current', 'expenses')
-    //条目	数额	周期
-    return <List title="支出" hint="每月" items={items} setItems={setItems}
-                 columns={[{title: '条目', type: 'text', key: 'name'}, {
-                     title: AMOUNT,
-                     type: 'number',
-                     key: 'amount'
-                 }, {title: '周期', type: 'text', key: 'duration'}]}/>
-}
-
-function Budget() {
-    const [{budget, isLoading}, dispatch] = useReducer(reducer,
-        () => ({budget: {}, error: false, isLoading: false, kpi: {}}))
-    // const [assets, setAssets] = useList('default', 'current')
-    const [expenses] = useList('default', 'current', 'expenses')
-    const {saveBudget} = useBudget('default', 'current')
+    function saveBudget(budget) {
+        dispatch({type: 'FETCH_BUDGET_SUCCESS', payload: budget})
+    }
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -60,15 +23,15 @@ function Budget() {
         }
     }
 
-    let setAssets = (items) => {
-        dispatch({type: 'UPDATE_BUDGET_REQUEST', payload: {...budget, assets: items}})
+    let updateList = list => items => {
+        dispatch({type: 'UPDATE_BUDGET_REQUEST', payload: {...budget, [list]: items}})
     }
     return (
         <div>
             <div className="level is-mobile">
                 <div className="level-item has-text-centered">
                     {/*R.sum(expenses.map(e => e[AMOUNT]))*/}
-                    <Kpi value={`0/${R.pipe(R.defaultTo([]), R.map(e => e[AMOUNT]), R.sum)(expenses)}`}/>
+                    {/*<Kpi value={`0/${budget.kpi.expenses}`}/>*/}
                 </div>
                 {/*<div className="level-item has-text-centered">*/}
                 {/*    <Progress/>*/}
@@ -76,12 +39,38 @@ function Budget() {
             </div>
             <div className="columns">
                 <fieldset className="column">
-                    <div className="panel"><List items={budget.assets} setItems={setAssets}/></div>
-                    <div className="panel"><Liability/></div>
+                    <div className="panel">
+                        <List items={budget.assets} setItems={updateList('assets')}/>
+                    </div>
+                    <div className="panel">
+                        <List title="负债" hint="不断从你口袋掏钱出来" items={budget.liabilities}
+                              setItems={updateList('liabilities')}
+                              columns={[{title: '条目', type: 'text', key: 'name'}, {
+                                  title: '总数',
+                                  type: 'number',
+                                  key: 'amount'
+                              }, {title: '已还', type: 'number', key: 'amortized'}]}/>
+                    </div>
                 </fieldset>
                 <fieldset className="column">
-                    <div className="panel"><Incomes/></div>
-                    <div className=" panel"><Expenses/></div>
+                    <div className="panel">
+                        <List title="收入" hint="每月" items={budget.incomes}
+                              setItems={updateList('incomes')}
+                              columns={[{title: '条目', type: 'text', key: 'name'}, {
+                                  title: AMOUNT,
+                                  type: 'number',
+                                  key: 'amount'
+                              }, {title: '周期', type: 'text', key: 'duration'}]}/>
+                    </div>
+                    <div className=" panel">
+                        <List title="支出" hint="每月" items={budget.expenses}
+                              setItems={updateList('expenses')}
+                              columns={[{title: '条目', type: 'text', key: 'name'}, {
+                                  title: AMOUNT,
+                                  type: 'number',
+                                  key: 'amount'
+                              }, {title: '周期', type: 'text', key: 'duration'}]}/>
+                    </div>
                 </fieldset>
             </div>
             <div className=" field is-grouped is-grouped-multiline">
