@@ -8,7 +8,7 @@ export default function useBudget(user: string, version: string)
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer,
         {repo: new BudgetRepositoryLocalStorageV2(), budget: {}, error: false, isLoading: false, kpi: {expenses: 0}})
     console.log('useBudgeting', user, version, state)
-    const {repo} = state
+    const {repo, budget} = state
     useEffect(() => {
         console.log('useBudget.useEffect1', repo, user, version)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
@@ -23,7 +23,6 @@ export default function useBudget(user: string, version: string)
             })
         ))
     }, [repo, user, version])
-    const {budget} = state
     useEffect(() => {
         console.log('useBudget.useEffect2', 'setBudget', user, version, budget)
         repo.setBudget(user, version, budget)().then(E.fold(
