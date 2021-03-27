@@ -7,17 +7,20 @@ import {getItem, setItem} from 'fp-ts-local-storage'
 const getKey = (user: string, version: string) => `${user}.${version}`
 
 export class BudgetRepositoryLocalStorageV2 implements BudgetRepositoryV2 {
+    constructor() {
+        console.log('BudgetRepositoryLocalStorageV2 constructing')
+    }
     getBudget = flow(
         getKey,
         getItem,
         TE.fromIO,
-        TE.chain(TE.fromOption(() => '不存在预算')),
+        TE.chain(TE.fromOption(() => 'none')),
         TE.map(JSON.parse)
     )
 
     setBudget = (user: string, version: string, v: any) => pipe(
         JSON.stringify(v),
-        log('BudgetRepositoryLocalStorage.setBudget'),
+        log('BudgetRepositoryLocalStorageV2.setBudget'),
         x => setItem(getKey(user, version), x),
         TE.fromIO,
     )

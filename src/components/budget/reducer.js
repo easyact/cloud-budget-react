@@ -37,6 +37,7 @@ export default function reducer(state, action) {
 
         case 'FETCH_BUDGET_SUCCESS':
             const budget = action.payload
+            console.log('reducer', 'FETCH_BUDGET_SUCCESS', budget)
             return {
                 ...state,
                 isLoading: false,

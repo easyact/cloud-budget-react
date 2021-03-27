@@ -1,14 +1,16 @@
 import {Dispatch, Reducer, ReducerAction, ReducerState, useEffect, useReducer} from 'react'
 import reducer from '../reducer'
 import * as E from 'fp-ts/Either'
-import {BudgetRepositoryV2} from '../repository/BudgetRepositoryV2'
+import {BudgetRepositoryLocalStorageV2} from '../repository/interpreter/BudgetRepositoryLocalStorageV2'
 
-export default function useBudget(repo: BudgetRepositoryV2, user: string, version: string)
+export default function useBudget(user: string, version: string)
     : [ReducerState<any>, Dispatch<ReducerAction<any>>] {
-    console.log('useBudgeting', user, version)
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer,
-        {budget: {}, error: false, isLoading: false, kpi: {expenses: 0}})
+        {repo: new BudgetRepositoryLocalStorageV2(), budget: {}, error: false, isLoading: false, kpi: {expenses: 0}})
+    console.log('useBudgeting', user, version, state)
+    const {repo} = state
     useEffect(() => {
+        console.log('useBudget.useEffect1', repo, user, version)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         repo.getBudget(user, version)().then(E.fold(
             e => dispatch({
@@ -21,14 +23,16 @@ export default function useBudget(repo: BudgetRepositoryV2, user: string, versio
             })
         ))
     }, [repo, user, version])
-    // useEffect(() => {
-    //     repo.setBudget(user, version, state.budget)().then(E.fold(
-    //         e => dispatch({
-    //             type: 'FETCH_BUDGET_ERROR',
-    //             payload: e
-    //         }),
-    //         () => console.log('Saved budget', state.budget)
-    //     ))
-    // }, [repo, user, version, state])
+    const {budget} = state
+    useEffect(() => {
+        console.log('useBudget.useEffect2', 'setBudget', user, version, budget)
+        repo.setBudget(user, version, budget)().then(E.fold(
+            e => dispatch({
+                type: 'FETCH_BUDGET_ERROR',
+                payload: e
+            }),
+            () => console.log('useBudget', 'Saved budget', budget)
+        ))
+    }, [repo, user, version, budget])
     return [state, dispatch]
 }

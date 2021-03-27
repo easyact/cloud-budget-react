@@ -7,7 +7,6 @@ import {useState} from 'react'
 import Profile from './auth/Profile'
 import {useAuth0} from '@auth0/auth0-react'
 import LoginButton from './auth/LoginButton'
-import {BudgetRepositoryLocalStorageV2} from './components/budget/repository/interpreter/BudgetRepositoryLocalStorageV2'
 
 function Sync() {
     return <div className="hero is-light">
@@ -21,7 +20,6 @@ function Sync() {
 function App() {
     const [active, setActive] = useState(false)
     const {isAuthenticated} = useAuth0()
-    const repo = new BudgetRepositoryLocalStorageV2()
     return <Router>
         <div className="App">
             <header>
@@ -64,7 +62,7 @@ function App() {
 
             <Routes>
                 <Route path="" element={<LandingPage/>}/>
-                <Route path="budget" element={<Budget repo={repo}/>}/>
+                <Route path="budget" element={<Budget/>}/>
                 <Route path="target" element={<Budget/>}/>
                 <Route path="sync" element={<Sync/>}/>
             </Routes>

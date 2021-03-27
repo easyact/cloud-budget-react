@@ -3,8 +3,8 @@ import useBudget from './budget/hook/useBudget'
 
 const AMOUNT = '数额'
 
-function Budget({repo}) {
-    const [{budget = {}}, dispatch] = useBudget(repo, 'default', 'current')
+function Budget() {
+    const [{budget = {}}, dispatch] = useBudget('default', 'current')
 
     function saveBudget(budget) {
         dispatch({type: 'FETCH_BUDGET_SUCCESS', payload: budget})
