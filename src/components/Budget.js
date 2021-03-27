@@ -60,7 +60,7 @@ function Budget() {
                                   title: AMOUNT,
                                   type: 'number',
                                   key: 'amount'
-                              }, {title: '周期', type: 'text', key: 'duration'}]}/>
+                              }, {title: '周期', type: 'duration', key: 'duration'}]}/>
                     </div>
                     <div className=" panel">
                         <List title="支出" hint="每月" items={budget.expenses}
@@ -69,7 +69,7 @@ function Budget() {
                                   title: AMOUNT,
                                   type: 'number',
                                   key: 'amount'
-                              }, {title: '周期', type: 'text', key: 'duration'}]}/>
+                              }, {title: '周期', type: 'duration', key: 'duration'}]}/>
                     </div>
                 </fieldset>
             </div>
