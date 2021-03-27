@@ -3,7 +3,7 @@ import {useRef} from 'react'
 import * as R from 'ramda'
 import {Item} from './Item'
 
-export const initValue = {text: '空', number: 0}
+export const initValue = {text: '空', number: 0, duration: {}}
 export default function List(
     {
         title = '资产',
