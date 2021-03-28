@@ -53,7 +53,7 @@ export default function List(
                     </thead>
                     <tfoot>
                     <tr>
-                        {columns.map(c => (
+                        {columns.map(c => (//TODO duration control
                             <td key={c.key}>
                                 <input type={c.type} className="input is-small" ref={adding[c.key]}/>
                             </td>

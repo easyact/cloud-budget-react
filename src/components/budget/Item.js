@@ -2,22 +2,22 @@ import {useRef, useState} from 'react'
 import {flow} from 'fp-ts/es6/function'
 import * as R from 'ramda'
 import {FaEdit, FaSave, FaTrash} from 'react-icons/all'
-import {initValue} from './List'
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
+import log from '../log'
 
 export function Item({index, columns, value, update, rm}) {
-    // log('Item')(value)
+    log('Item')(value)
     const [editing, setEditing] = useState(false)
-    const adding = {}
+    const fields = {}
     for (const c of columns) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        adding[c.key] = useRef(initValue[c.type])
-        // console.log('Item.adding', c.key, adding[c.key])
+        fields[c.key] = useRef(value[c.type])
+        // console.log('Item.fields', c.key, fields[c.key])
     }
     const save = flow(
         () => setEditing(false),
-        () => update(index, R.mapObjIndexed(r => r.current.value, adding))
+        () => update(index, R.mapObjIndexed(r => r.current.value, fields))
     )
     const durationControl = {
         duration: {
@@ -28,14 +28,14 @@ export function Item({index, columns, value, update, rm}) {
                         <div className="field has-addons">
                             <p className="control">
                                 <input defaultValue={value} className="input is-small"
-                                       onChange={v => adding[key].current[unit] = v}/>
+                                       onChange={v => fields[key].current[unit] = v}/>
                             </p>
                             <p className="control">
                             <span className="select is-small is-narrow">
                               <select defaultValue={unit} onChange={event => {
                                   const u = event.target.value
-                                  const current = adding[key].current || {value: {}}
-                                  console.log('Selecting', unit, u, current, adding)
+                                  const current = fields[key].current || {value: {}}
+                                  console.log('Selecting', unit, u, current, fields)
                                   current.value = {[u]: value}
                                   // delete current[unit]
                               }}>
@@ -57,7 +57,7 @@ export function Item({index, columns, value, update, rm}) {
     }
     const td = (type, editing) => durationControl[type]?.[editing]
         ?? ((v, key) => editing
-            ? <input type={type} className="input is-small" defaultValue={v} ref={adding[key]}/>
+            ? <input type={type} className="input is-small" defaultValue={v} ref={fields[key]}/>
             : v)
     return <tr key={index}>
         {columns.map(c => <td key={c.key + index}>{td(c.type, editing)(value[c.key], c.key)}</td>)}
