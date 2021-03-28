@@ -5,27 +5,34 @@ import {BudgetRepositoryLocalStorageV2} from '../repository/interpreter/BudgetRe
 import {useAuth0} from '@auth0/auth0-react'
 
 export default function useBudget(version: string): [ReducerState<any>, Dispatch<ReducerAction<any>>] {
-    const {user = {email: 'default'}} = useAuth0()
+    const {user = {}, isAuthenticated, isLoading} = useAuth0()
     const [state, dispatch] = useReducer<Reducer<any, any>, undefined>(reducer, user.email, email => (
         {
-            repo: new BudgetRepositoryLocalStorageV2(),
+            email,
             budget: {},
             error: false,
             isLoading: false,
             kpi: {expenses: 0},
             saving: false,
-            email
+            repo: new BudgetRepositoryLocalStorageV2()
         }))
     const {repo, budget, saving, email} = state
+    if (email !== user.email && !isLoading && isAuthenticated) dispatch({type: 'USER_AUTHED', payload: user.email})
     console.log('useBudgeting', email, version, state)
     useEffect(() => {
         // console.log('useBudget.useEffect1', repo, user, version)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         repo.getBudget(email, version)().then(E.fold(
-            e => dispatch({
-                type: 'FETCH_BUDGET_ERROR',
-                payload: e
-            }),
+            e => {
+                // if ('none' === e) return dispatch({
+                //     type: 'FETCH_BUDGET_SUCCESS',
+                //     payload: {}
+                // })
+                dispatch({
+                    type: 'FETCH_BUDGET_ERROR',
+                    payload: e
+                })
+            },
             budget => dispatch({
                 type: 'FETCH_BUDGET_SUCCESS',
                 payload: budget

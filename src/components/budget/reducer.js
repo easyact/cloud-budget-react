@@ -13,10 +13,10 @@ const kpi = R.pipe(
 )
 
 export default function reducer(state, action) {
-    console.log('reducing', state, action)
+    console.log('reducing', action, state)
     switch (action.type) {
-        case 'CREATE_ITEM':
-            return { /* unchanged */}
+        case 'USER_AUTHED':
+            return {...state, email: action.payload}
         case 'UPDATE_BUDGET_REQUEST':
             return {
                 ...state,
@@ -32,7 +32,7 @@ export default function reducer(state, action) {
                 ...state,
                 isLoading: true,
                 error: false,
-                // budget: {}
+                budget: {}
             }
 
         case 'FETCH_BUDGET_SUCCESS':
