@@ -4,7 +4,7 @@ import useBudget from './budget/hook/useBudget'
 const AMOUNT = '数额'
 
 function Budget() {
-    const [{budget = {}}, dispatch] = useBudget('default', 'current')
+    const [{budget = {}}, dispatch] = useBudget('current')
 
     function saveBudget(budget) {
         dispatch({type: 'FETCH_BUDGET_SUCCESS', payload: budget})
