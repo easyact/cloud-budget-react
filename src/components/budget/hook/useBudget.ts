@@ -5,7 +5,7 @@ import {BudgetRepositoryLocalStorageV2} from '../repository/interpreter/BudgetRe
 import {useAuth0} from '@auth0/auth0-react'
 
 export default function useBudget(version: string): [ReducerState<any>, Dispatch<ReducerAction<any>>] {
-    const {user = {}, isAuthenticated, isLoading} = useAuth0()
+    const {user = {email: 'default'}, isAuthenticated, isLoading} = useAuth0()
     const [state, dispatch] = useReducer<Reducer<any, any>, undefined>(reducer, user.email, email => (
         {
             email,
