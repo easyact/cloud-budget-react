@@ -22,7 +22,6 @@ export function Item({index, columns, value, update, rm}) {
     )
     const durationControl = {
         duration: {
-            // false: formatDurationWithOptions({format: ['年','个月','周','天','小时','分钟','秒']}),
             false: formatDurationWithOptions({locale}),
             true: function (duration, key) {
                 return Object.entries(duration).map(([unit, value], index) =>

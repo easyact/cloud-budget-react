@@ -23,6 +23,7 @@ export default function reducer(state, action) {
                 ...state,
                 budget: action.payload,
                 isLoading: true,
+                saving: true,
             }
         case 'DELETE_ITEM':
             return { /* unchanged */}
