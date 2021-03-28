@@ -4,7 +4,8 @@ import * as R from 'ramda'
 import {FaEdit, FaSave, FaTrash} from 'react-icons/all'
 import {initValue} from './List'
 import log from '../log'
-import {formatDuration} from 'date-fns/esm/fp'
+import {formatDurationWithOptions} from 'date-fns/esm/fp'
+import locale from 'date-fns/locale/zh-CN/index'
 
 export function Item({index, columns, value, update, rm}) {
     log('Item')(value)
@@ -21,7 +22,8 @@ export function Item({index, columns, value, update, rm}) {
     )
     const durationControl = {
         duration: {
-            false: v => formatDuration(v),
+            // false: formatDurationWithOptions({format: ['年','个月','周','天','小时','分钟','秒']}),
+            false: formatDurationWithOptions({locale}),
             true: function (duration, key) {
                 return Object.entries(duration).map(([unit, value], index) =>
                     <div className="field has-addons" key={`duration-${index}`}>
@@ -50,7 +52,8 @@ export function Item({index, columns, value, update, rm}) {
                             </span>
                             </p>
                         </div>
-                    </div>)
+                    </div>
+                )
             }
         }
     }

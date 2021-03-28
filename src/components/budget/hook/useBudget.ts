@@ -6,9 +6,16 @@ import {BudgetRepositoryLocalStorageV2} from '../repository/interpreter/BudgetRe
 export default function useBudget(user: string, version: string)
     : [ReducerState<any>, Dispatch<ReducerAction<any>>] {
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer,
-        {repo: new BudgetRepositoryLocalStorageV2(), budget: {}, error: false, isLoading: false, kpi: {expenses: 0}})
+        {
+            repo: new BudgetRepositoryLocalStorageV2(),
+            budget: {},
+            error: false,
+            isLoading: false,
+            kpi: {expenses: 0},
+            saving: false
+        })
     console.log('useBudgeting', user, version, state)
-    const {repo, budget} = state
+    const {repo, budget, saving} = state
     useEffect(() => {
         console.log('useBudget.useEffect1', repo, user, version)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
@@ -24,14 +31,15 @@ export default function useBudget(user: string, version: string)
         ))
     }, [repo, user, version])
     useEffect(() => {
-        console.log('useBudget.useEffect2', 'setBudget', user, version, budget)
+        console.log('useBudget.useEffect2', 'setBudget', saving, user, version, budget)
+        if (!saving) return
         repo.setBudget(user, version, budget)().then(E.fold(
             e => dispatch({
                 type: 'FETCH_BUDGET_ERROR',
                 payload: e
             }),
-            () => console.log('useBudget', 'Saved budget', budget)
+            () => dispatch({type: 'SAVED_BUDGET'})
         ))
-    }, [repo, user, version, budget])
+    }, [repo, user, version, budget, saving])
     return [state, dispatch]
 }

@@ -41,8 +41,15 @@ export default function reducer(state, action) {
             return {
                 ...state,
                 isLoading: false,
+                saving: true,
                 budget: budget,
                 kpi: kpi(budget)
+            }
+        case 'SAVED_BUDGET':
+            console.log('reducer', 'SAVED_BUDGET')
+            return {
+                ...state,
+                saving: false
             }
 
         case 'FETCH_BUDGET_ERROR':
