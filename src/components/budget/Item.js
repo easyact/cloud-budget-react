@@ -3,12 +3,11 @@ import {flow} from 'fp-ts/es6/function'
 import * as R from 'ramda'
 import {FaEdit, FaSave, FaTrash} from 'react-icons/all'
 import {initValue} from './List'
-import log from '../log'
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 
 export function Item({index, columns, value, update, rm}) {
-    log('Item')(value)
+    // log('Item')(value)
     const [editing, setEditing] = useState(false)
     const adding = {}
     for (const c of columns) {
@@ -61,11 +60,7 @@ export function Item({index, columns, value, update, rm}) {
             ? <input type={type} className="input is-small" defaultValue={v} ref={adding[key]}/>
             : v)
     return <tr key={index}>
-        {columns.map(c => {
-            const tdF = td(c.type, editing)
-            console.log('tdF', value[c.key], c.key)
-            return <td key={c.key + index}>{tdF(value[c.key], c.key)}</td>
-        })}
+        {columns.map(c => <td key={c.key + index}>{td(c.type, editing)(value[c.key], c.key)}</td>)}
         <td key={`td${index}`}>
             <div className="field has-addons">
                 {editing ? <div className="control">

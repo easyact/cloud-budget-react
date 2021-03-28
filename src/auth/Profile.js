@@ -13,7 +13,7 @@ const Profile = () => {
     }
 
     return isAuthenticated ? <div className="navbar-item has-dropdown is-hoverable">
-        <div className="navbar-link" style={{'margin-left': '100px'}}>
+        <div className="navbar-link" style={{marginLeft: '100px'}}>
             {user.name}
         </div>
         <div className="navbar-dropdown">
