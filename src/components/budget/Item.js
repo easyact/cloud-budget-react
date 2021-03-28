@@ -13,10 +13,12 @@ export function Item({index, columns, value, update, rm}) {
     for (const c of columns) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         adding[c.key] = useRef(initValue[c.type])
+        // console.log('Item.adding', c.key, adding[c.key])
     }
     const save = flow(
         () => setEditing(false),
-        () => update(index, R.mapObjIndexed(r => r.current.value)(adding)))
+        () => update(index, R.mapObjIndexed(r => r.current.value, adding))
+    )
     const durationControl = {
         duration: {
             false: v => formatDuration(v),
@@ -32,9 +34,9 @@ export function Item({index, columns, value, update, rm}) {
                             <span className="select is-small is-narrow">
                               <select defaultValue={unit} onChange={event => {
                                   const u = event.target.value
-                                  const current = adding[key].current
+                                  const current = adding[key].current || {value: {}}
                                   console.log('Selecting', unit, u, current, adding)
-                                  current[u] = value
+                                  current.value = {[u]: value}
                                   // delete current[unit]
                               }}>
                                 <option value="years">年</option>
