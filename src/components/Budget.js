@@ -84,11 +84,11 @@ function Budget() {
                 {/*        </button>*/}
                 {/*    </p>*/}
                 {/*</div>*/}
-                <div className=" control">
-                    <button className="button is-small">
-                        导出
-                    </button>
-                </div>
+                {/*<div className=" control">*/}
+                {/*    <button className="button is-small">*/}
+                {/*        导出*/}
+                {/*    </button>*/}
+                {/*</div>*/}
                 <div className="control">
                     <button className="button is-small" onClick={() => document.getElementById('import-file').click()}>
                         导入
