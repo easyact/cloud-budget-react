@@ -16,12 +16,17 @@ export default function reducer(state, action) {
     console.log('reducing', action, state)
     switch (action.type) {
         case 'USER_AUTHED':
-            return {...state, email: action.payload}
-        case 'UPDATE_BUDGET_REQUEST':
+            return {...state, email: action.payload, authing: true}
+        case 'ADD_BUDGETS':
             return {
                 ...state,
                 budget: action.payload,
-                isLoading: true,
+                saving: true,
+            }
+        case 'UPDATE_BUDGET':
+            return {
+                ...state,
+                budget: action.payload,
                 saving: true,
             }
         case 'DELETE_ITEM':
@@ -40,14 +45,15 @@ export default function reducer(state, action) {
             return {
                 ...state,
                 isLoading: false,
-                saving: true,
+                // saving: false,
                 budget: budget,
                 kpi: kpi(budget)
             }
         case 'SAVED_BUDGET':
             return {
                 ...state,
-                saving: false
+                saving: false,
+                authing: false
             }
 
         case 'FETCH_BUDGET_ERROR':

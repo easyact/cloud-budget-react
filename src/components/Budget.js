@@ -7,7 +7,7 @@ function Budget() {
     const [{budget = {}}, dispatch] = useBudget('current')
 
     function saveBudget(budget) {
-        dispatch({type: 'FETCH_BUDGET_SUCCESS', payload: budget})
+        dispatch({type: 'UPDATE_BUDGET', payload: budget})
     }
 
     function importBudget(e) {
@@ -24,7 +24,7 @@ function Budget() {
     }
 
     let updateList = list => items => {
-        dispatch({type: 'UPDATE_BUDGET_REQUEST', payload: {...budget, [list]: items}})
+        dispatch({type: 'UPDATE_BUDGET', payload: {...budget, [list]: items}})
     }
     return (
         <div>
