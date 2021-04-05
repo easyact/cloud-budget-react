@@ -7,6 +7,7 @@ import {useState} from 'react'
 import Profile from './auth/Profile'
 import {useAuth0} from '@auth0/auth0-react'
 import LoginButton from './auth/LoginButton'
+import {LoggedIn} from './auth/LoggedIn'
 
 function Sync() {
     return <div className="hero is-light">
@@ -65,6 +66,7 @@ function App() {
                 <Route path="budget" element={<Budget/>}/>
                 <Route path="target" element={<Budget/>}/>
                 <Route path="sync" element={<Sync/>}/>
+                <Route path="loggedIn" element={<LoggedIn/>}/>
             </Routes>
         </div>
     </Router>

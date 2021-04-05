@@ -21,6 +21,7 @@ export default function useBudget(version: string): [ReducerState<any>, Dispatch
     console.log('useBudgeting', email, version, state)
     useEffect(() => {
         // console.log('useBudget.useEffect1', repo, user, version)
+        if (isLoading) return
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         repo.getBudget(email, version)().then(E.fold(
             e => {
@@ -38,9 +39,10 @@ export default function useBudget(version: string): [ReducerState<any>, Dispatch
                 payload: budget
             })
         ))
-    }, [repo, email, version])
+    }, [repo, email, version, isLoading])
     useEffect(() => {
         // console.log('useBudget.useEffect2', 'setBudget', saving, user, version, budget)
+        if (isLoading) return
         if (!saving) return
         repo.setBudget(email, version, budget)().then(E.fold(
             e => dispatch({
@@ -49,6 +51,6 @@ export default function useBudget(version: string): [ReducerState<any>, Dispatch
             }),
             () => dispatch({type: 'SAVED_BUDGET'})
         ))
-    }, [repo, email, version, budget, saving])
+    }, [repo, email, version, budget, saving, isLoading])
     return [state, dispatch]
 }
