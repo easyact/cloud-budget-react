@@ -23,7 +23,7 @@ export default function useBudget(version: string): [ReducerState<any>, Dispatch
     if (email !== user.email && !isLoading && isAuthenticated) dispatch({type: 'USER_AUTHED', payload: user.email})
     console.log('useBudgeting', email, version, state)
     useEffect(() => {
-        // console.log('useBudget.useEffect1', repo, user, version)
+        console.log('useBudget.loading', repo, email, version, authing)
         if (authing) return
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         repo.getBudget(email, version)().then(E.fold(

@@ -10,14 +10,15 @@ export function Item({index, columns, value, update, rm}) {
     log('Item')(value)
     const [editing, setEditing] = useState(false)
     const fields = {}
-    for (const c of columns) {
+    for (const column of columns) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        fields[c.key] = useRef(value[c.type])
-        // console.log('Item.fields', c.key, fields[c.key])
+        fields[column.key] = useRef(value[column.key])
+        console.log('Item.fields', column.key, fields[column.key])
     }
     const save = flow(
+        () => log('Item.saving fields')(R.mapObjIndexed(r => r.current, fields)),
         () => setEditing(false),
-        () => update(index, R.mapObjIndexed(r => r.current.value, fields))
+        () => update(index, log('Item.saving')(R.mapObjIndexed(r => r.current.value, fields)))
     )
     const durationControl = {
         duration: {
