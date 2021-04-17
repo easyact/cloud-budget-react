@@ -4,13 +4,22 @@ import {pipe} from 'fp-ts/function'
 import * as O from 'fp-ts/Option'
 import R from 'ramda'
 
+// import {Foldable} from 'fp-ts/Foldable'
+
 export class Budget {
     assets?: Item[] = []
     liabilities?: Item[] = []
 }
 
+export interface Item {
+    id?: String
+    name: String
+    amount: number
+    lastModifiedDate?: Date
+}
+
 const NULL = new Budget()
-export const BudgetAdditionMonoid: Monoid<Budget> = {
+export const budgetAdditionMonoid: Monoid<Budget> = {
     concat: (x, y) => pipe(NULL, R.keys,
         map(k => R.objOf(k)(listAdditionMonoid.concat(x[k] ?? [], y[k] ?? []))),
         R.mergeAll),
@@ -31,9 +40,17 @@ export const listAdditionMonoid: Monoid<Item[]> = {
     empty: []
 }
 
-export interface Item {
-    id?: String
-    name: String
-    amount: number
-    lastModifiedDate?: Date
-}
+// export const budgetFoldable: Foldable<Budget> = {
+//     URI: undefined,
+//     foldMap<M>(M: Monoid<M>): <A>(fa: HKT<Budget, A>, f: (a: A) => M) => M {
+//         return function (p1: HKT<Budget, A>, p2: (a: A) => M) {
+//             return undefined
+//         }
+//     },
+//     reduce<A, B>(fa: HKT<Budget, A>, b: B, f: (b: B, a: A) => B): B {
+//         return undefined
+//     },
+//     reduceRight<A, B>(fa: HKT<Budget, A>, b: B, f: (a: A, b: B) => B): B {
+//         return undefined
+//     }
+// }
