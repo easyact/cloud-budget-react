@@ -24,18 +24,18 @@ export function Item({index, columns, value, update, rm}) {
         duration: {
             false: formatDurationWithOptions({locale}),
             true: function (duration, key) {
+                const current = fields[key].current = {value: duration}
                 return Object.entries(duration).map(([unit, value], index) =>
                     <div className="field has-addons" key={`duration-${index}`}>
                         <div className="field has-addons">
                             <p className="control">
                                 <input defaultValue={value} className="input is-small"
-                                       onChange={v => fields[key].current[unit] = v}/>
+                                       onChange={v => current.value[unit] = v}/>
                             </p>
                             <p className="control">
                             <span className="select is-small is-narrow">
                               <select defaultValue={unit} onChange={event => {
                                   const u = event.target.value
-                                  const current = fields[key].current || {value: {}}
                                   console.log('Selecting', unit, u, current, fields)
                                   current.value = {[u]: value}
                                   // delete current[unit]
