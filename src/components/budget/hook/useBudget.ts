@@ -10,8 +10,7 @@ interface BudgetState {
 }
 
 export default function useBudget(version: string): [ReducerState<any>, Dispatch<ReducerAction<any>>] {
-    const defaultUser = 'default'
-    const {user = {email: defaultUser}, isAuthenticated, isLoading} = useAuth0()
+    const {user = {email: 'default'}, isAuthenticated, isLoading} = useAuth0()
     const [state, dispatch] = useReducer<Reducer<any, any>, undefined>(reducer, user.email, email => (
         {
             email,
@@ -22,17 +21,17 @@ export default function useBudget(version: string): [ReducerState<any>, Dispatch
             saving: false,
             service: new BudgetEsService(email)
         }))
-    const {service, email, authing}: BudgetState = state
+    const {service, email}: BudgetState = state
     if (email !== user.email && !isLoading && isAuthenticated) dispatch({type: 'USER_AUTHED', payload: user.email})
     console.log('useBudgeting', email, version, state)
     useEffect(() => {
-        console.log('useBudget.loading', email, version, authing, service)
-        if (authing) return
+        console.log('useBudget.loading', version, isLoading, service)
+        if (isLoading) return
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         dispatch({
             type: 'FETCH_BUDGET_SUCCESS',
             payload: service.getBudget(version)
         })
-    }, [service, email, version, authing])
+    }, [service, version, isLoading])
     return [state, dispatch]
 }
