@@ -6,7 +6,7 @@ import {Task} from 'fp-ts/lib/Task'
 
 export type AggregateId = String
 
-export interface Event {
+export interface Event<A> {
     at: Date
 }
 
@@ -15,9 +15,9 @@ export interface Aggregate {
 }
 
 export abstract class Snapshot<A> {
-    abstract updateState(e: Event, initial: Map<String, A>): Map<String, A>
+    abstract updateState(e: Event<A>, initial: Map<String, A>): Map<String, A>
 
-    snapshot(es: Event[]): E.Either<String, Map<String, A>> {
+    snapshot(es: Event<A>[]): E.Either<String, Map<String, A>> {
         return pipe(es,
             reduce(new Map<String, A>(), (a, e) => this.updateState(e, a)),
             E.right
@@ -25,16 +25,19 @@ export abstract class Snapshot<A> {
     }
 }
 
-export type Command<A> = F.Free<Event, A>
+export type Command<A> = F.Free<Event<A>, A>
 
 export interface Commands<A> {
 }
 
-export abstract class RepositoryBackedInterpreter {
-    abstract step(e: Event) : Task<any>
+export abstract class RepositoryBackedInterpreter<A> {
+    abstract step(e: Event<A>): Task<any>
 
-    // apply<A>(action: F.Free<Event, A>): Task<A> {
-    //         // action.foldMap(step)
-    //     return
-    // }
+    apply(action: F.Free<Event<A>, A>): Task<A> {
+        return action.foldMap(step)
+    }
+}
+
+function foldMap<A>(f: (free: F.Free<Event<A>, A>) => Task<A>): Task<A> {
+    return
 }
