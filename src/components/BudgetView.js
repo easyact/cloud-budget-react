@@ -4,11 +4,8 @@ import useBudget from './budget/hook/useBudget'
 const AMOUNT = '数额'
 
 function BudgetView() {
-    const [{budget = {}}, dispatch] = useBudget('current')
-
-    function saveBudget(budget) {
-        dispatch({type: 'UPDATE_BUDGET', payload: budget})
-    }
+    const version = 'current'
+    const [{budget, service}, dispatch] = useBudget(version)
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -19,7 +16,9 @@ function BudgetView() {
         reader.onload = readerEvent => {
             const content = readerEvent.target.result // this is the content!
             console.log(content)
-            saveBudget(JSON.parse(content))
+            const payload = JSON.parse(content)
+            service.import(version, payload)
+            dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})
         }
     }
 

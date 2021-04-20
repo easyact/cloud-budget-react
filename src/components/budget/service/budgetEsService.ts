@@ -10,4 +10,8 @@ export class BudgetEsService {
     getBudget(version: string): Budget {
         return this.cache.get(version)
     }
+
+    import(version: string, payload: Budget) {
+        this.cache.set(version, payload)
+    }
 }
