@@ -1,6 +1,6 @@
 import {TaskEither} from 'fp-ts/TaskEither'
 
-type BudgetTE<A> = TaskEither<any, A>
+export type BudgetTE<A> = TaskEither<any, A>
 
 export interface BudgetRepositoryV2 {
     getBudget(user: string, version: string): BudgetTE<any>

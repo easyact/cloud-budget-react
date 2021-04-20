@@ -3,7 +3,7 @@ import useBudget from './budget/hook/useBudget'
 
 const AMOUNT = '数额'
 
-function Budget() {
+function BudgetView() {
     const [{budget = {}}, dispatch] = useBudget('current')
 
     function saveBudget(budget) {
@@ -100,4 +100,4 @@ function Budget() {
     )
 }
 
-export default Budget
+export default BudgetView

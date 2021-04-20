@@ -1,7 +1,7 @@
 import './App.css'
 import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom'
 import {FaCalendarAlt, FaSync} from 'react-icons/all'
-import Budget from './components/Budget'
+import BudgetView from './components/BudgetView'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
 import Profile from './auth/Profile'
@@ -63,8 +63,8 @@ function App() {
 
             <Routes>
                 <Route path="" element={<LandingPage/>}/>
-                <Route path="budget" element={<Budget/>}/>
-                <Route path="target" element={<Budget/>}/>
+                <Route path="budget" element={<BudgetView/>}/>
+                <Route path="target" element={<BudgetView/>}/>
                 <Route path="sync" element={<Sync/>}/>
                 <Route path="loggedIn" element={<LoggedIn/>}/>
             </Routes>
