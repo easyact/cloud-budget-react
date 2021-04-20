@@ -5,7 +5,7 @@ const AMOUNT = '数额'
 
 function BudgetView() {
     const version = 'current'
-    const [{budget, service}, dispatch] = useBudget(version)
+    const [{budget}, dispatch] = useBudget(version)
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -17,8 +17,7 @@ function BudgetView() {
             const content = readerEvent.target.result // this is the content!
             console.log(content)
             const payload = JSON.parse(content)
-            service.import(version, payload)
-            dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})
+            dispatch({type: 'IMPORT_BUDGET', payload})
         }
     }
 

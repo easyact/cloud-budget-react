@@ -1,15 +1,8 @@
 import {Dispatch, Reducer, ReducerAction, useEffect, useReducer} from 'react'
-import reducer from '../reducer'
+import reducer from './reducer'
 import {useAuth0} from '@auth0/auth0-react'
 import {BudgetEsService} from '../service/budgetEsService'
-import {Budget} from '../Model'
-
-export interface BudgetState {
-    service: BudgetEsService
-    email: string
-    version: string
-    budget: Budget
-}
+import {BudgetState} from './budgetState'
 
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
     const {user = {email: 'default'}, isAuthenticated, isLoading} = useAuth0()

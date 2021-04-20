@@ -17,20 +17,6 @@ export default function reducer(state, action) {
     switch (action.type) {
         case 'USER_AUTHED':
             return {...state, email: action.payload, authing: true}
-        case 'ADD_BUDGETS':
-            return {
-                ...state,
-                budget: action.payload,
-                saving: true,
-            }
-        case 'UPDATE_BUDGET':
-            return {
-                ...state,
-                budget: action.payload,
-                saving: true,
-            }
-        case 'DELETE_ITEM':
-            return { /* unchanged */}
 
         case 'FETCH_BUDGET_REQUEST':
             return {
@@ -49,12 +35,6 @@ export default function reducer(state, action) {
                 budget: budget,
                 kpi: kpi(budget)
             }
-        case 'SAVED_BUDGET':
-            return {
-                ...state,
-                saving: false,
-                authing: false
-            }
 
         case 'FETCH_BUDGET_ERROR':
             return {
@@ -64,6 +44,7 @@ export default function reducer(state, action) {
             }
 
         default:
+            state.service.exec(action)
             return state
     }
 }
