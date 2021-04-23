@@ -6,7 +6,7 @@ import * as T from 'fp-ts/lib/Task'
 
 export type AggregateId = String
 
-export interface Event<A> {
+export interface Event<A> extends Readonly<Record<string, any>> {
     at: Date
 }
 
@@ -34,10 +34,10 @@ export abstract class RepositoryBackedInterpreter<A> {
     abstract step(e: Event<A>): T.Task<any>
 
     apply(action: F.Free<Event<A>, A>): T.Task<any> {
-        return foldMap(action, this.step)
+        return foldMap(this.step, action)
     }
 }
 
-function foldMap<A>(action: F.Free<Event<A>, A>, f: (e: Event<A>) => T.Task<any>): T.Task<any> {
-    return T.of('test') //TODO
+function foldMap<A>(f: (e: Event<A>) => T.Task<A>, action: F.Free<Event<A>, A>): T.Task<A> {
+    return F.foldFree(T.task)(f, action)
 }
