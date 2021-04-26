@@ -30,10 +30,18 @@ export type Command<A> = F.Free<Event<A>, A>
 export interface Commands<A> {
 }
 
-export abstract class RepositoryBackedInterpreter<A> {
-    abstract step(e: Event<A>): T.Task<A>
+export const URI = 'Event'
+export type URI = typeof URI
+declare module 'fp-ts/HKT' {
+    interface URItoKind<A> {
+        Event: Event<A>
+    }
+}
 
-    apply(action: F.Free<Event<A>, A>): T.Task<any> {
+export abstract class RepositoryBackedInterpreter<A> {
+    abstract step<A>(e: Event<A>): T.Task<A>
+
+    apply(action: F.Free<URI, A>): T.Task<any> {
         return F.foldFree(T.task)(this.step, action)
     }
 }
