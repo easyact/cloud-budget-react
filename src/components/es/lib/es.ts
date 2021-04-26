@@ -31,13 +31,10 @@ export interface Commands<A> {
 }
 
 export abstract class RepositoryBackedInterpreter<A> {
-    abstract step(e: Event<A>): T.Task<any>
+    abstract step(e: Event<A>): T.Task<A>
 
     apply(action: F.Free<Event<A>, A>): T.Task<any> {
-        return foldMap(this.step, action)
+        return F.foldFree(T.task)(this.step, action)
     }
 }
 
-function foldMap<A>(f: (e: Event<A>) => T.Task<A>, action: F.Free<Event<A>, A>): T.Task<A> {
-    return F.foldFree(T.task)(f, action)
-}
