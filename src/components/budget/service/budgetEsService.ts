@@ -8,7 +8,7 @@ import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
 type Command = { type: 'IMPORT_BUDGET', payload: any, user: { email: string }, to: { version: string } }
 
 export class BudgetEsService {
-    private cache = new Map()
+    private cache: Either<string, Map<string, Budget>> = E.left('None')
     private eventStore: EventStore = new MemEventStore()
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
 
@@ -18,8 +18,11 @@ export class BudgetEsService {
 
     getBudget(email: string, version: string): Budget {
         return pipe(
-            this.eventStore.events(email, version),
-            E.chain(this.snapshot.snapshot),
+            this.cache,
+            E.orElse(_ => pipe(
+                this.eventStore.events(email, version),
+                E.chain(this.snapshot.snapshot),
+            )),
             E.map(map => map.get(version) ?? {}),
             E.getOrElse(() => ({}))
         )
@@ -27,12 +30,13 @@ export class BudgetEsService {
 
     exec(command: Command): Either<Error, Map<string, Budget>> {
         const {user: {email}, to: {version}} = command
-        return pipe(
+        return this.cache = pipe(
             BudgetEsService.handleCommand(command),
             E.bindTo('e'),
             E.bind('_', ({e}) => this.eventStore.put(email, version, e)),
             E.bind('es', () => this.eventStore.events(email, version)),
-            E.chain(({es}) => this.snapshot.snapshot(es, this.cache))
+            E.bind('cache', () => this.cache),
+            E.chain(({es, cache}) => this.snapshot.snapshot(es, cache)),
         )
     }
 

@@ -24,8 +24,8 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         dispatch({
             type: 'FETCH_BUDGET_SUCCESS',
-            payload: service.getBudget(version)
+            payload: service.getBudget(email, version)
         })
-    }, [service, version, isLoading])
+    }, [service, version, isLoading, email])
     return [state, dispatch]
 }
