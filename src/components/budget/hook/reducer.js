@@ -45,7 +45,7 @@ export default function reducer(state, action) {
 
         default:
             const {service, email, version} = state
-            service.exec({email, version, ...action})
+            service.exec({user: {email}, to: {version}, ...action})
             return state
     }
 }
