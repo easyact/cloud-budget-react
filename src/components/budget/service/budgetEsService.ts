@@ -11,34 +11,36 @@ export class BudgetEsService {
     // private cache: Either<string, Map<string, Budget>> = E.left('None')
     private eventStore: EventStore = new MemEventStore()
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
+    private email: string
 
-    constructor(user: string) {
-        console.log('BudgetEsService init with user', user)
+    constructor(email: string) {
+        this.email = email
+        console.log('BudgetEsService init with email', email)
     }
 
-    getBudget(email: string, version: string): Budget {
-        return E.getOrElse(() => ({}))(this.getBudgetE(email, version))
+    getBudget(version: string): Budget {
+        return E.getOrElse(() => ({}))(this.getBudgetE(version))
     }
 
-    private getBudgetE(email: string, version: string): Either<Error, Budget> {
+    private getBudgetE(version: string): Either<Error, Budget> {
         return pipe(
             // this.cache,
             // E.orElse(_ => pipe(
-            this.getVersions(email),
+            this.getVersions(),
             // )),
             E.map(map => map.get(version) ?? {}),
         )
     }
 
-    private getVersions(email: string): Either<string, Map<string, Budget>> {
+    private getVersions(): Either<string, Map<string, Budget>> {
         return pipe(
-            this.eventStore.events(email),
+            this.eventStore.events(this.email),
             E.chain(this.snapshot.snapshot),
-            E.map(snapshot => snapshot.get(email) ?? new Map()),
+            E.map(snapshot => snapshot.get(this.email) ?? new Map()),
         )
     }
 
-    exec(command: Command): Either<Error, Map<string, Budget>> {
+    exec(command: Command): Budget {
         const {user: {email}} = command
         // return this.cache =
         return pipe(
@@ -47,16 +49,17 @@ export class BudgetEsService {
             E.bind('_', () => this.eventStore.put(email, {...command, at: new Date()})),
             // E.bind('cache', () => this.cache),
             // E.map(({cache, b}) => cache.set(version, b)),
-            E.chain(_ => this.getVersions(email)),
+            E.map(({b}) => b),
+            E.getOrElse(_ => ({}))
         )
     }
 
     private handleCommand(command: Command): Either<Error, Budget> {
         switch (command.type) {
             case 'IMPORT_BUDGET':
-                const {user: {email}, to: {version}} = command
+                const {to: {version}} = command
                 return pipe(
-                    this.getBudgetE(email, version),
+                    this.getBudgetE(version),
                     E.map(b => budgetAdditionMonoid.concat(b, command.payload)),
                 )
             default:

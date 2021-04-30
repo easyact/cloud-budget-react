@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import {BudgetEsService} from '../service/budgetEsService'
 
 const kpi = R.pipe(
     R.prop('expenses'),
@@ -14,9 +15,17 @@ const kpi = R.pipe(
 
 export default function reducer(state, action) {
     console.log('reducing', action, state)
+    const r = handle(state, action)
+    console.log('reduced', r)
+    return r
+}
+
+function handle(state, action) {
+    console.log('reducing', action, state)
     switch (action.type) {
         case 'USER_AUTHED':
-            return {...state, email: action.payload, authing: true}
+            const email = action.payload
+            return {...state, email: email, authing: true, service: new BudgetEsService(email)}
 
         case 'FETCH_BUDGET_REQUEST':
             return {
@@ -32,7 +41,7 @@ export default function reducer(state, action) {
                 ...state,
                 isLoading: false,
                 // saving: false,
-                budget: budget,
+                budget,
                 kpi: kpi(budget)
             }
 
@@ -44,8 +53,7 @@ export default function reducer(state, action) {
             }
 
         default:
-            const {service, email, version} = state
-            service.exec({user: {email}, to: {version}, ...action})
-            return state
+            const {service, version} = state
+            return {...state, budget: service.exec({user: {email: state.email}, to: {version}, ...action})}
     }
 }

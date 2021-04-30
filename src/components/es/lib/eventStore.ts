@@ -2,7 +2,7 @@ import {Event} from './es'
 import {Budget} from '../../budget/Model'
 import * as E from 'fp-ts/Either'
 import {Either} from 'fp-ts/Either'
-import {pipe} from 'fp-ts/lib/function'
+import {identity, pipe} from 'fp-ts/lib/function'
 import * as R from 'ramda'
 
 export type Error = string
@@ -26,7 +26,7 @@ export class MemEventStore implements EventStore {
     }
 
     events(id: string): Either<Error, Event<Budget>[]> {
-        return R.tap(console.log, pipe(
+        return R.tap(identity, pipe(
             E.fromNullable('none')(this.store.get(id)),
             E.orElse(() => E.right([] as Event<Budget>[])),
         ))

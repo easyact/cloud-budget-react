@@ -17,14 +17,14 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     }))
     const {service, email}: BudgetState = state
     if (email !== user.email && !isLoading && isAuthenticated) dispatch({type: 'USER_AUTHED', payload: user.email})
-    console.log('useBudgeting', email, version, state)
+    console.log('useBudgeting', email, version, state, service)
     useEffect(() => {
         console.log('useBudget.loading', version, isLoading, service)
         if (isLoading) return
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
         dispatch({
             type: 'FETCH_BUDGET_SUCCESS',
-            payload: service.getBudget(email, version)
+            payload: service.getBudget(version)
         })
     }, [service, version, isLoading, email])
     return [state, dispatch]
