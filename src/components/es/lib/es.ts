@@ -8,17 +8,21 @@ import {Budget} from '../../budget/Model'
 export type AggregateId = string
 
 export interface Event<A> extends Readonly<Record<string, any>> {
-    at: Date
+    at: Date,
+    type: string,
+    payload: any
 }
 
 export interface Aggregate {
     id: AggregateId
 }
 
-export abstract class Snapshot<A> {
-    abstract updateState(e: Event<A>, initial: Map<string, A>): Map<string, A>
+export type BUDGET_SNAPSHOT<A> = Map<string, Map<string, A>>
 
-    snapshot(es: Event<A>[], initial: Map<string, A> = new Map<string, A>()): E.Either<string, Map<string, A>> {
+export abstract class Snapshot<A> {
+    abstract updateState(e: Event<A>, initial: BUDGET_SNAPSHOT<A>): BUDGET_SNAPSHOT<A>
+
+    snapshot(es: Event<A>[], initial: BUDGET_SNAPSHOT<A> = new Map()): E.Either<string, BUDGET_SNAPSHOT<A>> {
         return pipe(es,
             reduce(initial, (a, e) => this.updateState(e, a)),
             E.right
@@ -27,8 +31,15 @@ export abstract class Snapshot<A> {
 }
 
 export class BudgetSnapshot extends Snapshot<Budget> {
-    updateState(e: Event<Budget>, initial: Map<string, Budget>): Map<string, Budget> {
-        throw new Error('Method not implemented.')
+    updateState(e: Event<Budget>, initial: BUDGET_SNAPSHOT<Budget>): BUDGET_SNAPSHOT<Budget> {
+        switch (e.type) {
+            case 'IMPORT_BUDGET':
+                const {user: {email}, to: {version}} = e
+                const versions = initial.get(email) ?? new Map<string, Budget>()
+                return initial.set(email, versions.set(version, e.payload))
+            default:
+                return initial
+        }
     }
 }
 

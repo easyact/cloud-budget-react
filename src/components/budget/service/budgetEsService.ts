@@ -20,14 +20,21 @@ export class BudgetEsService {
         return E.getOrElse(() => ({}))(this.getBudgetE(email, version))
     }
 
-    getBudgetE(email: string, version: string): Either<Error, Budget> {
+    private getBudgetE(email: string, version: string): Either<Error, Budget> {
         return pipe(
             // this.cache,
             // E.orElse(_ => pipe(
-            this.eventStore.events(email),
-            E.chain(this.snapshot.snapshot),
+            this.getVersions(email),
             // )),
             E.map(map => map.get(version) ?? {}),
+        )
+    }
+
+    private getVersions(email: string): Either<string, Map<string, Budget>> {
+        return pipe(
+            this.eventStore.events(email),
+            E.chain(this.snapshot.snapshot),
+            E.map(snapshot => snapshot.get(email) ?? new Map()),
         )
     }
 
@@ -40,8 +47,7 @@ export class BudgetEsService {
             E.bind('_', () => this.eventStore.put(email, {...command, at: new Date()})),
             // E.bind('cache', () => this.cache),
             // E.map(({cache, b}) => cache.set(version, b)),
-            E.bind('es', () => this.eventStore.events(email)),
-            E.chain(({es}) => this.snapshot.snapshot(es)),
+            E.chain(_ => this.getVersions(email)),
         )
     }
 
