@@ -8,26 +8,26 @@ import * as R from 'ramda'
 export type Error = string
 
 export interface EventStore {
-    put(email: string, version: string, event: Event<Budget>): Either<Error, void>
+    put(id: string, event: Event<Budget>): Either<Error, void>
 
-    events(email: string, version: string): Either<Error, Event<Budget>[]>
+    events(id: string): Either<Error, Event<Budget>[]>
 }
 
 export class MemEventStore implements EventStore {
     private store = new Map()
 
-    put(email: string, version: string, event: Event<Budget>): Either<Error, void> {
+    put(id: string, event: Event<Budget>): Either<Error, void> {
         return pipe(
-            this.events(email, version),
+            this.events(id),
             E.map(es => es.push(event)),
-            E.map(es => this.store.set(version, es)),
+            E.map(es => this.store.set(id, es)),
             E.map(_ => undefined),
         )
     }
 
-    events(email: string, version: string): Either<Error, Event<Budget>[]> {
+    events(id: string): Either<Error, Event<Budget>[]> {
         return R.tap(console.log, pipe(
-            E.fromNullable('none')(this.store.get(version)),
+            E.fromNullable('none')(this.store.get(id)),
             E.orElse(() => E.right([] as Event<Budget>[])),
         ))
     }

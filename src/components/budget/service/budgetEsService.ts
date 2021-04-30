@@ -20,7 +20,7 @@ export class BudgetEsService {
         return pipe(
             this.cache,
             E.orElse(_ => pipe(
-                this.eventStore.events(email, version),
+                this.eventStore.events(email),
                 E.chain(this.snapshot.snapshot),
             )),
             E.map(map => map.get(version) ?? {}),
@@ -29,12 +29,12 @@ export class BudgetEsService {
     }
 
     exec(command: Command): Either<Error, Map<string, Budget>> {
-        const {user: {email}, to: {version}} = command
+        const {user: {email}} = command
         return this.cache = pipe(
             BudgetEsService.handleCommand(command),
             E.bindTo('e'),
-            E.bind('_', ({e}) => this.eventStore.put(email, version, e)),
-            E.bind('es', () => this.eventStore.events(email, version)),
+            E.bind('_', ({e}) => this.eventStore.put(email, e)),
+            E.bind('es', () => this.eventStore.events(email)),
             E.bind('cache', () => this.cache),
             E.chain(({es, cache}) => this.snapshot.snapshot(es, cache)),
         )
