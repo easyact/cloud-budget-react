@@ -1,5 +1,5 @@
 import {Budget, budgetAdditionMonoid} from '../Model'
-import {BudgetSnapshot, Event, Snapshot} from '../../es/lib/es'
+import {BudgetSnapshot, Snapshot} from '../../es/lib/es'
 import * as E from 'fp-ts/lib/Either'
 import {Either} from 'fp-ts/lib/Either'
 import {pipe} from 'fp-ts/lib/function'
@@ -8,7 +8,7 @@ import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
 type Command = { type: 'IMPORT_BUDGET', payload: any, user: { email: string }, to: { version: string } }
 
 export class BudgetEsService {
-    private cache: Either<string, Map<string, Budget>> = E.left('None')
+    // private cache: Either<string, Map<string, Budget>> = E.left('None')
     private eventStore: EventStore = new MemEventStore()
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
 
@@ -17,37 +17,41 @@ export class BudgetEsService {
     }
 
     getBudget(email: string, version: string): Budget {
+        return E.getOrElse(() => ({}))(this.getBudgetE(email, version))
+    }
+
+    getBudgetE(email: string, version: string): Either<Error, Budget> {
         return pipe(
-            this.cache,
-            E.orElse(_ => pipe(
-                this.eventStore.events(email),
-                E.chain(this.snapshot.snapshot),
-            )),
+            // this.cache,
+            // E.orElse(_ => pipe(
+            this.eventStore.events(email),
+            E.chain(this.snapshot.snapshot),
+            // )),
             E.map(map => map.get(version) ?? {}),
-            E.getOrElse(() => ({}))
         )
     }
 
     exec(command: Command): Either<Error, Map<string, Budget>> {
         const {user: {email}} = command
-        return this.cache = pipe(
+        // return this.cache =
+        return pipe(
             this.handleCommand(command),
-            E.bindTo('e'),
-            E.bind('_', ({e}) => this.eventStore.put(email, e)),
+            E.bindTo('b'),
+            E.bind('_', () => this.eventStore.put(email, {...command, at: new Date()})),
+            // E.bind('cache', () => this.cache),
+            // E.map(({cache, b}) => cache.set(version, b)),
             E.bind('es', () => this.eventStore.events(email)),
-            E.bind('cache', () => this.cache),
-            E.chain(({es, cache}) => this.snapshot.snapshot(es, cache)),
+            E.chain(({es}) => this.snapshot.snapshot(es)),
         )
     }
 
-    private handleCommand(command: Command): Either<Error, Event<Budget>> {
+    private handleCommand(command: Command): Either<Error, Budget> {
         switch (command.type) {
             case 'IMPORT_BUDGET':
+                const {user: {email}, to: {version}} = command
                 return pipe(
-                    this.cache,
-                    E.map(s => s.get(command.user.email) ?? new Budget()),
+                    this.getBudgetE(email, version),
                     E.map(b => budgetAdditionMonoid.concat(b, command.payload)),
-                    E.map(b => ({...command, at: new Date()})),
                 )
             default:
                 return E.left('不支持的命令')
