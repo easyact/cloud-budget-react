@@ -60,7 +60,13 @@ export class BudgetEsService {
                 const {to: {version}} = command
                 return pipe(
                     this.getBudgetE(version),
-                    E.map(b => budgetAdditionMonoid.concat(b, command.payload)),
+                    E.map(b => {
+                        const importing = command.payload
+                        console.log('executing concat', b, importing)
+                        const r = budgetAdditionMonoid.concat(b, importing)
+                        console.log('executed concat', r)
+                        return r
+                    }),
                 )
             default:
                 return E.left('不支持的命令')
