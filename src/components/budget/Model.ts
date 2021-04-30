@@ -2,7 +2,7 @@ import {Monoid} from 'fp-ts/Monoid'
 import {findIndex, map, modifyAt, reduce} from 'fp-ts/Array'
 import {pipe} from 'fp-ts/function'
 import * as O from 'fp-ts/Option'
-import R from 'ramda'
+import * as R from 'ramda'
 
 // import {Foldable} from 'fp-ts/Foldable'
 
