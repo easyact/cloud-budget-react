@@ -1,4 +1,4 @@
-import {Budget} from '../Model'
+import {Budget, budgetAdditionMonoid} from '../Model'
 import {BudgetSnapshot, Event, Snapshot} from '../../es/lib/es'
 import * as E from 'fp-ts/lib/Either'
 import {Either} from 'fp-ts/lib/Either'
@@ -31,7 +31,7 @@ export class BudgetEsService {
     exec(command: Command): Either<Error, Map<string, Budget>> {
         const {user: {email}} = command
         return this.cache = pipe(
-            BudgetEsService.handleCommand(command),
+            this.handleCommand(command),
             E.bindTo('e'),
             E.bind('_', ({e}) => this.eventStore.put(email, e)),
             E.bind('es', () => this.eventStore.events(email)),
@@ -40,10 +40,15 @@ export class BudgetEsService {
         )
     }
 
-    private static handleCommand(command: Command): Either<Error, Event<Budget>> {
+    private handleCommand(command: Command): Either<Error, Event<Budget>> {
         switch (command.type) {
             case 'IMPORT_BUDGET':
-                return E.right({...command, at: new Date()})
+                return pipe(
+                    this.cache,
+                    E.map(s => s.get(command.user.email) ?? new Budget()),
+                    E.map(b => budgetAdditionMonoid.concat(b, command.payload)),
+                    E.map(b => ({...command, at: new Date()})),
+                )
             default:
                 return E.left('不支持的命令')
         }
