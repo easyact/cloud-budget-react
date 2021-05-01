@@ -9,6 +9,8 @@ import * as R from 'ramda'
 export class Budget {
     assets?: Item[] = []
     liabilities?: Item[] = []
+    incomes?: Item[] = []
+    expenses?: Item[] = []
 }
 
 export interface Item {
