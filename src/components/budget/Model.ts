@@ -32,10 +32,10 @@ const lastModifyAt = (item: Item) => item.lastModifiedDate ?? defaultDate
 export const listAdditionMonoid: Monoid<Item[]> = {
     concat: (x, y) => reduce(x, (r, item: Item) => pipe(
         r,
-        findIndex(i => i.id === item.id),
+        findIndex(i => !!i.id && !!item.id && i.id === item.id),
         O.chain(index => pipe(r, modifyAt(index, i => lastModifyAt(i) > lastModifyAt(item) ? i : item))),
         // O.chain(f => f(r)),
-        O.getOrElse(() => r)
+        O.getOrElse(() => [...r, item])
     ))(y),
     empty: []
 }
