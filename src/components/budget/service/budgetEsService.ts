@@ -7,7 +7,12 @@ import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 
-type Command = { type: 'IMPORT_BUDGET' | 'ADD_ITEM', payload: any, user: { email: string }, to: { version: string } }
+type Command = {
+    type: 'IMPORT_BUDGET' | 'PUT_ITEM', payload: any, user: { email: string }, to: {
+        list?: string
+        version: string
+    }
+}
 
 export class BudgetEsService {
     // private cache: Either<string, Map<string, Budget>> = E.left('None')
@@ -57,34 +62,27 @@ export class BudgetEsService {
     }
 
     private handleCommand(command: Command): Either<Error, Budget> {
-        switch (command.type) {
+        const {to: {list, version}, type, payload} = command
+        switch (type) {
             case 'IMPORT_BUDGET':
-                const {to: {version}} = command
-                return pipe(
-                    this.getBudgetE(version),
-                    E.map(b => {
-                        const importing = command.payload
-                        console.log('executing concat', b, importing)
-                        const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
-                        const r = budgetAdditionMonoid.concat(b, idFilled)
-                        console.log('executed concat', r)
-                        return r
-                    }),
-                )
-            // case 'ADD_ITEM':
-            //     const {to: {version}} = command
-            //     return pipe(
-            //         this.getBudgetE(version),
-            //         E.map(b => {
-            //             const importing = command.payload
-            //             console.log('executing concat', b, importing)
-            //             const r = budgetAdditionMonoid.concat(b, importing)
-            //             console.log('executed concat', r)
-            //             return r
-            //         }),
-            //     )
+                return this.importBudget(version, payload)
+            case 'PUT_ITEM':
+                return this.importBudget(version, {[(list)!!]: [payload]})
             default:
                 return E.left('不支持的命令')
         }
+    }
+
+    private importBudget(version: string, importing: any) {
+        return pipe(
+            this.getBudgetE(version),
+            E.map(b => {
+                console.log('executing concat', b, importing)
+                const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
+                const r = budgetAdditionMonoid.concat(b, idFilled)
+                console.log('executed concat', r)
+                return r
+            }),
+        )
     }
 }
