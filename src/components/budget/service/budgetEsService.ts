@@ -73,16 +73,14 @@ export class BudgetEsService {
         }
     }
 
-    private importBudget(version: string, importing: any) {
-        return pipe(
-            this.getBudgetE(version),
-            E.map(b => {
-                console.log('executing concat', b, importing)
-                const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
-                const r = budgetAdditionMonoid.concat(b, idFilled)
-                console.log('executed concat', r)
-                return r
-            }),
-        )
-    }
+    private importBudget = (version: string, importing: any) => pipe(
+        this.getBudgetE(version),
+        E.map(b => {
+            console.log('executing concat', b, importing)
+            const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
+            const r = budgetAdditionMonoid.concat(b, idFilled)
+            console.log('executed concat', r)
+            return r
+        }),
+    )
 }
