@@ -4,8 +4,10 @@ import * as E from 'fp-ts/lib/Either'
 import {Either} from 'fp-ts/lib/Either'
 import {pipe} from 'fp-ts/lib/function'
 import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
+import * as R from 'ramda'
+import {v4 as uuid} from 'uuid'
 
-type Command = { type: 'IMPORT_BUDGET', payload: any, user: { email: string }, to: { version: string } }
+type Command = { type: 'IMPORT_BUDGET' | 'ADD_ITEM', payload: any, user: { email: string }, to: { version: string } }
 
 export class BudgetEsService {
     // private cache: Either<string, Map<string, Budget>> = E.left('None')
@@ -63,11 +65,24 @@ export class BudgetEsService {
                     E.map(b => {
                         const importing = command.payload
                         console.log('executing concat', b, importing)
-                        const r = budgetAdditionMonoid.concat(b, importing)
+                        const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
+                        const r = budgetAdditionMonoid.concat(b, idFilled)
                         console.log('executed concat', r)
                         return r
                     }),
                 )
+            // case 'ADD_ITEM':
+            //     const {to: {version}} = command
+            //     return pipe(
+            //         this.getBudgetE(version),
+            //         E.map(b => {
+            //             const importing = command.payload
+            //             console.log('executing concat', b, importing)
+            //             const r = budgetAdditionMonoid.concat(b, importing)
+            //             console.log('executed concat', r)
+            //             return r
+            //         }),
+            //     )
             default:
                 return E.left('不支持的命令')
         }
