@@ -6,12 +6,15 @@ import * as R from 'ramda'
 
 // import {Foldable} from 'fp-ts/Foldable'
 
-export class Budget {
-    assets?: Item[] = []
-    liabilities?: Item[] = []
-    incomes?: Item[] = []
-    expenses?: Item[] = []
-}
+// export class Budget {
+//     assets?: Item[] = []
+//     liabilities?: Item[] = []
+//     incomes?: Item[] = []
+//     expenses?: Item[] = []
+// }
+const BudgetKeys = ['assets', 'liabilities', 'incomes', 'expenses']
+type BKeys = typeof BudgetKeys[number]
+export type Budget = { [K in BKeys]: Item[] }
 
 export interface Item {
     id?: String
@@ -19,13 +22,11 @@ export interface Item {
     amount: number
     lastModifiedDate?: Date
 }
-
-const NULL = new Budget()
 export const budgetAdditionMonoid: Monoid<Budget> = {
-    concat: (x, y) => pipe(NULL, R.keys,
+    concat: (x, y) => pipe(BudgetKeys,
         map(k => R.objOf(k)(listAdditionMonoid.concat(x[k] ?? [], y[k] ?? []))),
-        R.mergeAll),
-    empty: new Budget()
+        R.mergeAll) as Budget,
+    empty: {}
 }
 
 const defaultDate = new Date(0)

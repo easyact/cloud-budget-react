@@ -20,10 +20,6 @@ function BudgetView() {
             dispatch({type: 'IMPORT_BUDGET', payload})
         }
     }
-
-    let updateList = list => items => {
-        dispatch({type: 'UPDATE_BUDGET', payload: {...budget, [list]: items}})
-    }
     return (
         <div>
             <div className="level is-mobile">
@@ -38,11 +34,11 @@ function BudgetView() {
             <div className="columns">
                 <fieldset className="column">
                     <div className="panel">
-                        <List items={budget.assets} setItems={updateList('assets')}/>
+                        <List items={budget.assets} dispatch={dispatch}/>
                     </div>
                     <div className="panel">
-                        <List title="负债" hint="不断从你口袋掏钱出来" items={budget.liabilities}
-                              setItems={updateList('liabilities')}
+                        <List name={'liabilities'} title="负债" hint="不断从你口袋掏钱出来" items={budget.liabilities}
+                              dispatch={dispatch}
                               columns={[{title: '条目', type: 'text', key: 'name'}, {
                                   title: '总数',
                                   type: 'number',
@@ -52,8 +48,8 @@ function BudgetView() {
                 </fieldset>
                 <fieldset className="column">
                     <div className="panel">
-                        <List title="收入" hint="每月" items={budget.incomes}
-                              setItems={updateList('incomes')}
+                        <List name={'incomes'} title="收入" hint="每月" items={budget.incomes}
+                              dispatch={dispatch}
                               columns={[{title: '条目', type: 'text', key: 'name'}, {
                                   title: AMOUNT,
                                   type: 'number',
@@ -61,8 +57,8 @@ function BudgetView() {
                               }, {title: '周期', type: 'duration', key: 'duration'}]}/>
                     </div>
                     <div className=" panel">
-                        <List title="支出" hint="每月" items={budget.expenses}
-                              setItems={updateList('expenses')}
+                        <List name={'expenses'} title="支出" hint="每月" items={budget.expenses}
+                              dispatch={dispatch}
                               columns={[{title: '条目', type: 'text', key: 'name'}, {
                                   title: AMOUNT,
                                   type: 'number',

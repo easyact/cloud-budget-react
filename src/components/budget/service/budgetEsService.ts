@@ -7,8 +7,9 @@ import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 
+type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 type Command = {
-    type: 'IMPORT_BUDGET' | 'PUT_ITEM', payload: any, user: { email: string }, to: {
+    type: CommandType, payload: any, user: { email: string }, to: {
         list?: string
         version: string
     }
@@ -62,22 +63,28 @@ export class BudgetEsService {
     }
 
     private handleCommand(command: Command): Either<Error, Budget> {
-        const {to: {list, version}, type, payload} = command
+        const {to: {version}, type, payload} = command
         switch (type) {
             case 'IMPORT_BUDGET':
                 return this.importBudget(version, payload)
             case 'PUT_ITEM':
-                return this.importBudget(version, {[(list)!!]: [payload]})
+                const {to, item} = payload
+                return this.importBudget(version, {[to]: [item]})
+            case 'DELETE_ITEM':
+                const {from, id: deletingId} = payload
+                return pipe(this.getBudgetE(version),
+                    E.map(b => R.over(R.lensProp(from), R.filter(({id}) => id !== deletingId))(b)))
             default:
                 return E.left('不支持的命令')
         }
     }
 
-    private importBudget = (version: string, importing: any) => pipe(
+    private importBudget = (version: string, importing: Budget) => pipe(
         this.getBudgetE(version),
         E.map(b => {
             console.log('executing concat', b, importing)
-            const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
+            // @ts-ignore
+            const idFilled: Budget = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
             const r = budgetAdditionMonoid.concat(b, idFilled)
             console.log('executed concat', r)
             return r

@@ -6,6 +6,7 @@ import {Item} from './Item'
 export const initValue = {text: '空', number: 0, duration: {months: 1}}
 export default function List(
     {
+        name = 'assets',
         title = '资产',
         hint = '产生被动收入',
         columns = [
@@ -13,7 +14,7 @@ export default function List(
             {title: '价值', type: 'number', key: 'amount'},
             {title: '首付', type: 'number', key: 'downPayment'}],
         items = [],
-        setItems = arr => items = arr
+        dispatch,
     }
 ) {
     const adding = {}
@@ -25,18 +26,17 @@ export default function List(
 
     function add() {
         console.log('List add', adding)
-        setItems([...items, R.mapObjIndexed(r => r.current.value)(adding)])
+        put(R.mapObjIndexed(r => r.current.value)(adding))
         columns.map(c => c.key).forEach(t => adding[t].current.value = null)
     }
 
-    function update(id, v) {
-        console.log('update', id, v)
-        setItems(R.update(id, v, items))
+    function put(item) {
+        dispatch({type: 'PUT_ITEM', payload: {item, to: name}})
     }
 
     function rm(id) {
         console.log('rm', id)
-        setItems(R.remove(id, 1, items))
+        dispatch({type: 'DELETE_ITEM', payload: {id, from: name}})
     }
 
     // let sum = 0;
@@ -81,7 +81,7 @@ export default function List(
                     </tfoot>
                     <tbody>
                     {items.map((value, index) =>
-                        <Item key={index} index={index} columns={columns} value={value} update={update} rm={rm}/>
+                        <Item key={index} index={index} columns={columns} value={value} update={put} rm={rm}/>
                     )}
                     </tbody>
                 </table>
