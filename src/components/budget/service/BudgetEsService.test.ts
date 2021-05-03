@@ -2,7 +2,7 @@ import {BudgetEsService} from './budgetEsService'
 import {Budget} from '../Model'
 
 describe('curd', () => {
-    const cmd = {user: {email: ''}, to: {version: ''}}
+    const cmd = {user: {email: 't'}, to: {version: '0'}}
     const item = {name: 'TI', type: 'assets'}
     let service: BudgetEsService
     beforeEach(() => {
@@ -36,8 +36,8 @@ describe('curd', () => {
         const updated = service.exec({
             type: 'PUT_ITEM',
             payload: {to: 'assets', item: newItem},
-            user: {email: ''},
-            to: {version: ''}
+            user: {email: 't'},
+            to: {version: '0'}
         })
         expect(updated.assets).toEqual([newItem])
     })
