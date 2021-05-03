@@ -1,4 +1,4 @@
-import {Budget, budgetAdditionMonoid} from '../Model'
+import {Budget} from '../Model'
 import {BudgetSnapshot, Snapshot} from '../../es/lib/es'
 import * as E from 'fp-ts/lib/Either'
 import {Either} from 'fp-ts/lib/Either'
@@ -44,51 +44,35 @@ export class BudgetEsService {
     private getVersions(): Either<string, Map<string, Budget>> {
         return pipe(
             this.eventStore.events(this.email),
-            E.chain(this.snapshot.snapshot),
+            E.chain(es => this.snapshot.snapshot(es)),
             E.map(snapshot => snapshot.get(this.email) ?? new Map()),
         )
     }
 
     exec(command: Command): Budget {
-        const {user: {email}} = command
+        const {to: {version}} = command
         // return this.cache =
         return pipe(
             this.handleCommand(command),
-            E.bindTo('b'),
-            E.bind('_', () => this.eventStore.put(email, {...command, at: new Date()})),
-            // E.bind('cache', () => this.cache),
-            // E.map(({cache, b}) => cache.set(version, b)),
-            E.map(({b}) => b),
+            E.chain(() => this.getBudgetE(version)),
             E.getOrElse(_ => ({}))
         )
     }
 
-    private handleCommand(command: Command): Either<Error, Budget> {
-        const {to: {version}, type, payload} = command
+    private handleCommand(command: Command): Either<Error, void> {
+        const {type, payload, user: {email}} = command
         switch (type) {
             case 'IMPORT_BUDGET':
-                return this.importBudget(version, payload)
+                const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(payload)
+                return this.eventStore.put(email, {...command, payload: idFilled, at: new Date()})
             case 'PUT_ITEM':
-                const {to, item} = payload
-                return this.importBudget(version, {[to]: [item]})
+                const lens = R.lensPath(['item', 'id'])
+                const item = R.over(lens, R.defaultTo(uuid()))(payload)
+                return this.eventStore.put(email, {...command, payload: item, at: new Date()})
             case 'DELETE_ITEM':
-                const {from, id: deletingId} = payload
-                return pipe(this.getBudgetE(version),
-                    E.map(b => R.over(R.lensProp(from), R.filter(({id}) => id !== deletingId))(b)))
+                return this.eventStore.put(email, {...command, at: new Date()})
             default:
                 return E.left('不支持的命令')
         }
     }
-
-    private importBudget = (version: string, importing: Budget) => pipe(
-        this.getBudgetE(version),
-        E.map(b => {
-            console.log('executing concat', b, importing)
-            // @ts-ignore
-            const idFilled: Budget = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(importing)
-            const r = budgetAdditionMonoid.concat(b, idFilled)
-            console.log('executed concat', r)
-            return r
-        }),
-    )
 }

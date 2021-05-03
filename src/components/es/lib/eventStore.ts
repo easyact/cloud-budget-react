@@ -19,7 +19,7 @@ export class MemEventStore implements EventStore {
     put(id: string, event: Event<Budget>): Either<Error, void> {
         return pipe(
             this.events(id),
-            E.map(es => es.push(event)),
+            E.map(es => [...es, event]),
             E.map(es => this.store.set(id, es)),
             E.map(_ => undefined),
         )
