@@ -17,12 +17,13 @@ type Command = {
 
 export class BudgetEsService {
     // private cache: Either<string, Map<string, Budget>> = E.left('None')
-    private eventStore: EventStore = new MemEventStore()
+    private eventStore: EventStore
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
-    private email: string
+    private readonly email: string
 
-    constructor(email: string) {
+    constructor(email: string, eventStore: EventStore = new MemEventStore()) {
         this.email = email
+        this.eventStore = eventStore
         console.log('BudgetEsService init with email', email)
     }
 
