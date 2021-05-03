@@ -26,6 +26,8 @@ describe('curd', () => {
         const newBudget = service.getBudget('0')
         expect(newBudget).not.toEqual({})
         expectIncludedItem(newBudget)
+
+
     })
     test('update item', () => {
         service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})
@@ -40,5 +42,18 @@ describe('curd', () => {
             to: {version: '0'}
         })
         expect(updated.assets).toEqual([newItem])
+    })
+    test('delete item', () => {
+        service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})
+        const budget = service.getBudget('0')
+        expect(budget).not.toEqual({})
+        expectIncludedItem(budget)
+        const updated = service.exec({
+            type: 'DELETE_ITEM',
+            payload: {from: 'assets', id: budget.assets[0].id},
+            user: {email: 't'},
+            to: {version: '0'}
+        })
+        expect(updated.assets).toEqual([])
     })
 })
