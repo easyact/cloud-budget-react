@@ -36,7 +36,7 @@ export class MemEventStore implements EventStore {
 
 export class DBEventStore implements EventStore {
     constructor(db: Dexie = new Dexie('easyact-budget')) {
-        db.version(1).stores({events: '++id, user, version, at, '})
+        db.version(1).stores({events: '++id, user.email, at, version'})
     }
 
     events(id: string): Either<Error, Event<Budget>[]> {
