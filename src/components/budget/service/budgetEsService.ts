@@ -1,7 +1,8 @@
 import {Budget} from '../Model'
 import {BudgetSnapshot, Snapshot} from '../../es/lib/es'
-import * as E from 'fp-ts/lib/Either'
-import {Either} from 'fp-ts/lib/Either'
+import * as E from 'fp-ts/lib/TaskEither'
+import {TaskEither} from 'fp-ts/lib/TaskEither'
+import * as T from 'fp-ts/lib/Task'
 import {pipe} from 'fp-ts/lib/function'
 import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
@@ -16,7 +17,7 @@ type Command = {
 }
 
 export class BudgetEsService {
-    // private cache: Either<string, Map<string, Budget>> = E.left('None')
+    // private cache: TaskEither<string, Map<string, Budget>> = E.left('None')
     private eventStore: EventStore
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
     private readonly email: string
@@ -27,11 +28,11 @@ export class BudgetEsService {
         console.log('BudgetEsService init with email', email)
     }
 
-    getBudget(version: string): Budget {
-        return E.getOrElse(() => ({}))(this.getBudgetE(version))
+    getBudget(version: string): Promise<Budget> {
+        return E.getOrElse(() => T.of({}))(this.getBudgetE(version))()
     }
 
-    private getBudgetE(version: string): Either<Error, Budget> {
+    private getBudgetE(version: string): TaskEither<Error, Budget> {
         return pipe(
             // this.cache,
             // E.orElse(_ => pipe(
@@ -41,25 +42,25 @@ export class BudgetEsService {
         )
     }
 
-    private getVersions(): Either<string, Map<string, Budget>> {
+    private getVersions(): TaskEither<string, Map<string, Budget>> {
         return pipe(
             this.eventStore.events(this.email),
-            E.chain(es => this.snapshot.snapshot(es)),
+            E.chain(es => E.fromEither(this.snapshot.snapshot(es))),
             E.map(snapshot => snapshot.get(this.email) ?? new Map()),
         )
     }
 
-    exec(command: Command): Budget {
+    exec(command: Command): Promise<Budget> {
         const {to: {version}} = command
         // return this.cache =
         return pipe(
             this.handleCommand(command),
             E.chain(() => this.getBudgetE(version)),
-            E.getOrElse(_ => ({}))
-        )
+            E.getOrElse(_ => T.of({}))
+        )()
     }
 
-    private handleCommand(command: Command): Either<Error, void> {
+    private handleCommand(command: Command): TaskEither<Error, void> {
         const {type, payload, user: {email}} = command
         switch (type) {
             case 'IMPORT_BUDGET':
