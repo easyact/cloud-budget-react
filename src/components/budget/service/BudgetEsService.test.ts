@@ -26,8 +26,13 @@ describe('curd', () => {
         const newBudget = service.getBudget('0')
         expect(newBudget).not.toEqual({})
         expectIncludedItem(newBudget)
-
-
+        const addedBudget2 = service.exec({
+            type: 'PUT_ITEM',
+            payload: {to: 'assets', item: {name: 'another'}},
+            user: {email: 't'},
+            to: {version: '0'}
+        })
+        expect(addedBudget2.assets).toEqual([{...item, id: expect.anything()}, {name: 'another', id: expect.anything()}])
     })
     test('update item', () => {
         service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})

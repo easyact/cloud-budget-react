@@ -42,13 +42,12 @@ export class BudgetSnapshot extends Snapshot<Budget> {
     }
 
     updateBudget(e: Event<Budget>, budget: Budget): Budget {
-        const {to: {version}} = e
         switch (e.type) {
             case 'IMPORT_BUDGET':
                 return this.importBudget(budget, e.payload)
             case 'PUT_ITEM':
                 const {payload: {to, item}} = e
-                return this.importBudget(version, {[to]: [item]})
+                return this.importBudget(budget, {[to]: [item]})
             case 'DELETE_ITEM':
                 const {payload: {from, id: deletingId}} = e
                 return R.over(R.lensProp(from), R.filter(({id}) => id !== deletingId))(budget)
