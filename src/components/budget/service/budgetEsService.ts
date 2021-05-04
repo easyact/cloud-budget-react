@@ -4,12 +4,12 @@ import * as E from 'fp-ts/lib/TaskEither'
 import {TaskEither} from 'fp-ts/lib/TaskEither'
 import * as T from 'fp-ts/lib/Task'
 import {pipe} from 'fp-ts/lib/function'
-import {Error, EventStore, MemEventStore} from '../../es/lib/eventStore'
+import {DBEventStore, Error, EventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
-type Command = {
+export type Command = {
     type: CommandType, payload: any, user: { email: string }, to: {
         list?: string
         version: string
@@ -22,7 +22,7 @@ export class BudgetEsService {
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
     private readonly email: string
 
-    constructor(email: string, eventStore: EventStore = new MemEventStore()) {
+    constructor(email: string, eventStore: EventStore = new DBEventStore()) {
         this.email = email
         this.eventStore = eventStore
         console.log('BudgetEsService init with email', email)

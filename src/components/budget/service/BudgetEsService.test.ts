@@ -1,13 +1,13 @@
 import {BudgetEsService} from './budgetEsService'
 import {Budget} from '../Model'
-import {DBEventStore} from '../../es/lib/eventStore'
+import {MemEventStore} from '../../es/lib/eventStore'
 
 describe('curd', () => {
     const cmd = {user: {email: 't'}, to: {version: '0'}}
     const item = {name: 'TI', type: 'assets'}
     let service: BudgetEsService
     beforeEach(async () => {
-        service = new BudgetEsService('t', new DBEventStore())
+        service = new BudgetEsService('t', new MemEventStore())
         const budget = await service.getBudget('0')
         expect(budget).toEqual({})
     })
