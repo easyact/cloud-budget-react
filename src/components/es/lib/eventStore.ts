@@ -4,6 +4,7 @@ import * as E from 'fp-ts/Either'
 import {Either} from 'fp-ts/Either'
 import {identity, pipe} from 'fp-ts/lib/function'
 import * as R from 'ramda'
+import Dexie from 'dexie'
 
 export type Error = string
 
@@ -30,5 +31,19 @@ export class MemEventStore implements EventStore {
             E.fromNullable('none')(this.store.get(id)),
             E.orElse(() => E.right([] as Event<Budget>[])),
         ))
+    }
+}
+
+export class DBEventStore implements EventStore {
+    constructor(db: Dexie = new Dexie('easyact-budget')) {
+        db.version(1).stores({events: '++id, user, version, at, '})
+    }
+
+    events(id: string): Either<Error, Event<Budget>[]> {
+        return undefined
+    }
+
+    put(id: string, event: Event<Budget>): Either<Error, void> {
+        return undefined
     }
 }

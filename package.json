@@ -13,6 +13,7 @@
     "@types/react-dom": "^17.0.0",
     "bulma": "^0.9.1",
     "date-fns": "^2.19.0",
+    "dexie": "^3.0.3",
     "firebase": "^8.2.4",
     "fp-ts": "^2.9.3",
     "fp-ts-contrib": "^0.1.22",

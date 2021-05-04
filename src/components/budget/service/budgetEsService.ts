@@ -66,7 +66,7 @@ export class BudgetEsService {
                 const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(payload)
                 return this.eventStore.put(email, {...command, payload: idFilled, at: new Date()})
             case 'PUT_ITEM':
-                const lens = R.lensPath(['item', 'id'])
+                const lens = R.lensProp('id')
                 const item = R.over(lens, R.defaultTo(uuid()))(payload)
                 return this.eventStore.put(email, {...command, payload: item, at: new Date()})
             case 'DELETE_ITEM':

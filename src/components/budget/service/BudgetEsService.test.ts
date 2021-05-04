@@ -6,7 +6,7 @@ describe('curd', () => {
     const item = {name: 'TI', type: 'assets'}
     let service: BudgetEsService
     beforeEach(() => {
-        service = new BudgetEsService('t')
+        service = new BudgetEsService('t'/*, new DBEventStore()*/)
         const budget = service.getBudget('0')
         expect(budget).toEqual({})
     })
@@ -18,7 +18,7 @@ describe('curd', () => {
     test('add item', () => {
         const addedBudget = service.exec({
             type: 'PUT_ITEM',
-            payload: {to: 'assets', item},
+            payload: item,
             user: {email: 't'},
             to: {version: '0'}
         })
@@ -28,11 +28,15 @@ describe('curd', () => {
         expectIncludedItem(newBudget)
         const addedBudget2 = service.exec({
             type: 'PUT_ITEM',
-            payload: {to: 'assets', item: {name: 'another'}},
+            payload: {name: 'another', type: 'assets'},
             user: {email: 't'},
             to: {version: '0'}
         })
-        expect(addedBudget2.assets).toEqual([{...item, id: expect.anything()}, {name: 'another', id: expect.anything()}])
+        expect(addedBudget2.assets).toEqual([{...item, id: expect.anything()}, {
+            name: 'another',
+            type: 'assets',
+            id: expect.anything()
+        }])
     })
     test('update item', () => {
         service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})
@@ -42,7 +46,7 @@ describe('curd', () => {
         const newItem = {...budget.assets[0], name: 'changed'}
         const updated = service.exec({
             type: 'PUT_ITEM',
-            payload: {to: 'assets', item: newItem},
+            payload: newItem,
             user: {email: 't'},
             to: {version: '0'}
         })
