@@ -7,13 +7,13 @@ import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
 
 export function Item({index, columns, value, update, rm}) {
-    log('Item')(value)
+    // log('Item')(value)
     const [editing, setEditing] = useState(false)
     const fields = {}
     for (const column of columns) {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         fields[column.key] = useRef(value[column.key])
-        console.log('Item.fields', column.key, fields[column.key])
+        // console.log('Item.fields', column.key, fields[column.key])
     }
     const save = flow(
         () => log('Item.saving fields')(R.mapObjIndexed(r => r.current, fields)),
@@ -76,7 +76,7 @@ export function Item({index, columns, value, update, rm}) {
                     </div>
                 }
                 <div className="control">
-                    <button className="button is-small" onClick={() => rm(index)}><FaTrash/></button>
+                    <button className="button is-small" onClick={() => rm(value.id)}><FaTrash/></button>
                 </div>
             </div>
         </td>
