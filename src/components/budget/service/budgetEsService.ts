@@ -37,7 +37,7 @@ export class BudgetEsService {
             // E.orElse(_ => pipe(
             this.getVersions(),
             // )),
-            E.map(map => map.get(version) ?? {}),
+            E.map(versions => versions.get(version) ?? {}),
         )
     }
 
