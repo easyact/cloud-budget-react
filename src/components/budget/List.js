@@ -31,7 +31,7 @@ export default function List(
     }
 
     function put(item) {
-        dispatch({type: 'PUT_ITEM', payload: {item, to: name}})
+        dispatch({type: 'PUT_ITEM', payload: {...item, type: name}})
     }
 
     function rm(id) {

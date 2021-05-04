@@ -40,10 +40,10 @@ export class DBEventStore implements EventStore {
     }
 
     events(id: string): Either<Error, Event<Budget>[]> {
-        return undefined
+        return E.left('later')
     }
 
     put(id: string, event: Event<Budget>): Either<Error, void> {
-        return undefined
+        return E.left('later')
     }
 }
