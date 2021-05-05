@@ -18,7 +18,7 @@ export function Item({index, columns, value, update, rm}) {
     const save = flow(
         () => log('Item.saving fields')(R.mapObjIndexed(r => r.current, fields)),
         () => setEditing(false),
-        () => update(log('Item.saving')(R.mapObjIndexed(r => r.current.value, fields)), index)
+        () => update(log('Item.saving')({...R.mapObjIndexed(r => r.current.value, fields), id: value.id}), index)
     )
     const durationControl = {
         duration: {
