@@ -1,4 +1,4 @@
-import {BudgetEsService} from '../service/budgetEsService'
+import {BudgetEsService, Command} from '../service/budgetEsService'
 import {Budget} from '../Model'
 
 export interface BudgetState {
@@ -6,4 +6,5 @@ export interface BudgetState {
     email: string
     version: string
     budget: Budget
+    cmd: Command
 }

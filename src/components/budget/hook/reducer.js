@@ -42,7 +42,7 @@ function handle(state, action) {
                 isLoading: false,
                 // saving: false,
                 budget,
-                kpi: kpi(budget)
+                kpi: kpi(budget),
             }
 
         case 'FETCH_BUDGET_ERROR':
@@ -53,7 +53,6 @@ function handle(state, action) {
             }
 
         default:
-            const {service, version} = state
-            return {...state, budget: service.exec({user: {email: state.email}, to: {version}, ...action})}
+            return {...state, cmd: {user: {email: state.email}, to: {version: state.version}, ...action}}
     }
 }
