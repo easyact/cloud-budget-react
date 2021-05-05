@@ -4,8 +4,7 @@ import useBudget from './budget/hook/useBudget'
 const AMOUNT = '数额'
 
 function BudgetView() {
-    const version = 'current'
-    const [{budget}, dispatch] = useBudget(version)
+    const [{budget}, dispatch] = useBudget('current')
 
     function importBudget(e) {
         const file = e.target.files[0]
