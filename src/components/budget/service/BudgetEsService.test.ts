@@ -66,4 +66,10 @@ describe('curd', () => {
         })
         expect(updated.assets).toEqual([])
     })
+    // test('login', async () => {
+    //     await service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})
+    //     // TODO mock fetch
+    //     const updated = service.login()
+    //     expect(updated.assets).toEqual([])
+    // })
 })
