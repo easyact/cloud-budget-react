@@ -29,6 +29,7 @@ export class BudgetEsService {
     }
 
     getBudget(version: string): Promise<Budget> {
+        console.log('getting Budget')
         return E.getOrElse(() => T.of({}))(this.getBudgetE(version))()
     }
 
@@ -51,6 +52,7 @@ export class BudgetEsService {
     }
 
     exec(command: Command): Promise<Budget> {
+        console.log('executing command', command)
         const {to: {version}} = command
         // return this.cache =
         return pipe(

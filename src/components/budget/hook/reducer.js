@@ -21,7 +21,6 @@ export default function reducer(state, action) {
 }
 
 function handle(state, action) {
-    console.log('reducing', action, state)
     switch (action.type) {
         case 'USER_AUTHED':
             const email = action.payload
