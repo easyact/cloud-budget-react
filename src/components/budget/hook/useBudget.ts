@@ -18,13 +18,13 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     const {service, email, cmd}: BudgetState = state
     if (email !== user.email && !isLoading && isAuthenticated) dispatch({type: 'USER_AUTHED', payload: user.email})
     console.log('useBudgeting', email, version, state, service)
-    useEffect(() => {
+    useEffect(function exec() {
         if (isLoading) return
         if (!cmd) return
-        console.log('useBudget.setting',cmd, version, isLoading, service)
+        console.log('useBudget.setting', cmd, version, isLoading, service)
         service.exec(cmd).then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
     }, [service, version, isLoading, email, cmd])
-    useEffect(() => {
+    useEffect(function load() {
         if (isLoading) return
         console.log('useBudget.loading', version, isLoading, service)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
