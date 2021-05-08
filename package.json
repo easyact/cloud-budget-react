@@ -58,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@pact-foundation/pact": "^9.15.5",
     "@types/ramda": "github:types/npm-ramda#dist",
     "@types/uuid": "^8.3.0",
     "isomorphic-fetch": "^3.0.0"
