@@ -56,3 +56,18 @@ export class DBEventStore implements EventStore {
         return E.fromTask(() => this.db.events.put(event))
     }
 }
+
+export class RemoteEventStore implements EventStore {
+    private uri: string
+
+    constructor(uri: string) {
+        this.uri = uri
+    }
+
+    events = (id: string): TaskEither<Error, BEvent[]> =>
+        E.fromTask(() => fetch('').then(a => []))
+
+    put(id: string, event: BEvent): TaskEither<Error, any> {
+        return E.fromTask(() => fetch(''))
+    }
+}

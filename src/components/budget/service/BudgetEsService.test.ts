@@ -3,8 +3,8 @@ import {Budget} from '../Model'
 import {MemEventStore} from '../../es/lib/eventStore'
 
 describe('curd', () => {
-    const cmd = {user: {email: 't'}, to: {version: '0'}}
-    const item = {name: 'TI', type: 'assets'}
+    // const cmd = {user: {email: 't'}, to: {version: '0'}}
+    const item = {name: 'TI', type: 'assets', amount: 100}
     let service: BudgetEsService
     beforeEach(async () => {
         service = new BudgetEsService('t', new MemEventStore())
@@ -39,8 +39,9 @@ describe('curd', () => {
             id: expect.anything()
         }])
     })
+
     test('update item', async () => {
-        await service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})
+        await service.importBudget('t', {assets: [item]})
         const budget = await service.getBudget('0')
         expect(budget).not.toEqual({})
         expectIncludedItem(budget)
@@ -54,7 +55,7 @@ describe('curd', () => {
         expect(updated.assets).toEqual([newItem])
     })
     test('delete item', async () => {
-        await service.exec({type: 'IMPORT_BUDGET', ...cmd, payload: {assets: [item]}})
+        await service.importBudget('t', {assets: [item]})
         const budget = await service.getBudget('0')
         expect(budget).not.toEqual({})
         expectIncludedItem(budget)

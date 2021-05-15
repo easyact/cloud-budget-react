@@ -51,6 +51,13 @@ export class BudgetEsService {
         )
     }
 
+    importBudget = (email: string, payload: Budget, version: string = '0'): Promise<Budget> => this.exec({
+        type: 'IMPORT_BUDGET',
+        user: {email},
+        to: {version},
+        payload: payload
+    })
+
     exec(command: Command): Promise<Budget> {
         console.log('executing command', command)
         const {to: {version}} = command
