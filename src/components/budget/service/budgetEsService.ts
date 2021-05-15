@@ -65,13 +65,12 @@ export class BudgetEsService {
         const {to: {version}} = command
         // return this.cache =
         return pipe(
-            this.handleCommand(command),
+            handleCommand(command)(this.eventStore),
             E.chain(() => this.getBudgetE(version)),
             E.getOrElse(_ => T.of({}))
         )()
     }
 
-    private handleCommand = (command: Command): TaskEither<Error, void> => handleCommand(command)(this.eventStore)
 }
 
 function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, void> {
