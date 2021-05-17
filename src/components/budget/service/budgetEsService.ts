@@ -20,7 +20,7 @@ export type Command = {
 
 export class BudgetEsService {
     // private cache: TaskEither<string, Map<string, Budget>> = E.left('None')
-    private eventStore: EventStore
+    private readonly eventStore: EventStore
     private snapshot: Snapshot<Budget> = new BudgetSnapshot()
     private readonly email: string
 

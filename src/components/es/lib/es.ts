@@ -23,13 +23,11 @@ export type BUDGET_SNAPSHOT<A> = Map<string, Map<string, A>>
 export abstract class Snapshot<A> {
     abstract updateState(e: Event<A>, initial: BUDGET_SNAPSHOT<A>): BUDGET_SNAPSHOT<A>
 
-    snapshot(es: Event<A>[], initial: BUDGET_SNAPSHOT<A> = new Map()): E.Either<string, BUDGET_SNAPSHOT<A>> {
-        const self = this
-        return pipe(es,
-            reduce(initial, (a, e) => self.updateState(e, a)),
-            E.right
-        )
-    }
+    snapshot = (es: Event<A>[], initial: BUDGET_SNAPSHOT<A> = new Map()): E.Either<string, BUDGET_SNAPSHOT<A>> => pipe(
+        es,
+        reduce(initial, (a, e) => this.updateState(e, a)),
+        E.right
+    )
 }
 
 export class BudgetSnapshot extends Snapshot<Budget> {
