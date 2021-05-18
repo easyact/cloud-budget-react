@@ -1,14 +1,15 @@
-import {Budget, budgetAdditionMonoid} from '../Model'
-import {BUDGET_SNAPSHOT, Event, snapshot} from '../../es/lib/es'
+import {Budget} from '../Model'
 import * as TE from 'fp-ts/lib/TaskEither'
 import * as RE from 'fp-ts/lib/ReaderTaskEither'
+import * as RT from 'fp-ts/lib/ReaderTask'
 import * as T from 'fp-ts/lib/Task'
 import {pipe} from 'fp-ts/lib/function'
 import {DBEventStore, Error, EventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
-import {Either} from 'fp-ts/Either'
+import {budgetSnapshot} from './snapshot'
+import {ReaderTask} from 'fp-ts/ReaderTask'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -34,24 +35,30 @@ export class BudgetEsService {
         return TE.getOrElse(() => T.of({}))(getBudgetE(this.email, version)(this.eventStore))()
     }
 
-    importBudget = (email: string, payload: Budget, version: string = '0'): Promise<Budget> => this.exec({
+    importBudget = (email: string, payload: Budget, version: string = '0'): Promise<Budget> =>
+        importBudget(email, payload, version)(this.eventStore)()
+
+    exec = (command: Command): Promise<Budget> => exec(this.email, command)(this.eventStore)()
+
+}
+
+export const importBudget = (email: string, payload: Budget, version: string = '0'): ReaderTask<EventStore, Budget> =>
+    exec(email, {
         type: 'IMPORT_BUDGET',
         user: {email},
         to: {version},
-        payload: payload
+        payload
     })
 
-    exec(command: Command): Promise<Budget> {
-        console.log('executing command', command)
-        const {to: {version}} = command
-        // return this.cache =
-        return pipe(
-            handleCommand(command)(this.eventStore),
-            TE.chain(() => getBudgetE(this.email, version)(this.eventStore)),
-            TE.getOrElse(_ => T.of({}))
-        )()
-    }
-
+function exec(email: string, command: Command): ReaderTask<EventStore, Budget> {
+    console.log('executing command', command)
+    const {to: {version}} = command
+    // return this.cache =
+    return pipe(
+        handleCommand(command),
+        RE.chain(() => getBudgetE(email, version)),
+        RE.getOrElse(_ => RT.of({}))
+    )
 }
 
 const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, Error, Budget> => pipe(
@@ -68,8 +75,6 @@ const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<st
     RE.chain(es => RE.fromEither(budgetSnapshot(es))),
     RE.map(ss => ss.get(email) ?? new Map()),
 )
-
-const budgetSnapshot = (es: Event<Budget>[]): Either<string, BUDGET_SNAPSHOT<Budget>> => snapshot(updateState, es)
 
 function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, void> {
     const {type, payload, user: {email}} = command
@@ -97,29 +102,3 @@ function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, vo
             return RE.left('不支持的命令')
     }
 }
-
-
-function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event<Budget>): BUDGET_SNAPSHOT<Budget> {
-    const {user: {email}, to: {version}} = e
-    const versions = initial.get(email) ?? new Map<string, Budget>()
-    const budget = versions.get(version) ?? {}
-    const updatedBudget = updateBudget(e, budget)
-    return initial.set(email, versions.set(version, updatedBudget))
-}
-
-function updateBudget(e: Event<Budget>, budget: Budget): Budget {
-    switch (e.type) {
-        case 'IMPORT_BUDGET':
-            return importBudget(budget, e.payload)
-        case 'PUT_ITEM':
-            const {payload} = e
-            return importBudget(budget, {[payload.type]: [payload]})
-        case 'DELETE_ITEM':
-            const {payload: {from, id: deletingId}} = e
-            return R.over(R.lensProp(from), R.filter(({id}) => id !== deletingId))(budget)
-        default:
-            return budget
-    }
-}
-
-const importBudget = (budget: Budget, importing: Budget) => budgetAdditionMonoid.concat(budget, importing)
