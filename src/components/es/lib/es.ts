@@ -1,4 +1,5 @@
 import * as E from 'fp-ts/Either'
+import {Either} from 'fp-ts/Either'
 import {reduce} from 'fp-ts/Array'
 import {pipe} from 'fp-ts/function'
 import * as F from 'fp-ts-contrib/lib/Free'
@@ -56,6 +57,12 @@ export class BudgetSnapshot extends Snapshot<Budget> {
 
     private static importBudget = (budget: Budget, importing: Budget) => budgetAdditionMonoid.concat(budget, importing)
 }
+
+export const snapshot = <A>(updateState: (initial: BUDGET_SNAPSHOT<A>, e: Event<A>) => BUDGET_SNAPSHOT<A>, es: Event<A>[], initial: BUDGET_SNAPSHOT<A> = new Map(),): Either<string, BUDGET_SNAPSHOT<A>> => pipe(
+    es,
+    reduce(initial, updateState),
+    E.right
+)
 
 
 export type Command<A> = F.Free<Event<A>, A>
