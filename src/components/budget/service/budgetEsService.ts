@@ -1,7 +1,6 @@
 import {Budget, budgetAdditionMonoid} from '../Model'
 import {BUDGET_SNAPSHOT, Event, snapshot} from '../../es/lib/es'
 import * as TE from 'fp-ts/lib/TaskEither'
-import {TaskEither} from 'fp-ts/lib/TaskEither'
 import * as RE from 'fp-ts/lib/ReaderTaskEither'
 import * as T from 'fp-ts/lib/Task'
 import {pipe} from 'fp-ts/lib/function'
@@ -32,25 +31,7 @@ export class BudgetEsService {
 
     getBudget(version: string): Promise<Budget> {
         console.log('getting Budget')
-        return TE.getOrElse(() => T.of({}))(this.getBudgetE(version))()
-    }
-
-    private getBudgetE(version: string): TaskEither<Error, Budget> {
-        return pipe(
-            // this.cache,
-            // E.orElse(_ => pipe(
-            this.getVersions(),
-            // )),
-            TE.map(versions => versions.get(version) ?? {}),
-        )
-    }
-
-    private getVersions(): TaskEither<string, Map<string, Budget>> {
-        return pipe(
-            this.eventStore.events(this.email),
-            TE.chain(es => TE.fromEither(budgetSnapshot(es))),
-            TE.map(ss => ss.get(this.email) ?? new Map()),
-        )
+        return TE.getOrElse(() => T.of({}))(getBudgetE(this.email, version)(this.eventStore))()
     }
 
     importBudget = (email: string, payload: Budget, version: string = '0'): Promise<Budget> => this.exec({
@@ -66,11 +47,30 @@ export class BudgetEsService {
         // return this.cache =
         return pipe(
             handleCommand(command)(this.eventStore),
-            TE.chain(() => this.getBudgetE(version)),
+            TE.chain(() => getBudgetE(this.email, version)(this.eventStore)),
             TE.getOrElse(_ => T.of({}))
         )()
     }
 
+}
+
+function getBudgetE(email: string, version: string): ReaderTaskEither<EventStore, Error, Budget> {
+    return pipe(
+        // this.cache,
+        // E.orElse(_ => pipe(
+        getVersions(email),
+        // )),
+        RE.map(versions => versions.get(version) ?? {}),
+    )
+}
+
+function getVersions(email: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> {
+    return pipe(
+        RE.ask<EventStore>(),
+        RE.chainTaskEitherK(eventStore => eventStore.events(email)),
+        RE.chain(es => RE.fromEither(budgetSnapshot(es))),
+        RE.map(ss => ss.get(email) ?? new Map()),
+    )
 }
 
 const budgetSnapshot = (es: Event<Budget>[]): Either<string, BUDGET_SNAPSHOT<Budget>> => snapshot(updateState, es)
