@@ -54,24 +54,20 @@ export class BudgetEsService {
 
 }
 
-function getBudgetE(email: string, version: string): ReaderTaskEither<EventStore, Error, Budget> {
-    return pipe(
-        // this.cache,
-        // E.orElse(_ => pipe(
-        getVersions(email),
-        // )),
-        RE.map(versions => versions.get(version) ?? {}),
-    )
-}
+const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, Error, Budget> => pipe(
+    // this.cache,
+    // E.orElse(_ => pipe(
+    getVersions(email),
+    // )),
+    RE.map(versions => versions.get(version) ?? {}),
+)
 
-function getVersions(email: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> {
-    return pipe(
-        RE.ask<EventStore>(),
-        RE.chainTaskEitherK(eventStore => eventStore.events(email)),
-        RE.chain(es => RE.fromEither(budgetSnapshot(es))),
-        RE.map(ss => ss.get(email) ?? new Map()),
-    )
-}
+const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
+    RE.ask<EventStore>(),
+    RE.chainTaskEitherK(eventStore => eventStore.events(email)),
+    RE.chain(es => RE.fromEither(budgetSnapshot(es))),
+    RE.map(ss => ss.get(email) ?? new Map()),
+)
 
 const budgetSnapshot = (es: Event<Budget>[]): Either<string, BUDGET_SNAPSHOT<Budget>> => snapshot(updateState, es)
 
