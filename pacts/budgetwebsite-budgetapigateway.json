@@ -1,0 +1,58 @@
+{
+  "consumer": {
+    "name": "BudgetWebsite"
+  },
+  "provider": {
+    "name": "BudgetApiGateway"
+  },
+  "interactions": [
+    {
+      "description": "first upload",
+      "providerState": "no user",
+      "request": {
+        "method": "POST",
+        "path": "/v0/users/damoco@easyact.cn/events",
+        "body": [
+          {
+            "type": "PUT_ITEM",
+            "at": "2021-05-14T00:00:00.012+08",
+            "user": {
+              "email": "damoco"
+            },
+            "to": {
+              "version": "0"
+            },
+            "payload": {
+              "assets": [
+                {
+                  "id": "",
+                  "name": "food",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "min": 1
+          },
+          "$.body[*].*": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "access-control-allow-origin": "*"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
