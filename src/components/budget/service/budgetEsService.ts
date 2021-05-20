@@ -1,10 +1,10 @@
 import {Budget} from '../Model'
 import * as TE from 'fp-ts/lib/TaskEither'
-import * as RE from 'fp-ts/lib/ReaderTaskEither'
+import * as RTE from 'fp-ts/lib/ReaderTaskEither'
 import * as RT from 'fp-ts/lib/ReaderTask'
 import * as T from 'fp-ts/lib/Task'
 import {pipe} from 'fp-ts/lib/function'
-import {DBEventStore, Error, EventStore} from '../../es/lib/eventStore'
+import {BEvent, DBEventStore, Error, EventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
@@ -56,8 +56,8 @@ function exec(email: string, command: Command): ReaderTask<EventStore, Budget> {
     // return this.cache =
     return pipe(
         handleCommand(command),
-        RE.chain(() => getBudgetE(email, version)),
-        RE.getOrElse(_ => RT.of({}))
+        RTE.chain(() => getBudgetE(email, version)),
+        RTE.getOrElse(_ => RT.of({}))
     )
 }
 
@@ -66,14 +66,16 @@ const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore
     // E.orElse(_ => pipe(
     getVersions(email),
     // )),
-    RE.map(versions => versions.get(version) ?? {}),
+    RTE.map(versions => versions.get(version) ?? {}),
 )
 
+export const getEvents = (email: string): ReaderTaskEither<EventStore, string, BEvent[]> =>
+    pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.events(email)))
+
 const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
-    RE.ask<EventStore>(),
-    RE.chainTaskEitherK(eventStore => eventStore.events(email)),
-    RE.chain(es => RE.fromEither(budgetSnapshot(es))),
-    RE.map(ss => ss.get(email) ?? new Map()),
+    getEvents(email),
+    RTE.chain(es => RTE.fromEither(budgetSnapshot(es))),
+    RTE.map(ss => ss.get(email) ?? new Map()),
 )
 
 function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, void> {
@@ -82,23 +84,36 @@ function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, vo
         case 'IMPORT_BUDGET':
             const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(payload)
             return pipe(
-                RE.ask<EventStore>(),
-                RE.chainTaskEitherK(
+                RTE.ask<EventStore>(),
+                RTE.chainTaskEitherK(
                     (s: EventStore) => s.put(email, {...command, payload: idFilled, at: new Date()})
                 ))
         case 'PUT_ITEM':
             const lens = R.lensProp('id')
             const item = R.over(lens, R.defaultTo(uuid()))(payload)
             return pipe(
-                RE.ask<EventStore>(),
-                RE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, payload: item, at: new Date()})
+                RTE.ask<EventStore>(),
+                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, payload: item, at: new Date()})
                 ))
         case 'DELETE_ITEM':
             return pipe(
-                RE.ask<EventStore>(),
-                RE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, at: new Date()})
+                RTE.ask<EventStore>(),
+                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, at: new Date()})
                 ))
         default:
-            return RE.left('不支持的命令')
+            return RTE.left('不支持的命令')
     }
 }
+
+export const register = (email: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> =>
+    pipe(
+        getEvents(email),
+        RTE.bindTo('events'),
+        RTE.bind('resp', ({events}) => RTE.fromTask(() => fetch(url, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(events)
+        })))
+    )

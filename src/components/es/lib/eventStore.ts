@@ -8,7 +8,7 @@ import {fromNullable} from 'fp-ts/lib/Either'
 import {Command} from '../../budget/service/budgetEsService'
 
 export type Error = string
-type BEvent = Event<Budget> & Command
+export type BEvent = Event<Budget> & Command
 
 export interface EventStore {
     put(id: string, event: BEvent): TaskEither<Error, any>

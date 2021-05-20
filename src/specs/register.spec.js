@@ -1,7 +1,7 @@
 import path from 'path'
 import {Pact} from '@pact-foundation/pact'
 import {MemEventStore} from '../components/es/lib/eventStore'
-import {importBudget} from '../components/budget/service/budgetEsService'
+import {importBudget, register} from '../components/budget/service/budgetEsService'
 import * as E from 'fp-ts/lib/Either'
 import {eachLike} from '@pact-foundation/pact/src/dsl/matchers'
 
@@ -13,11 +13,6 @@ const provider = new Pact({
     dir: path.resolve(process.cwd(), 'pacts'),
     spec: 2
 })
-
-async function getEvents(email, eventStore) {
-    const either = await eventStore.events(email)()
-    return E.getOrElse(_ => [])(either)
-}
 
 describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
 
@@ -56,15 +51,9 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                 beforeEach(async () => {
                     const url = `${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`
                     expect(url).toBeTruthy()
-                    const events = await getEvents('damoco', eventStore)
+                    const {events, resp} = await register('damoco', url)(eventStore)()
+                        .then(E.getOrElse(undefined))
                     expect(events).not.toHaveLength(0)
-                    const resp = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'content-type': 'application/json'
-                        },
-                        body: JSON.stringify(events)
-                    })
                     expect(resp.ok).toStrictEqual(true)
                 })
                 it(`那么从新客户端访问可以拿到所有历史事件`, async () => {
