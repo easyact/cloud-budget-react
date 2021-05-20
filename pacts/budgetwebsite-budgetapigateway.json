@@ -14,7 +14,7 @@
         "path": "/v0/users/damoco@easyact.cn/events",
         "body": [
           {
-            "type": "PUT_ITEM",
+            "type": "IMPORT_BUDGET",
             "at": "2021-05-14T00:00:00.012+08",
             "user": {
               "email": "damoco"
@@ -47,6 +47,41 @@
         "headers": {
           "access-control-allow-origin": "*"
         }
+      }
+    },
+    {
+      "description": "new client get",
+      "providerState": "damoco imported",
+      "request": {
+        "method": "GET",
+        "path": "/v0/users/damoco@easyact.cn/events"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "access-control-allow-origin": "*"
+        },
+        "body": [
+          {
+            "type": "IMPORT_BUDGET",
+            "at": "2021-05-14T00:00:00.012+08",
+            "user": {
+              "email": "damoco"
+            },
+            "to": {
+              "version": "0"
+            },
+            "payload": {
+              "assets": [
+                {
+                  "id": "",
+                  "name": "food",
+                  "amount": 10
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   ],

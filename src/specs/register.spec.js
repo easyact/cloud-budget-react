@@ -4,7 +4,6 @@ import {MemEventStore} from '../components/es/lib/eventStore'
 import {importBudget} from '../components/budget/service/budgetEsService'
 import * as E from 'fp-ts/lib/Either'
 import {eachLike} from '@pact-foundation/pact/src/dsl/matchers'
-import assert from 'assert'
 
 const provider = new Pact({
     consumer: 'BudgetWebsite',
@@ -14,6 +13,11 @@ const provider = new Pact({
     dir: path.resolve(process.cwd(), 'pacts'),
     spec: 2
 })
+
+async function getEvents(email, eventStore) {
+    const either = await eventStore.events(email)()
+    return E.getOrElse(_ => [])(either)
+}
 
 describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
 
@@ -25,19 +29,20 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
     describe(`场景: 注册`, () => {
         describe(`假设服务端没有damoco用户\n并且damoco在本地已有试用数据`, () => {
             const eventStore = new MemEventStore()
+            const EVENT = {
+                type: 'IMPORT_BUDGET',
+                at: '2021-05-14T00:00:00.012+08',
+                user: {email: 'damoco'},
+                to: {version: '0'},
+                payload: {assets: [{id: '', ...item}]},
+            }
             beforeEach(() => provider.addInteraction({
                 state: 'no user',
                 uponReceiving: 'first upload',
                 withRequest: {
                     method: 'POST',
                     path: '/v0/users/damoco@easyact.cn/events',
-                    body: eachLike({
-                        type: 'PUT_ITEM',
-                        at: '2021-05-14T00:00:00.012+08',
-                        user: {email: 'damoco'},
-                        to: {version: '0'},
-                        payload: {assets: [{id: '', ...item}]},
-                    }),
+                    body: eachLike(EVENT),
                     // headers: {Accept: 'application/json'},
                 },
                 willRespondWith: {
@@ -49,12 +54,9 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
             beforeEach(importBudget('damoco', {assets: [item]})(eventStore))
             describe(`当damoco注册`, () => {
                 beforeEach(async () => {
-                    const url = provider.mockService.baseUrl + '/v0/users/damoco@easyact.cn/events'
+                    const url = `${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`
                     expect(url).toBeTruthy()
-
-                    const either = await eventStore.events('damoco')()
-                    assert.ok(E.isRight(either))
-                    const events = E.getOrElse(_ => [])(either)
+                    const events = await getEvents('damoco', eventStore)
                     expect(events).not.toHaveLength(0)
                     const resp = await fetch(url, {
                         method: 'POST',
@@ -66,6 +68,24 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                     expect(resp.ok).toStrictEqual(true)
                 })
                 it(`那么从新客户端访问可以拿到所有历史事件`, async () => {
+                    await provider.addInteraction({
+                        state: 'damoco imported',
+                        uponReceiving: 'new client get',
+                        withRequest: {
+                            method: 'GET',
+                            path: '/v0/users/damoco@easyact.cn/events',
+                            // headers: {Accept: 'application/json'},
+                        },
+                        willRespondWith: {
+                            status: 200,
+                            headers: {'access-control-allow-origin': '*'},
+                            body: [EVENT]
+                        },
+                    })
+                    const events = await fetch(`${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`)
+                        .then(r => r.json())
+                    // const [{at, ...expected}] = await getEvents('damoco', eventStore)
+                    expect(events).toEqual([EVENT])
                 })
             })
         })
