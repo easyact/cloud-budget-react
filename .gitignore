@@ -24,3 +24,5 @@ yarn-error.log*
 /.idea/
 /.eslintcache
 /logs/pact.log
+.terraform.lock.hcl
+.terraform
