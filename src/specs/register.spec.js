@@ -24,9 +24,9 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
     describe(`场景: 注册`, () => {
         describe(`假设服务端没有damoco用户\n并且damoco在本地已有试用数据`, () => {
             const eventStore = new MemEventStore()
-            const EVENT = {
+            const at = '2021-05-14T00:00:00.012+08'
+            const CMD = {
                 type: 'IMPORT_BUDGET',
-                at: '2021-05-14T00:00:00.012+08',
                 user: {email: 'damoco'},
                 to: {version: '0'},
                 payload: {assets: [{id: '', ...item}]},
@@ -37,7 +37,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                 withRequest: {
                     method: 'POST',
                     path: '/v0/users/damoco@easyact.cn/events',
-                    body: eachLike(EVENT),
+                    body: eachLike(CMD),
                     // headers: {Accept: 'application/json'},
                 },
                 willRespondWith: {
@@ -57,6 +57,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                     expect(resp.ok).toStrictEqual(true)
                 })
                 it(`那么从新客户端访问可以拿到所有历史事件`, async () => {
+                    const event = {...CMD, at}
                     await provider.addInteraction({
                         state: 'damoco imported',
                         uponReceiving: 'new client get',
@@ -68,13 +69,13 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                         willRespondWith: {
                             status: 200,
                             headers: {'access-control-allow-origin': '*'},
-                            body: [EVENT]
+                            body: [event]
                         },
                     })
                     const events = await fetch(`${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`)
                         .then(r => r.json())
                     // const [{at, ...expected}] = await getEvents('damoco', eventStore)
-                    expect(events).toEqual([EVENT])
+                    expect(events).toEqual([event])
                 })
             })
         })

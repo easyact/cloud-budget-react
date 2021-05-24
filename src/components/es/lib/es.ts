@@ -6,7 +6,7 @@ import {pipe} from 'fp-ts/function'
 export type AggregateId = string
 
 export interface Event<A> extends Readonly<Record<string, any>> {
-    at: Date,
+    at?: string,
     type: string,
     payload: any
 }

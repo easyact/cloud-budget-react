@@ -86,19 +86,19 @@ function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, vo
             return pipe(
                 RTE.ask<EventStore>(),
                 RTE.chainTaskEitherK(
-                    (s: EventStore) => s.put(email, {...command, payload: idFilled, at: new Date()})
+                    (s: EventStore) => s.put(email, {...command, payload: idFilled})
                 ))
         case 'PUT_ITEM':
             const lens = R.lensProp('id')
             const item = R.over(lens, R.defaultTo(uuid()))(payload)
             return pipe(
                 RTE.ask<EventStore>(),
-                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, payload: item, at: new Date()})
+                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, payload: item})
                 ))
         case 'DELETE_ITEM':
             return pipe(
                 RTE.ask<EventStore>(),
-                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, at: new Date()})
+                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command})
                 ))
         default:
             return RTE.left('不支持的命令')
