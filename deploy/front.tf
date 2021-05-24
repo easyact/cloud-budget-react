@@ -1,6 +1,3 @@
-provider "aws" {
-  region = "cn-northwest-1"
-}
 resource "aws_s3_bucket" "www" {
   bucket = "easyact.cn"
   acl = "public-read"
@@ -27,6 +24,6 @@ resource "aws_s3_bucket_object" "files" {
 
 output "www" {
   value = {
-    s3 = aws_s3_bucket.www
+    s3 = "https://${aws_s3_bucket.www.website_endpoint}"
   }
 }

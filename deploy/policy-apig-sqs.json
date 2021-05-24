@@ -1,0 +1,11 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EsApigSqs",
+      "Effect": "Allow",
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws-cn:sqs:cn-northwest-1:020064664914:es"
+    }
+  ]
+}
