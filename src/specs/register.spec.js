@@ -38,7 +38,8 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                     method: 'POST',
                     path: '/v0/users/damoco@easyact.cn/events',
                     body: eachLike(CMD),
-                    // headers: {Accept: 'application/json'},
+                    headers: {'Content-Type': 'application/json'},
+                    // headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
                 },
                 willRespondWith: {
                     status: 200,

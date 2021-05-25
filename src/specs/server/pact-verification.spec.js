@@ -6,11 +6,12 @@ const port = 80
 describe('Pact Verification', () => {
     const opts = {
         provider: providerName,
-        providerBaseUrl: `https://easyact.cn:${port}/api`,
+        providerBaseUrl: `https://m99jy17a13.execute-api.cn-northwest-1.amazonaws.com.cn/dev`,
         pactUrls: [path.resolve(process.cwd(), 'pacts', 'budgetwebsite-budgetapigateway.json')],
         publishVerificationResult: true,
         tags: ['prod'],
         providerVersion: '1.0.' + process.env.HOSTNAME,
+        // verbose: true,
     }
 
     it('should validate the expectations of Order Web', () => {

@@ -12,6 +12,9 @@
       "request": {
         "method": "POST",
         "path": "/v0/users/damoco@easyact.cn/events",
+        "headers": {
+          "Content-Type": "application/json"
+        },
         "body": [
           {
             "type": "IMPORT_BUDGET",
