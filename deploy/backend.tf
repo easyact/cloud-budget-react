@@ -46,6 +46,10 @@ resource "aws_iam_role" "apig_dbd" {
     aws_iam_policy.apig_dbd.arn]
 }
 
+module "api" {
+  source = "./apig"
+}
+
 output "api" {
   value = {
     sqs = aws_sqs_queue.es

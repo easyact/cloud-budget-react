@@ -1,7 +1,8 @@
+#set($inputRoot = $input.path('$'))
 {
   "RequestItems": {
     "events" : [
-#foreach($e in $)
+#foreach($e in $inputRoot)
       {
         "PutRequest": {
           "Item": $e
