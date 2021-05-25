@@ -2,13 +2,24 @@
 {
   "RequestItems": {
     "events" : [
-#foreach($e in $inputRoot)
+    #foreach($e in $inputRoot)
+    #set($i = $foreach.index)
+
       {
         "PutRequest": {
-          "Item": $input.json("$[$foreach.index]")
+          "Item": {
+          #foreach($k in $e.keySet())
+
+            "$k": {
+              "M": $input.json("$[$i].$k")
+            }
+          #end
+
+          }
         }
       }#if($foreach.hasNext),#end
-#end
+    #end
+
     ]
   }
 }
