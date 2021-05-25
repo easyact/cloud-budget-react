@@ -1,0 +1,13 @@
+{
+  "RequestItems": {
+    "events" : [
+#foreach($e in $)
+      {
+        "PutRequest": {
+          "Item": $e
+        }
+      }#if($foreach.hasNext),#end
+#end
+    ]
+  },
+}
