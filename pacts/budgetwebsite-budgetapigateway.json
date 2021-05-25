@@ -48,7 +48,8 @@
         "status": 200,
         "headers": {
           "access-control-allow-origin": "*"
-        }
+        },
+        "body": ""
       }
     },
     {
