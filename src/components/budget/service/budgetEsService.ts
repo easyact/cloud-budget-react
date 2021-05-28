@@ -78,42 +78,36 @@ const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<st
     RTE.map(ss => ss.get(email) ?? new Map()),
 )
 
-function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, void> {
-    const {type, payload, user: {email}} = command
+const handleCommand = (command: Command): ReaderTaskEither<EventStore, Error, void> => pipe(
+    RTE.ask<EventStore>(),
+    RTE.chainTaskEitherK((s: EventStore) => s.put(command.user.email, fixCommand(command)))
+)
+
+function fixCommand(command: Command): BEvent {
+    const {type, payload} = command
     switch (type) {
         case 'IMPORT_BUDGET':
             const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(payload)
-            return pipe(
-                RTE.ask<EventStore>(),
-                RTE.chainTaskEitherK(
-                    (s: EventStore) => s.put(email, {...command, payload: idFilled})
-                ))
+            return {...command, payload: idFilled}
         case 'PUT_ITEM':
             const lens = R.lensProp('id')
             const item = R.over(lens, R.defaultTo(uuid()))(payload)
-            return pipe(
-                RTE.ask<EventStore>(),
-                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command, payload: item})
-                ))
+            return {...command, payload: item}
         case 'DELETE_ITEM':
-            return pipe(
-                RTE.ask<EventStore>(),
-                RTE.chainTaskEitherK((s: EventStore) => s.put(email, {...command})
-                ))
+            return {...command}
         default:
-            return RTE.left('不支持的命令')
+            throw new Error('不支持的命令')
     }
 }
 
-export const register = (email: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> =>
-    pipe(
-        getEvents(email),
-        RTE.bindTo('events'),
-        RTE.bind('resp', ({events}) => RTE.fromTask(() => fetch(url, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(events)
-        })))
+const postAll = (url: string, events: BEvent[]) => () => fetch(url, {
+    method: 'POST',
+    headers: {'content-type': 'application/json'},
+    body: JSON.stringify(events)
+})
+
+export const register =
+    (email: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> => pipe(
+        getEvents(email), RTE.bindTo('events'),
+        RTE.bind('resp', ({events}) => RTE.fromTask(postAll(url, events)))
     )

@@ -51,7 +51,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
             describe(`当damoco注册`, () => {
                 beforeEach(async () => {
                     const url = `${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`
-                    expect(url).toBeTruthy()
+
                     const {events, resp} = await register('damoco', url)(eventStore)()
                         .then(E.getOrElse(undefined))
                     expect(events).not.toHaveLength(0)
