@@ -44,7 +44,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                 willRespondWith: {
                     status: 200,
                     headers: {'access-control-allow-origin': '*'},
-                    body: ''
+                    body: "{}"
                 },
             }))
             beforeEach(importBudget('damoco', {assets: [item]})(eventStore))

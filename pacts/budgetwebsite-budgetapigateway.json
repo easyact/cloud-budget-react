@@ -49,7 +49,7 @@
         "headers": {
           "access-control-allow-origin": "*"
         },
-        "body": ""
+        "body": "{}"
       }
     },
     {
