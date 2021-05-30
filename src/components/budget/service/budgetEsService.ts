@@ -78,10 +78,12 @@ const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<st
     RTE.map(ss => ss.get(email) ?? new Map()),
 )
 
-const handleCommand = (command: Command): ReaderTaskEither<EventStore, Error, void> => pipe(
-    RTE.ask<EventStore>(),
-    RTE.chainTaskEitherK((s: EventStore) => s.put(command.user.email, fixCommand(command)))
-)
+function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, void> {
+    return pipe(
+        RTE.ask<EventStore>(),
+        RTE.chainTaskEitherK((s: EventStore) => s.put(command.user.email, fixCommand(command)))
+    )
+}
 
 function fixCommand(command: Command): BEvent {
     const {type, payload} = command

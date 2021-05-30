@@ -39,7 +39,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                     method: 'POST',
                     path: '/v0/users/damoco@easyact.cn/events',
                     body: eachLike(CMD),
-                    headers: {'Content-Type': 'application/json'},
+                    headers: {'Content-Type': 'application/json', 'Origin': like('https://easyact.cn')},
                     // headers: {Accept: 'application/json', 'Content-Type': 'application/json'},
                 },
                 willRespondWith: {
@@ -66,11 +66,12 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                             method: 'GET',
                             path: '/v0/users/damoco@easyact.cn/events',
                             // headers: {Accept: 'application/json'},
+                            headers: {'Origin': like('https://easyact.cn')},
                         },
                         willRespondWith: {
                             status: 200,
                             headers: {'access-control-allow-origin': '*'},
-                            body: [{...CMD, at: like(at), "user.email": user}]
+                            body: [{...CMD, at: like(at), 'user.email': user}]
                         },
                     })
                     const events = await fetch(`${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`, {
@@ -78,7 +79,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                     })
                         .then(r => r.json())
                     // const [{at, ...expected}] = await getEvents('damoco', eventStore)
-                    expect(events).toEqual([{...CMD, at, "user.email": user}])
+                    expect(events).toEqual([{...CMD, at, 'user.email': user}])
                 })
             })
         })
