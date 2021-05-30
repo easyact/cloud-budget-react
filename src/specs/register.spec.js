@@ -3,7 +3,7 @@ import {Pact} from '@pact-foundation/pact'
 import {MemEventStore} from '../components/es/lib/eventStore'
 import {importBudget, register} from '../components/budget/service/budgetEsService'
 import * as E from 'fp-ts/lib/Either'
-import {eachLike} from '@pact-foundation/pact/src/dsl/matchers'
+import {eachLike, like} from '@pact-foundation/pact/src/dsl/matchers'
 
 const provider = new Pact({
     consumer: 'BudgetWebsite',
@@ -25,9 +25,10 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
         describe(`假设服务端没有damoco用户\n并且damoco在本地已有试用数据`, () => {
             const eventStore = new MemEventStore()
             const at = '2021-05-14T00:00:00.012+08'
+            const user = 'damoco@easyact.cn'
             const CMD = {
                 type: 'IMPORT_BUDGET',
-                user: {email: 'damoco'},
+                user: {email: user},
                 to: {version: '0'},
                 payload: {assets: [{id: '', ...item}]},
             }
@@ -44,21 +45,20 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                 willRespondWith: {
                     status: 200,
                     headers: {'access-control-allow-origin': '*'},
-                    body: "{}"
+                    body: {}
                 },
             }))
-            beforeEach(importBudget('damoco', {assets: [item]})(eventStore))
+            beforeEach(importBudget(user, {assets: [item]})(eventStore))
             describe(`当damoco注册`, () => {
                 beforeEach(async () => {
                     const url = `${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`
 
-                    const {events, resp} = await register('damoco', url)(eventStore)()
+                    const {events, resp} = await register(user, url)(eventStore)()
                         .then(E.getOrElse(undefined))
                     expect(events).not.toHaveLength(0)
                     expect(resp.ok).toStrictEqual(true)
                 })
                 it(`那么从新客户端访问可以拿到所有历史事件`, async () => {
-                    const event = {...CMD, at}
                     await provider.addInteraction({
                         state: 'damoco imported',
                         uponReceiving: 'new client get',
@@ -70,13 +70,15 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                         willRespondWith: {
                             status: 200,
                             headers: {'access-control-allow-origin': '*'},
-                            body: [event]
+                            body: [{...CMD, at: like(at), "user.email": user}]
                         },
                     })
-                    const events = await fetch(`${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`)
+                    const events = await fetch(`${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`, {
+                        // headers: {Accept: 'application/json'}
+                    })
                         .then(r => r.json())
                     // const [{at, ...expected}] = await getEvents('damoco', eventStore)
-                    expect(events).toEqual([event])
+                    expect(events).toEqual([{...CMD, at, "user.email": user}])
                 })
             })
         })
