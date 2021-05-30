@@ -1,7 +1,7 @@
 import path from 'path'
 import {Pact} from '@pact-foundation/pact'
 import {MemEventStore} from '../components/es/lib/eventStore'
-import {importBudget, register} from '../components/budget/service/budgetEsService'
+import {importBudget, uploadEvents} from '../components/budget/service/budgetEsService'
 import * as E from 'fp-ts/lib/Either'
 import {eachLike, like} from '@pact-foundation/pact/src/dsl/matchers'
 
@@ -53,7 +53,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                 beforeEach(async () => {
                     const url = `${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`
 
-                    const {events, resp} = await register(user, url)(eventStore)()
+                    const {events, resp} = await uploadEvents(user, url)(eventStore)()
                         .then(E.getOrElse(undefined))
                     expect(events).not.toHaveLength(0)
                     expect(resp.ok).toStrictEqual(true)

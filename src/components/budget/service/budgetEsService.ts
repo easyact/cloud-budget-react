@@ -21,7 +21,7 @@ export type Command = {
 
 export class BudgetEsService {
     // private cache: TaskEither<string, Map<string, Budget>> = E.left('None')
-    private readonly eventStore: EventStore
+    readonly eventStore: EventStore
     private readonly email: string
 
     constructor(email: string, eventStore: EventStore = new DBEventStore()) {
@@ -50,7 +50,7 @@ export const importBudget = (email: string, payload: Budget, version: string = '
         payload
     })
 
-function exec(email: string, command: Command): ReaderTask<EventStore, Budget> {
+export function exec(email: string, command: Command): ReaderTask<EventStore, Budget> {
     console.log('executing command', command)
     const {to: {version}} = command
     // return this.cache =
@@ -102,14 +102,17 @@ function fixCommand(command: Command): BEvent {
     }
 }
 
-const postAll = (url: string, events: BEvent[]) => () => fetch(url, {
+export const post = (url: string, obj: any) => fetch(url, {
     method: 'POST',
     headers: {'content-type': 'application/json'},
-    body: JSON.stringify(events)
+    body: JSON.stringify(obj)
 })
 
-export const register =
+export const uploadEvents =
     (email: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> => pipe(
         getEvents(email), RTE.bindTo('events'),
-        RTE.bind('resp', ({events}) => RTE.fromTask(postAll(url, events)))
+        RTE.bind('resp', ({events}) => RTE.fromTask(() => post(url, events)))
     )
+// export function register() {
+//
+// }
