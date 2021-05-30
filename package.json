@@ -19,6 +19,7 @@
     "fp-ts-contrib": "^0.1.22",
     "fp-ts-local-storage": "^1.0.3",
     "history": "^5.0.0",
+    "monocle-ts": "^2.3.10",
     "ramda": "^0.27.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
