@@ -1,8 +1,9 @@
-import {BudgetEsService, Command} from '../service/budgetEsService'
+import {Command} from '../service/budgetEsService'
 import {Budget} from '../Model'
+import {EventStore} from '../../es/lib/eventStore'
 
 export interface BudgetState {
-    service: BudgetEsService
+    eventStore: EventStore
     version: string
     budget: Budget
     cmd: Command

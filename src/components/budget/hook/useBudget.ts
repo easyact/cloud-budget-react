@@ -27,30 +27,30 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         isLoading: false,
         kpi: {expenses: 0},
         saving: false,
-        service: new DBEventStore(),
+        eventStore: new DBEventStore(),
         apiUrl: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn/`
     })
     const {user, isAuthenticated, isLoading} = useAuth0()
-    const {service, cmd, apiUrl}: BudgetState = state
-    console.log('useBudgeting', uid, user, version, state, service)
+    const {eventStore, cmd, apiUrl}: BudgetState = state
+    console.log('useBudgeting', uid, user, version, state, eventStore)
     useEffect(function login() {
         if (!isAuthenticated) return
-        uploadEvents(uid, apiUrl)(service.eventStore)().then(E.fold(
+        uploadEvents(uid, apiUrl)(eventStore)().then(E.fold(
             payload => dispatch({type: 'FETCH_BUDGET_ERROR', payload}),
             log('upload success!')))
-    }, [apiUrl, uid, isAuthenticated, service.eventStore])
+    }, [apiUrl, uid, isAuthenticated, eventStore])
     useEffect(function execCmd() {
         if (!cmd) return
-        console.log('useBudget.setting', cmd, version, service)
-        exec(uid, cmd)(service.eventStore)()
+        console.log('useBudget.setting', cmd, version, eventStore)
+        exec(uid, cmd)(eventStore)()
             .then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
-    }, [service, version, cmd, uid])
+    }, [eventStore, version, cmd, uid])
     useEffect(function load() {
         if (isLoading) return
-        console.log('useBudget.loading', version, isLoading, service)
+        console.log('useBudget.loading', version, isLoading, eventStore)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
-        TE.getOrElse(() => T.of({}))(getBudgetE(uid, version)(service.eventStore))()
+        TE.getOrElse(() => T.of({}))(getBudgetE(uid, version)(eventStore))()
             .then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
-    }, [service, version, isLoading, uid])
+    }, [eventStore, version, isLoading, uid])
     return [state, dispatch]
 }
