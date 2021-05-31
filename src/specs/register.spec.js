@@ -71,7 +71,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                         willRespondWith: {
                             status: 200,
                             headers: {'access-control-allow-origin': '*'},
-                            body: [{...CMD, at: like(at), 'user.email': user}]
+                            body: [{...CMD, at: like(at), 'user.id': user}]
                         },
                     })
                     const events = await fetch(`${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`, {
@@ -79,7 +79,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
                     })
                         .then(r => r.json())
                     // const [{at, ...expected}] = await getEvents('damoco', eventStore)
-                    expect(events).toEqual([{...CMD, at, 'user.email': user}])
+                    expect(events).toEqual([{...CMD, at, 'user.id': user}])
                 })
             })
         })
