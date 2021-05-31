@@ -22,6 +22,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         io.chainFirst(s => setItem(uidKey, s))
     )()
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer, {
+        uid,
         version,
         budget: {},
         isLoading: false,

@@ -4,6 +4,7 @@ import {EventStore} from '../../es/lib/eventStore'
 
 export interface BudgetState {
     eventStore: EventStore
+    uid: string
     version: string
     budget: Budget
     cmd: Command

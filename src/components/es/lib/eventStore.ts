@@ -37,7 +37,7 @@ class MyAppDatabase extends Dexie {
     constructor() {
         super('easyact-budget')
         this.version(1).stores({
-            events: '++id, user.email, at, version',
+            events: '++id, user.id, at, version',
             //...other tables goes here...
         })
         // The following line is needed if your typescript
@@ -50,7 +50,7 @@ export class DBEventStore implements EventStore {
     private db: MyAppDatabase = new MyAppDatabase()
 
     events = (id: string): TaskEither<ErrorM, BEvent[]> =>
-        E.fromTask(() => this.db.events.where('user.email').equals(id).toArray())
+        E.fromTask(() => this.db.events.where('user.id').equals(id).toArray())
 
     put(id: string, event: BEvent): TaskEither<ErrorM, any> {
         return E.fromTask(() => this.db.events.put(event))

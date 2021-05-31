@@ -47,6 +47,6 @@ function handle(state, action) {
             }
 
         default:
-            return {...state, cmd: {user: {email: state.email}, to: {version: state.version}, ...action}}
+            return {...state, cmd: {user: {id: state.uid}, to: {version: state.version}, ...action}}
     }
 }
