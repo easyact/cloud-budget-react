@@ -14,7 +14,7 @@
         "path": "/v0/users/damoco@easyact.cn/events",
         "headers": {
           "Content-Type": "application/json",
-          "Origin": "https://easyact.cn"
+          "origin": "http://localhost:3000"
         },
         "body": [
           {
@@ -37,7 +37,7 @@
           }
         ],
         "matchingRules": {
-          "$.headers.Origin": {
+          "$.headers.origin": {
             "match": "type"
           },
           "$.body": {

@@ -11,7 +11,7 @@ describe('Pact Verification', () => {
         providerBaseUrl,
         pactUrls: [path.resolve(process.cwd(), 'pacts', 'budgetwebsite-budgetapigateway.json')],
         publishVerificationResult: true,
-        tags: ['prod'],
+        consumerVersionTags: ['dev'],
         providerVersion: '1.0.' + process.env.HOSTNAME,
         // verbose: true,
         stateHandlers: {
@@ -20,6 +20,6 @@ describe('Pact Verification', () => {
     }
 
     it('should validate the expectations of Order Web', () => {
-        return new Verifier().verifyProvider(opts)
+        return new Verifier(opts).verifyProvider()
     }, 20000)
 })
