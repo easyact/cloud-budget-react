@@ -1,43 +1,56 @@
 import {Dispatch, Reducer, ReducerAction, useEffect, useReducer} from 'react'
 import reducer from './reducer'
 import {useAuth0} from '@auth0/auth0-react'
-import {BudgetEsService, exec, uploadEvents} from '../service/budgetEsService'
+import {exec, getBudgetE, uploadEvents} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
+import * as O from 'fp-ts/Option'
 import * as E from 'fp-ts/Either'
+import * as io from 'fp-ts/IO'
 import log from '../../log'
+import {v4} from 'uuid'
+import {DBEventStore} from '../../es/lib/eventStore'
+import * as TE from 'fp-ts/TaskEither'
+import * as T from 'fp-ts/Task'
+import {getItem, setItem} from 'fp-ts-local-storage'
+import {pipe} from 'fp-ts/lib/function'
 
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
-    const {user = {email: 'default'}, isAuthenticated, isLoading} = useAuth0()
-    const [state, dispatch] = useReducer<Reducer<any, any>, undefined>(reducer, user.email, email => ({
-        email,
+    const uidKey = 'user.id'
+    const uid: string = pipe(
+        getItem(uidKey),
+        io.map(O.getOrElse(v4)),
+        io.chainFirst(s => setItem(uidKey, s))
+    )()
+    const [state, dispatch] = useReducer<Reducer<any, any>>(reducer, {
         version,
         budget: {},
         isLoading: false,
         kpi: {expenses: 0},
         saving: false,
-        service: new BudgetEsService(email),
+        service: new DBEventStore(),
         apiUrl: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn/`
-    }))
-    const {service, email, cmd, apiUrl}: BudgetState = state
-    if (email !== user.email && !isLoading && isAuthenticated) dispatch({type: 'USER_AUTHED', payload: user.email})
-    console.log('useBudgeting', email, version, state, service)
+    })
+    const {user, isAuthenticated, isLoading} = useAuth0()
+    const {service, cmd, apiUrl}: BudgetState = state
+    console.log('useBudgeting', uid, user, version, state, service)
     useEffect(function login() {
         if (!isAuthenticated) return
-        uploadEvents(email, apiUrl)(service.eventStore)().then(E.fold(
+        uploadEvents(uid, apiUrl)(service.eventStore)().then(E.fold(
             payload => dispatch({type: 'FETCH_BUDGET_ERROR', payload}),
             log('upload success!')))
-    }, [apiUrl, email, isAuthenticated, service.eventStore])
+    }, [apiUrl, uid, isAuthenticated, service.eventStore])
     useEffect(function execCmd() {
         if (!cmd) return
         console.log('useBudget.setting', cmd, version, service)
-        exec(email, cmd)(service.eventStore)()
+        exec(uid, cmd)(service.eventStore)()
             .then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
-    }, [service, version, cmd, email])
+    }, [service, version, cmd, uid])
     useEffect(function load() {
         if (isLoading) return
         console.log('useBudget.loading', version, isLoading, service)
         dispatch({type: 'FETCH_BUDGET_REQUEST'})
-        service.getBudget(version).then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
-    }, [service, version, isLoading, email])
+        TE.getOrElse(() => T.of({}))(getBudgetE(uid, version)(service.eventStore))()
+            .then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
+    }, [service, version, isLoading, uid])
     return [state, dispatch]
 }

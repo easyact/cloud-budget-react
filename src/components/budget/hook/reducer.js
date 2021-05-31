@@ -1,5 +1,4 @@
 import * as R from 'ramda'
-import {BudgetEsService} from '../service/budgetEsService'
 
 const kpi = R.pipe(
     R.prop('expenses'),
@@ -22,10 +21,6 @@ export default function reducer(state, action) {
 
 function handle(state, action) {
     switch (action.type) {
-        case 'USER_AUTHED':
-            const email = action.payload
-            return {...state, email: email, authing: true, service: new BudgetEsService(email)}
-
         case 'FETCH_BUDGET_REQUEST':
             return {
                 ...state,

@@ -26,25 +26,24 @@ export type Command = {
 }
 
 export class BudgetEsService {
-    // private cache: TaskEither<string, Map<string, Budget>> = E.left('None')
     readonly eventStore: EventStore
-    private readonly email: string
+    private readonly uid: string
 
-    constructor(email: string, eventStore: EventStore = new DBEventStore()) {
-        this.email = email
+    constructor(uid: string, eventStore: EventStore = new DBEventStore()) {
+        this.uid = uid
         this.eventStore = eventStore
-        console.log('BudgetEsService init with email', email)
+        console.log('BudgetEsService init with email', uid)
     }
 
     getBudget(version: string): Promise<Budget> {
         console.log('getting Budget')
-        return TE.getOrElse(() => T.of({}))(getBudgetE(this.email, version)(this.eventStore))()
+        return TE.getOrElse(() => T.of({}))(getBudgetE(this.uid, version)(this.eventStore))()
     }
 
     importBudget = (email: string, payload: Budget, version: string = '0'): Promise<Budget> =>
         importBudget(email, payload, version)(this.eventStore)()
 
-    exec = (command: Command): Promise<Budget> => exec(this.email, command)(this.eventStore)()
+    exec = (command: Command): Promise<Budget> => exec(this.uid, command)(this.eventStore)()
 
 }
 
@@ -67,7 +66,7 @@ export function exec(email: string, command: Command): ReaderTask<EventStore, Bu
     )
 }
 
-const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
+export const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
     // this.cache,
     // E.orElse(_ => pipe(
     getVersions(email),
