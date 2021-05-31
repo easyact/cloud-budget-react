@@ -19,7 +19,7 @@ import {IO} from 'fp-ts/lib/IO'
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
     id?: number,
-    type: CommandType, payload: any, user: { email: string }, to: {
+    type: CommandType, payload: any, user: { id: string }, to: {
         list?: string
         version: string
     }
@@ -32,7 +32,7 @@ export class BudgetEsService {
     constructor(uid: string, eventStore: EventStore = new DBEventStore()) {
         this.uid = uid
         this.eventStore = eventStore
-        console.log('BudgetEsService init with email', uid)
+        console.log('BudgetEsService init with uid', uid)
     }
 
     getBudget(version: string): Promise<Budget> {
@@ -40,53 +40,53 @@ export class BudgetEsService {
         return TE.getOrElse(() => T.of({}))(getBudgetE(this.uid, version)(this.eventStore))()
     }
 
-    importBudget = (email: string, payload: Budget, version: string = '0'): Promise<Budget> =>
-        importBudget(email, payload, version)(this.eventStore)()
+    importBudget = (uid: string, payload: Budget, version: string = '0'): Promise<Budget> =>
+        importBudget(uid, payload, version)(this.eventStore)()
 
     exec = (command: Command): Promise<Budget> => exec(this.uid, command)(this.eventStore)()
 
 }
 
-export const importBudget = (email: string, payload: Budget, version: string = '0'): ReaderTask<EventStore, Budget> =>
-    exec(email, {
+export const importBudget = (uid: string, payload: Budget, version: string = '0'): ReaderTask<EventStore, Budget> =>
+    exec(uid, {
         type: 'IMPORT_BUDGET',
-        user: {email},
+        user: {id: uid},
         to: {version},
         payload
     })
 
-export function exec(email: string, command: Command): ReaderTask<EventStore, Budget> {
+export function exec(uid: string, command: Command): ReaderTask<EventStore, Budget> {
     console.log('executing command', command)
     const {to: {version}} = command
     // return this.cache =
     return pipe(
         handleCommand(command),
-        RTE.chain(() => getBudgetE(email, version)),
+        RTE.chain(() => getBudgetE(uid, version)),
         RTE.getOrElse(_ => RT.of({}))
     )
 }
 
-export const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
+export const getBudgetE = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
     // this.cache,
     // E.orElse(_ => pipe(
-    getVersions(email),
+    getVersions(uid),
     // )),
     RTE.map(versions => versions.get(version) ?? {}),
 )
 
-export const getEvents = (email: string): ReaderTaskEither<EventStore, string, BEvent[]> =>
-    pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.events(email)))
+export const getEvents = (uid: string): ReaderTaskEither<EventStore, string, BEvent[]> =>
+    pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.events(uid)))
 
-const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
-    getEvents(email),
+const getVersions = (uid: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
+    getEvents(uid),
     RTE.chain(es => RTE.fromEither(budgetSnapshot(es))),
-    RTE.map(ss => ss.get(email) ?? new Map()),
+    RTE.map(ss => ss.get(uid) ?? new Map()),
 )
 
 function handleCommand(command: Command): ReaderTaskEither<EventStore, ErrorM, void> {
     return pipe(
         RTE.ask<EventStore>(),
-        RTE.chainTaskEitherK((s: EventStore) => s.put(command.user.email, fixCommand(command)))
+        RTE.chainTaskEitherK((s: EventStore) => s.put(command.user.id, fixCommand(command)))
     )
 }
 
@@ -109,32 +109,35 @@ function fixCommand(command: Command): BEvent {
 
 export const post = (url: string, obj: any) => fetch(url, {
     method: 'POST',
+    mode: 'cors',
     headers: {'content-type': 'application/json'},
     body: JSON.stringify(obj)
 })
 
 export const uploadEvents =
-    (email: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> => pipe(
-        getEvents(email),
+    (uid: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> => pipe(
+        getEvents(uid),
         RTE.map(events => pipe(
-            eventOffset(email)(),
+            eventOffset(uid)(),
             O.chain((s: string) => O.tryCatch(() => parseInt(s))),
             O.getOrElse(() => 0),
             offset => O.tryCatch(() => events.slice(offset)),
             O.getOrElse(() => [] as BEvent[])
         )),
         RTE.bindTo('events'),
-        RTE.bind('resp', ({events}) => RTE.fromTask(() => post(url, events))),
-        RTE.chainFirst(({events}) => setOffsetByEvents(email, events)),
+        RTE.bind('resp', ({events}) => RTE.fromTaskEither(TE.tryCatch(
+            () => post(`${url}/v0/users/${uid}/events`, events),
+            e => `上传事件失败: ${e}`))),
+        RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
     )
 
-export const eventOffset = (email: string) => getItem(`${email}.offset`)
-export const setEventOffset = (email: string) => (offset: number): IO<void> => setItem(`${email}.offset`, String(offset))
+export const eventOffset = (uid: string) => getItem(`${uid}.offset`)
+export const setEventOffset = (uid: string) => (offset: number): IO<void> => setItem(`${uid}.offset`, String(offset))
 const id: Lens<BEvent, BEvent[string]> = Lens.fromProp<BEvent>()('id')
-const setOffsetByEvents = (email: string, events: BEvent[]): ReaderTaskEither<EventStore, string, void> => pipe(
+const setOffsetByEvents = (uid: string, events: BEvent[]): ReaderTaskEither<EventStore, string, void> => pipe(
     last(events),
     O.map(id.get),
-    O.map(setEventOffset(email)),
+    O.map(setEventOffset(uid)),
     RTE.fromOption(() => 'setOffsetByEvents got null id'),
     RTE.map(f => f()),
 )

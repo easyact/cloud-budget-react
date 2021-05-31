@@ -3,7 +3,7 @@ import {Budget} from '../Model'
 import {MemEventStore} from '../../es/lib/eventStore'
 
 describe('curd', () => {
-    // const cmd = {user: {email: 't'}, to: {version: '0'}}
+    // const cmd = {user: {id: 't'}, to: {version: '0'}}
     const item = {name: 'TI', type: 'assets', amount: 100}
     let service: BudgetEsService
     beforeEach(async () => {
@@ -20,7 +20,7 @@ describe('curd', () => {
         const addedBudget = service.exec({
             type: 'PUT_ITEM',
             payload: item,
-            user: {email: 't'},
+            user: {id: 't'},
             to: {version: '0'}
         })
         expectIncludedItem(await addedBudget)
@@ -30,7 +30,7 @@ describe('curd', () => {
         const addedBudget2 = await service.exec({
             type: 'PUT_ITEM',
             payload: {name: 'another', type: 'assets'},
-            user: {email: 't'},
+            user: {id: 't'},
             to: {version: '0'}
         })
         expect(addedBudget2.assets).toEqual([{...item, id: expect.anything()}, {
@@ -49,7 +49,7 @@ describe('curd', () => {
         const updated = await service.exec({
             type: 'PUT_ITEM',
             payload: newItem,
-            user: {email: 't'},
+            user: {id: 't'},
             to: {version: '0'}
         })
         expect(updated.assets).toEqual([newItem])
@@ -62,7 +62,7 @@ describe('curd', () => {
         const updated = await service.exec({
             type: 'DELETE_ITEM',
             payload: {from: 'assets', id: budget.assets[0].id},
-            user: {email: 't'},
+            user: {id: 't'},
             to: {version: '0'}
         })
         expect(updated.assets).toEqual([])

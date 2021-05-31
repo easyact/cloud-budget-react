@@ -7,11 +7,11 @@ export const budgetSnapshot = (es: Event<Budget>[]): Either<string, BUDGET_SNAPS
     snapshot(updateState, es)
 
 function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event<Budget>): BUDGET_SNAPSHOT<Budget> {
-    const {user: {email}, to: {version}} = e
-    const versions = initial.get(email) ?? new Map<string, Budget>()
+    const {user: {id}, to: {version}} = e
+    const versions = initial.get(id) ?? new Map<string, Budget>()
     const budget = versions.get(version) ?? {}
     const updatedBudget = updateBudget(e, budget)
-    return initial.set(email, versions.set(version, updatedBudget))
+    return initial.set(id, versions.set(version, updatedBudget))
 }
 
 function updateBudget(e: Event<Budget>, budget: Budget): Budget {

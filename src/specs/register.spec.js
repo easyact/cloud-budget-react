@@ -28,7 +28,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
             const user = 'damoco@easyact.cn'
             const CMD = {
                 type: 'IMPORT_BUDGET',
-                user: {email: user},
+                user: {id: user},
                 to: {version: '0'},
                 payload: {assets: [{id: '', ...item}]},
             }
@@ -51,7 +51,7 @@ describe(`功能: 作为新用户, 为了注册后保留数据`, () => {
             beforeEach(importBudget(user, {assets: [item]})(eventStore))
             describe(`当damoco注册`, () => {
                 beforeEach(async () => {
-                    const url = `${provider.mockService.baseUrl}/v0/users/damoco@easyact.cn/events`
+                    const url = provider.mockService.baseUrl
 
                     const {events, resp} = await uploadEvents(user, url)(eventStore)()
                         .then(E.getOrElse(undefined))

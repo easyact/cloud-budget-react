@@ -20,7 +20,7 @@
           {
             "type": "IMPORT_BUDGET",
             "user": {
-              "email": "damoco@easyact.cn"
+              "id": "damoco@easyact.cn"
             },
             "to": {
               "version": "0"
@@ -81,7 +81,7 @@
           {
             "type": "IMPORT_BUDGET",
             "user": {
-              "email": "damoco@easyact.cn"
+              "id": "damoco@easyact.cn"
             },
             "to": {
               "version": "0"
