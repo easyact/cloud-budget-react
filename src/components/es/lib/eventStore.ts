@@ -7,19 +7,19 @@ import Dexie from 'dexie'
 import {fromNullable} from 'fp-ts/lib/Either'
 import {Command} from '../../budget/service/budgetEsService'
 
-export type Error = string
+export type ErrorM = string
 export type BEvent = Event<Budget> & Command
 
 export interface EventStore {
-    put(id: string, event: BEvent): TaskEither<Error, any>
+    put(id: string, event: BEvent): TaskEither<ErrorM, any>
 
-    events(id: string): TaskEither<Error, BEvent[]>
+    events(id: string): TaskEither<ErrorM, BEvent[]>
 }
 
 export class MemEventStore implements EventStore {
     private store = new Map()
 
-    put(id: string, event: BEvent): TaskEither<Error, any> {
+    put(id: string, event: BEvent): TaskEither<ErrorM, any> {
         return pipe(
             this.events(id),
             E.map(es => [...es, event]),
@@ -27,7 +27,7 @@ export class MemEventStore implements EventStore {
         )
     }
 
-    events = (id: string): TaskEither<Error, BEvent[]> =>
+    events = (id: string): TaskEither<ErrorM, BEvent[]> =>
         E.fromEither(fromNullable('none')(this.store.get(id) ?? []))
 }
 
@@ -49,10 +49,10 @@ class MyAppDatabase extends Dexie {
 export class DBEventStore implements EventStore {
     private db: MyAppDatabase = new MyAppDatabase()
 
-    events = (id: string): TaskEither<Error, BEvent[]> =>
+    events = (id: string): TaskEither<ErrorM, BEvent[]> =>
         E.fromTask(() => this.db.events.where('user.email').equals(id).toArray())
 
-    put(id: string, event: BEvent): TaskEither<Error, any> {
+    put(id: string, event: BEvent): TaskEither<ErrorM, any> {
         return E.fromTask(() => this.db.events.put(event))
     }
 }
@@ -64,10 +64,10 @@ export class RemoteEventStore implements EventStore {
         this.uri = uri
     }
 
-    events = (id: string): TaskEither<Error, BEvent[]> =>
+    events = (id: string): TaskEither<ErrorM, BEvent[]> =>
         E.fromTask(() => fetch('').then(a => []))
 
-    put(id: string, event: BEvent): TaskEither<Error, any> {
+    put(id: string, event: BEvent): TaskEither<ErrorM, any> {
         return E.fromTask(() => fetch(''))
     }
 }

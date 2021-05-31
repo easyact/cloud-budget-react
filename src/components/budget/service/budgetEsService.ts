@@ -5,7 +5,7 @@ import * as RT from 'fp-ts/lib/ReaderTask'
 import * as T from 'fp-ts/lib/Task'
 import * as O from 'fp-ts/lib/Option'
 import {pipe} from 'fp-ts/lib/function'
-import {BEvent, DBEventStore, Error, EventStore} from '../../es/lib/eventStore'
+import {BEvent, DBEventStore, ErrorM, EventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
@@ -67,7 +67,7 @@ export function exec(email: string, command: Command): ReaderTask<EventStore, Bu
     )
 }
 
-const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, Error, Budget> => pipe(
+const getBudgetE = (email: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
     // this.cache,
     // E.orElse(_ => pipe(
     getVersions(email),
@@ -84,7 +84,7 @@ const getVersions = (email: string): ReaderTaskEither<EventStore, string, Map<st
     RTE.map(ss => ss.get(email) ?? new Map()),
 )
 
-function handleCommand(command: Command): ReaderTaskEither<EventStore, Error, void> {
+function handleCommand(command: Command): ReaderTaskEither<EventStore, ErrorM, void> {
     return pipe(
         RTE.ask<EventStore>(),
         RTE.chainTaskEitherK((s: EventStore) => s.put(command.user.email, fixCommand(command)))
