@@ -21,6 +21,11 @@ export default function reducer(state, action) {
 
 function handle(state, action) {
     switch (action.type) {
+        case 'LOGGED_IN':
+            return {
+                ...state,
+                uid: action.payload
+            }
         case 'FETCH_BUDGET_REQUEST':
             return {
                 ...state,

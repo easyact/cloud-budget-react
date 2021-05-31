@@ -12,7 +12,7 @@ import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {getItem, setItem} from 'fp-ts-local-storage'
-import {last} from 'fp-ts/lib/Array'
+import {last, map} from 'fp-ts/lib/Array'
 import {Lens} from 'monocle-ts'
 import {IO} from 'fp-ts/lib/IO'
 
@@ -114,22 +114,31 @@ export const post = (url: string, obj: any) => fetch(url, {
     body: JSON.stringify(obj)
 })
 
-export const uploadEvents =
-    (uid: string, url: string): ReaderTaskEither<EventStore, string, { events: BEvent[], resp: Response }> => pipe(
-        getEvents(uid),
-        RTE.map(events => pipe(
-            eventOffset(uid)(),
-            O.chain((s: string) => O.tryCatch(() => parseInt(s))),
-            O.getOrElse(() => 0),
-            offset => O.tryCatch(() => events.slice(offset)),
-            O.getOrElse(() => [] as BEvent[])
-        )),
-        RTE.bindTo('events'),
-        RTE.bind('resp', ({events}) => RTE.fromTaskEither(TE.tryCatch(
-            () => post(`${url}/v0/users/${uid}/events`, events),
-            e => `上传事件失败: ${e}`))),
-        RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
-    )
+const filterNewEvents = (uid: string) => (events: BEvent[]) => pipe(
+    eventOffset(uid)(),
+    O.chain((s: string) => O.tryCatch(() => parseInt(s))),
+    O.getOrElse(() => 0),
+    offset => O.tryCatch(() => events.slice(offset)),
+    O.getOrElse(() => [] as BEvent[])
+)
+
+const unUploadedEvents = (uid: string) => pipe(getEvents(uid), RTE.map(filterNewEvents(uid)))
+
+export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.tryCatch(
+    () => post(`${url}/v0/users/${uid}/events`, events),
+    e => `上传事件失败因为: ${e}`
+)
+
+export const sync = (uid: string, url: string): ReaderTaskEither<EventStore, string,
+    { events: BEvent[], resp: Response }> => pipe(
+    // RTE.Do,
+    // RTE.apS('events', unUploadedEvents(uid)),
+    unUploadedEvents(uid),
+    RTE.map(map(({user, ...e}) => ({...e, user: {...user, id: uid}}))),//TODO mayBe should chainFirst
+    RTE.bindTo('events'),
+    RTE.bind('resp', ({events}) => RTE.fromTaskEither(uploadEvents(url, uid, events))),
+    RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
+)
 
 export const eventOffset = (uid: string) => getItem(`${uid}.offset`)
 export const setEventOffset = (uid: string) => (offset: number): IO<void> => setItem(`${uid}.offset`, String(offset))
