@@ -8,5 +8,5 @@ export interface BudgetState {
     version: string
     budget: Budget
     cmd: Command
-    apiUrl: string
+    apiBase: string
 }
