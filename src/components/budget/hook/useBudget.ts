@@ -1,11 +1,14 @@
 import {Dispatch, Reducer, ReducerAction, useEffect, useReducer} from 'react'
 import reducer from './reducer'
 import {useAuth0} from '@auth0/auth0-react'
-import {exec, getBudgetE, sync} from '../service/budgetEsService'
+import {exec, getBudgetE, migrateEventsToUser, sync} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
 import * as O from 'fp-ts/Option'
+import {Option} from 'fp-ts/Option'
 import * as E from 'fp-ts/Either'
+import * as RTE from 'fp-ts/ReaderTaskEither'
 import * as io from 'fp-ts/IO'
+import {IO} from 'fp-ts/IO'
 import log from '../../log'
 import {DBEventStore} from '../../es/lib/eventStore'
 import * as TE from 'fp-ts/TaskEither'
@@ -13,10 +16,16 @@ import * as T from 'fp-ts/Task'
 import {getItem} from 'fp-ts-local-storage'
 import {pipe} from 'fp-ts/lib/function'
 
+const uidKey = 'user.id'
+const getUser = (): IO<Option<string>> => getItem(uidKey)
+
+// function notRegistered() {
+//     return O.isNone(getUser()())
+// }
+
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
-    const uidKey = 'user.id'
     const uid: string = pipe(
-        getItem(uidKey),
+        getUser(),
         io.map(O.getOrElse(() => 'default')),
         // io.chainFirst(s => setItem(uidKey, s))
     )()
@@ -36,9 +45,16 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function login() {
         if (!isAuthenticated) return
         dispatch({type: 'LOGGED_IN', uid})
-        sync(uid, apiUrl)(eventStore)().then(E.fold(
+        const readerTaskEither = pipe(
+            getUser(),
+            RTE.fromIO,
+            RTE.chain(O.fold(() => migrateEventsToUser(uid), RTE.of)),
+            RTE.chain(() => sync(uid, apiUrl)),
+        )
+        readerTaskEither(eventStore)().then(E.fold(
             payload => dispatch({type: 'FETCH_BUDGET_ERROR', payload}),
-            log('upload success!')))
+            log('upload success!')
+        ))
     }, [apiUrl, uid, isAuthenticated, eventStore])
     useEffect(function execCmd() {
         if (!cmd) return

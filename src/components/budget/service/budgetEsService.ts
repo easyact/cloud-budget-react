@@ -12,7 +12,7 @@ import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {getItem, setItem} from 'fp-ts-local-storage'
-import {last, map} from 'fp-ts/lib/Array'
+import {last} from 'fp-ts/lib/Array'
 import {Lens} from 'monocle-ts'
 import {IO} from 'fp-ts/lib/IO'
 
@@ -134,10 +134,14 @@ export const sync = (uid: string, url: string): ReaderTaskEither<EventStore, str
     // RTE.Do,
     // RTE.apS('events', unUploadedEvents(uid)),
     unUploadedEvents(uid),
-    RTE.map(map(({user, ...e}) => ({...e, user: {...user, id: uid}}))),//TODO mayBe should chainFirst
     RTE.bindTo('events'),
     RTE.bind('resp', ({events}) => RTE.fromTaskEither(uploadEvents(url, uid, events))),
     RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
+)
+
+export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): ReaderTaskEither<EventStore, string, any> => pipe(
+    RTE.ask<EventStore>(),
+    RTE.chain(store => RTE.fromTaskEither(store.modifyUser(oldUid, uid)))
 )
 
 export const eventOffset = (uid: string) => getItem(`${uid}.offset`)
