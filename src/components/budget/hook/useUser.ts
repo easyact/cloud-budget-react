@@ -16,7 +16,7 @@ const loadUser = (): IO<Option<string>> => getItem(uidKey)
 const saveUser = (user: string): IO<void> => setItem(uidKey, user)
 const defaultUser = 'default'
 export default function useUser(eventStore: EventStore) {
-    const {user: {email}} = useAuth0()
+    const {user: {email} = {}} = useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
     const [isAuthenticated, setAuthenticated] = useState(false)
     const [error, setError] = useState<string>()
