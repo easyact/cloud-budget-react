@@ -34,22 +34,16 @@ function getA(email: string, localUser: Option<string>): ReaderTaskEither<EventS
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
     const {user: {email}, isAuthenticated} = useAuth0()
     const localUser: Option<string> = getUser()()
-    const uid = pipe(
-        O.fromNullable(email),
+    const uid = email ? pipe(
         O.fold(
-            () => O.fold(
-                () => RTE.of<EventStore, string, string>('default'),
-                (u: string) => RTE.of(u)
-            )(localUser),
-            () => pipe(
-                O.fold(
-                    () => migrateEventsToUser(email),
-                    RTE.of
-                )(localUser),
-                RTE.chainFirst(() => RTE.fromIO(setUser(email)))
-            )
-        )
-    )
+            () => migrateEventsToUser(email),
+            RTE.of
+        )(localUser),
+        RTE.chainFirst(() => RTE.fromIO(setUser(email)))
+    ) : O.fold(
+        () => RTE.of<EventStore, string, string>('default'),
+        (u: string) => RTE.of(u)
+    )(localUser)
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer, {
         uid,
         version,
