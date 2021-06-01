@@ -3,7 +3,6 @@ import reducer from './reducer'
 import {exec, getBudgetE, sync} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
 import * as E from 'fp-ts/Either'
-import log from '../../log'
 import {DBEventStore} from '../../es/lib/eventStore'
 import * as TE from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
@@ -22,21 +21,22 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         eventStore,
         apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn/`
     })
-    const {cmd, apiBase}: BudgetState = state
+    const {cmd, apiBase, syncNeeded}: BudgetState = state
     console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function whenLoggedIn() {
         if (!isAuthenticated) return
-        dispatch({type: 'LOGGED_IN', uid})
+        dispatch({type: 'LOGGED_IN', payload: uid})
+        if (!syncNeeded) return
         sync(uid, apiBase)(eventStore)().then(E.fold(
             payload => dispatch({type: 'FETCH_BUDGET_ERROR', payload}),
-            log('upload success!')
+            () => dispatch({type: 'SYNC_SUCCESS'})
         ))
-    }, [apiBase, uid, isAuthenticated])
+    }, [apiBase, uid, isAuthenticated, syncNeeded])
     useEffect(function execCmd() {
         if (!cmd) return
         console.log('useBudget.setting', cmd, version, eventStore)
         exec(uid, cmd)(eventStore)()
-            .then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
+            .then(payload => dispatch({type: 'CMD_SUCCESS', payload}))
     }, [version, cmd, uid])
     useEffect(function load() {
         console.log('useBudget.loading', version, eventStore)

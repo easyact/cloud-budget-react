@@ -43,6 +43,18 @@ function handle(state, action) {
                 budget,
                 kpi: kpi(budget),
             }
+        case 'CMD_SUCCESS':
+            return {
+                ...state,
+                syncNeeded: true,
+                budget: action.payload,
+                kpi: kpi(action.payload),
+            }
+        case 'SYNC_SUCCESS':
+            return {
+                ...state,
+                syncNeeded: false,
+            }
 
         case 'FETCH_BUDGET_ERROR':
             return {
