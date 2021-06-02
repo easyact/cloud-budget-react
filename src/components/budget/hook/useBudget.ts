@@ -4,8 +4,6 @@ import {exec, getBudgetE, sync} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
 import * as E from 'fp-ts/Either'
 import {DBEventStore} from '../../es/lib/eventStore'
-import * as TE from 'fp-ts/TaskEither'
-import * as T from 'fp-ts/Task'
 import useUser from './useUser'
 
 const eventStore = new DBEventStore()
@@ -21,6 +19,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         eventStore,
         apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn/`
     })
+    const notifyError = <E>(payload: E) => dispatch({type: 'FETCH_BUDGET_ERROR', payload})
     const {cmd, apiBase, syncNeeded}: BudgetState = state
     console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function loggedIn() {
@@ -29,10 +28,8 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     }, [uid, isAuthenticated])
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
-        sync(uid, apiBase)(eventStore)().then(E.fold(
-            payload => dispatch({type: 'FETCH_BUDGET_ERROR', payload}),
-            () => dispatch({type: 'SYNC_SUCCESS'})
-        ))
+        sync(uid, apiBase)(eventStore)()
+            .then(E.fold(notifyError, () => dispatch({type: 'SYNC_SUCCESS'})))
     }, [apiBase, uid, isAuthenticated, syncNeeded])
     useEffect(function execCmd() {
         if (!cmd) return
@@ -43,8 +40,8 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function load() {
         console.log('useBudget.loading', version, eventStore)
         // dispatch({type: 'FETCH_BUDGET_REQUEST'})
-        TE.getOrElse(() => T.of({}))(getBudgetE(uid, version)(eventStore))()
-            .then(payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload}))
+        getBudgetE(uid, version)(eventStore)()
+            .then(E.fold(notifyError, payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})))
     }, [version, uid])
     return [state, dispatch]
 }
