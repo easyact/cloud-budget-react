@@ -34,7 +34,10 @@ export default function useUser(eventStore: EventStore) {
         migrateEventsIf1stLogin(localUser, email),
         RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
         RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
-    ) : RTE.fromOption(() => defaultUser)(localUser)
+    ) : pipe(localUser, O.fold(
+        () => RTE.of(defaultUser),
+        RTE.of
+    ))
     const notifyAuthed = () => setAuthenticated(true)
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
