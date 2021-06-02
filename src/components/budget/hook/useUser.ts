@@ -34,7 +34,7 @@ export default function useUser(eventStore: EventStore) {
         migrateEventsIf1stLogin(localUser, email),
         RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
         RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
-    ) : pipe(localUser, RTE.fromOption(() => defaultUser))
+    ) : RTE.fromOption(() => defaultUser)(localUser)
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             setError,
