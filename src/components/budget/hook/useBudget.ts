@@ -21,13 +21,14 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     })
     const notifyError = <E>(payload: E) => dispatch({type: 'FETCH_BUDGET_ERROR', payload})
     const {cmd, apiBase, syncNeeded}: BudgetState = state
-    console.log('useBudgeting', uid, version, state, eventStore)
+    // console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function loggedIn() {
         if (!isAuthenticated) return
         dispatch({type: 'LOGGED_IN', payload: uid})
     }, [uid, isAuthenticated])
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
+        console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
         sync(uid, apiBase)(eventStore)()
             .then(E.fold(notifyError, () => dispatch({type: 'SYNC_SUCCESS'})))
     }, [apiBase, uid, isAuthenticated, syncNeeded])
@@ -38,7 +39,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
             .then(payload => dispatch({type: 'CMD_SUCCESS', payload}))
     }, [version, cmd, uid])
     useEffect(function load() {
-        console.log('useBudget.loading', version, eventStore)
+        console.log('useBudget.loading', uid, version, eventStore)
         // dispatch({type: 'FETCH_BUDGET_REQUEST'})
         getBudgetE(uid, version)(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})))
