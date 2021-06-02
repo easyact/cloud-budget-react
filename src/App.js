@@ -68,6 +68,14 @@ function App() {
                 <Route path="sync" element={<Sync/>}/>
                 <Route path="loggedIn" element={<LoggedIn/>}/>
             </Routes>
+            <footer className="footer">
+                <div className="columns">
+                    <div className="column is-3">
+                        {/*<p className="bd-footer-link-title"></p>*/}
+                        <p><a href="https://beian.miit.gov.cn/">沪ICP备2021014272号</a></p>
+                    </div>
+                </div>
+            </footer>
         </div>
     </Router>
 }
