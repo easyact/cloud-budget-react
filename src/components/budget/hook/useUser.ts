@@ -15,6 +15,15 @@ const uidKey = 'user.id'
 const loadUser = (): IO<Option<string>> => getItem(uidKey)
 const saveUser = (user: string): IO<void> => setItem(uidKey, user)
 const defaultUser = 'default'
+
+const migrateEventsIf1stLogin = (localUser: Option<string>, email: string) => pipe(
+    localUser,
+    O.fold(
+        () => migrateEventsToUser(email),
+        RTE.of
+    )
+)
+
 export default function useUser(eventStore: EventStore) {
     const {user: {email} = {}} = useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
@@ -22,18 +31,10 @@ export default function useUser(eventStore: EventStore) {
     const [error, setError] = useState<string>()
     const localUser: Option<string> = loadUser()()
     const task: ReaderTaskEither<EventStore, string, string> = email ? pipe(
-        pipe(localUser, O.fold(
-            () => migrateEventsToUser(email),
-            RTE.of
-        )),
+        migrateEventsIf1stLogin(localUser, email),
         RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
-        RTE.chain(lUser => RTE.fromOption(
-            () => `本地存储损坏,因为读不到刚刚覆盖的用户数据: ${lUser}->${email}`
-        )(loadUser()())),
-    ) : pipe(localUser, O.fold(
-        () => RTE.of(defaultUser),
-        RTE.of
-    ))
+        RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
+    ) : pipe(localUser, RTE.fromOption(() => defaultUser))
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             setError,
