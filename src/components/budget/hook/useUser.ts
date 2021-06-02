@@ -35,11 +35,11 @@ export default function useUser(eventStore: EventStore) {
         RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
         RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
     ) : RTE.fromOption(() => defaultUser)(localUser)
-    const markAuthed = () => setAuthenticated(true)
+    const notifyAuthed = () => setAuthenticated(true)
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             setError,
-            flow(setUid, markAuthed))
+            flow(setUid, notifyAuthed))
         ).catch(setError)
     }, [task, eventStore])
     return {uid, error, isAuthenticated}
