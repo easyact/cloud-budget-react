@@ -12,9 +12,12 @@ import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {getItem, setItem} from 'fp-ts-local-storage'
-import {last} from 'fp-ts/lib/Array'
+import {findIndex, last} from 'fp-ts/lib/Array'
 import {Lens} from 'monocle-ts'
 import {IO} from 'fp-ts/lib/IO'
+import log from '../../log'
+import {Option} from 'fp-ts/Option'
+import {flow} from 'fp-ts/function'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -114,15 +117,33 @@ export const post = (url: string, obj: any) => fetch(url, {
     body: JSON.stringify(obj)
 })
 
-const filterNewEvents = (uid: string) => (events: BEvent[]) => pipe(
+const findIndexById = (events: BEvent[]) => (id: number): Option<number> => pipe(
+    events,
+    findIndex(e => eventId.get(e) === id),
+)
+
+const sliceNewEvents = (events: BEvent[]): (lastOffsetId: number) => Option<BEvent[]> => flow(
+    findIndexById(events),
+    O.map(events.slice))
+
+const loadSyncOffsetId = (uid: string) => pipe(
     eventOffset(uid)(),
     O.chain((s: string) => O.tryCatch(() => parseInt(s))),
     O.getOrElse(() => 0),
-    offset => O.tryCatch(() => events.slice(offset)),
-    O.getOrElse(() => [] as BEvent[])
 )
 
-const unUploadedEvents = (uid: string) => pipe(getEvents(uid), RTE.map(filterNewEvents(uid)))
+const filterNewEvents = (uid: string) => (events: BEvent[]) => pipe(
+    loadSyncOffsetId(uid),
+    findIndexById(events),
+    O.map(events.slice),
+    O.getOrElse(() => events),
+    log('将要上传事件: '),
+)
+
+const unUploadedEvents = (uid: string) => pipe(
+    getEvents(uid),
+    RTE.map(filterNewEvents(uid)),
+)
 
 export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.tryCatch(
     () => post(`${url}/v0/users/${uid}/events`, events),
@@ -146,10 +167,10 @@ export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): Re
 
 export const eventOffset = (uid: string) => getItem(`${uid}.offset`)
 export const setEventOffset = (uid: string) => (offset: number): IO<void> => setItem(`${uid}.offset`, String(offset))
-const id: Lens<BEvent, BEvent[string]> = Lens.fromProp<BEvent>()('id')
+const eventId: Lens<BEvent, BEvent[string]> = Lens.fromProp<BEvent>()('id')
 const setOffsetByEvents = (uid: string, events: BEvent[]): ReaderTaskEither<EventStore, string, void> => pipe(
     last(events),
-    O.map(id.get),
+    O.map(eventId.get),
     O.map(setEventOffset(uid)),
     RTE.fromOption(() => 'setOffsetByEvents got null id'),
     RTE.map(f => f()),

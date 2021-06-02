@@ -23,10 +23,12 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     })
     const {cmd, apiBase, syncNeeded}: BudgetState = state
     console.log('useBudgeting', uid, version, state, eventStore)
-    useEffect(function whenLoggedIn() {
+    useEffect(function loggedIn() {
         if (!isAuthenticated) return
         dispatch({type: 'LOGGED_IN', payload: uid})
-        if (!syncNeeded) return
+    }, [uid, isAuthenticated])
+    useEffect(function whenLoggedIn() {
+        if (!(isAuthenticated && syncNeeded)) return
         sync(uid, apiBase)(eventStore)().then(E.fold(
             payload => dispatch({type: 'FETCH_BUDGET_ERROR', payload}),
             () => dispatch({type: 'SYNC_SUCCESS'})
