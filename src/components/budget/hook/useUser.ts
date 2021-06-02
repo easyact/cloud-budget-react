@@ -28,6 +28,7 @@ export default function useUser(eventStore: EventStore) {
     const {user: {email} = {}} = useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
     const [isAuthenticated, setAuthenticated] = useState(false)
+    const notifyAuthed = () => setAuthenticated(true)
     const [error, notifyError] = useState<string>()
     const localUser: Option<string> = loadUser()()
     const task: ReaderTaskEither<EventStore, string, string> = email ? pipe(
@@ -38,7 +39,6 @@ export default function useUser(eventStore: EventStore) {
         () => RTE.of(defaultUser),
         RTE.of
     ))
-    const notifyAuthed = () => setAuthenticated(true)
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             notifyError,
