@@ -17,7 +17,6 @@ import {Lens} from 'monocle-ts'
 import {IO} from 'fp-ts/lib/IO'
 import log from '../../log'
 import {Option} from 'fp-ts/Option'
-import {flow} from 'fp-ts/function'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -121,11 +120,6 @@ const findIndexById = (events: BEvent[]) => (id: number): Option<number> => pipe
     events,
     findIndex(e => eventId.get(e) === id),
 )
-
-const sliceNewEvents = (events: BEvent[]): (lastOffsetId: number) => Option<BEvent[]> => flow(
-    findIndexById(events),
-    O.map(events.slice))
-
 const loadSyncOffsetId = (uid: string) => pipe(
     eventOffset(uid)(),
     O.chain((s: string) => O.tryCatch(() => parseInt(s))),
@@ -135,7 +129,8 @@ const loadSyncOffsetId = (uid: string) => pipe(
 const filterNewEvents = (uid: string) => (events: BEvent[]) => pipe(
     loadSyncOffsetId(uid),
     findIndexById(events),
-    O.map(events.slice),
+    log(`${events}.findIndexById: `),
+    O.map(i => events.slice(i)),
     O.getOrElse(() => events),
     log('将要上传事件: '),
 )
