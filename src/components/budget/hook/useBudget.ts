@@ -29,7 +29,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
-        sync(uid, apiBase)(eventStore)()
+        sync(apiBase, uid)(eventStore)()
             .then(E.fold(notifyError, () => dispatch({type: 'SYNC_SUCCESS'})))
     }, [apiBase, uid, isAuthenticated, syncNeeded])
     useEffect(function execCmd() {

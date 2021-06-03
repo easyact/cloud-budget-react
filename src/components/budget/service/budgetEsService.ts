@@ -17,6 +17,8 @@ import {Lens} from 'monocle-ts'
 import {IO} from 'fp-ts/lib/IO'
 import log from '../../log'
 import {Option} from 'fp-ts/Option'
+import {TaskEither} from 'fp-ts/TaskEither'
+import {getMonoid} from 'fp-ts/es6/Array'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -120,24 +122,9 @@ const findIndexById = (events: BEvent[]) => (id: number): Option<number> => pipe
     events,
     findIndex(e => eventId.get(e) === id),
 )
-const loadSyncOffsetId = (uid: string) => pipe(
+const loadSyncOffsetId = (uid: string): Option<number> => pipe(
     eventOffset(uid)(),
     O.chain((s: string) => O.tryCatch(() => parseInt(s))),
-    O.getOrElse(() => 0),
-)
-
-const filterNewEvents = (uid: string) => (events: BEvent[]) => pipe(
-    loadSyncOffsetId(uid),
-    findIndexById(events),
-    log(`${events}.findIndexById: `),
-    O.map(i => events.slice(i)),
-    O.getOrElse(() => events),
-    log('将要上传事件: '),
-)
-
-const unUploadedEvents = (uid: string) => pipe(
-    getEvents(uid),
-    RTE.map(filterNewEvents(uid)),
 )
 
 export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.tryCatch(
@@ -145,15 +132,37 @@ export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.t
     e => `上传事件失败因为: ${e}`
 )
 
-export const sync = (uid: string, url: string): ReaderTaskEither<EventStore, string,
-    { events: BEvent[], resp: Response }> => pipe(
-    // RTE.Do,
-    // RTE.apS('events', unUploadedEvents(uid)),
-    unUploadedEvents(uid),
-    RTE.bindTo('events'),
-    RTE.bind('resp', ({events}) => RTE.fromTaskEither(uploadEvents(url, uid, events))),
+const M = getMonoid<BEvent>()
+const getRemoteEvents = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, number> => pipe(
+    RTE.Do,
+    RTE.apS('remote', RTE.fromTaskEither(getAllEvents(baseUrl, uid))),
+    RTE.apS('local', getEvents(uid)),
+    RTE.apS('store', RTE.ask<EventStore, string>()),
+    RTE.chainFirst(({remote, local, store}) => RTE.fromTaskEither(pipe(
+        store.clear(uid),
+        TE.chain(() => store.putList(uid, M.concat(remote, local))),
+    ))),
+    RTE.map(({remote}) => pipe(last(remote), O.map(eventId.get), O.map(x => x + 1), O.getOrElse(() => 0))),
+)
+type SyncResult = { events: BEvent[]; resp: Response }
+export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, SyncResult> => pipe(
+    loadSyncOffsetId(uid),
+    O.fold(() => getRemoteEvents(baseUrl, uid), RTE.right),
+    RTE.bindTo('offset'),
+    RTE.apS('all', getEvents(uid)),
+    RTE.bind('events', ({all, offset}) => RTE.of(pipe(
+        findIndexById(all)(offset),
+        log(`${all}.findIndexById: `),
+        O.map(i => all.slice(i)),
+        O.getOrElse(() => all),
+        log('将要上传事件: '),
+    ))),
+    RTE.bind('resp', ({events}) => RTE.fromTaskEither(uploadEvents(baseUrl, uid, events))),
     RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
 )
+
+export const getAllEvents = (baseUrl: string, uid: string): TaskEither<string, BEvent[]> => TE.tryCatch(() =>
+    fetch(`${baseUrl}/v0/users/${uid}/events`).then(r => r.json()), String)
 
 export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): ReaderTaskEither<EventStore, string, any> => pipe(
     RTE.ask<EventStore>(),
