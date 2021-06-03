@@ -20,7 +20,7 @@ const migrateEventsIf1stLogin = (localUser: Option<string>, email: string) => pi
     localUser,
     O.fold(
         () => migrateEventsToUser(email),
-        RTE.of
+        RTE.right
     )
 )
 
@@ -35,10 +35,7 @@ export default function useUser(eventStore: EventStore) {
         migrateEventsIf1stLogin(localUser, email),
         RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
         RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
-    ) : pipe(localUser, O.fold(
-        () => RTE.of(defaultUser),
-        RTE.of
-    ))
+    ) : pipe(localUser, O.getOrElse(() => defaultUser), RTE.right)
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             notifyError,
