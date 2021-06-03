@@ -58,11 +58,12 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                         method: 'GET',
                         path: '/v0/users/damoco@easyact.cn/events',
                         // headers: {Accept: 'application/json'},
-                        // headers: {'Origin': like('https://easyact.cn')},
+                        headers: {'Origin': like('https://easyact.cn')},
                     },
                     willRespondWith: {
-                        status: 404,
+                        status: 200,
                         headers: {'access-control-allow-origin': '*'},
+                        body: []
                     },
                 })
                 await importBudget(user, {assets: [item]})(eventStore)()
