@@ -1,6 +1,6 @@
-export default function log(key: any) {
+export default function log(key: any, fn = console.log) {
     return <T>(obj: T): T => {
-        console.log(key, obj)
+        fn(key, obj)
         return obj
     }
 }

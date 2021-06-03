@@ -12,13 +12,12 @@ import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {getItem, setItem} from 'fp-ts-local-storage'
-import {findIndex, last} from 'fp-ts/lib/Array'
+import {findIndex, getMonoid, last} from 'fp-ts/Array'
 import {Lens} from 'monocle-ts'
-import {IO} from 'fp-ts/lib/IO'
+import {IO} from 'fp-ts/IO'
 import log from '../../log'
 import {Option} from 'fp-ts/Option'
 import {TaskEither} from 'fp-ts/TaskEither'
-import {getMonoid} from 'fp-ts/es6/Array'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -135,7 +134,12 @@ export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.t
 const M = getMonoid<BEvent>()
 const getRemoteEvents = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, number> => pipe(
     RTE.Do,
-    RTE.apS('remote', RTE.fromTaskEither(getAllEvents(baseUrl, uid))),
+    RTE.apS('remote', RTE.fromTask(pipe(
+        getAllEvents(baseUrl, uid),
+        TE.getOrElse(e => {
+            log('getAllEvents recovering from', console.error)(e)
+            return T.of([] as BEvent[])
+        })))),
     RTE.apS('local', getEvents(uid)),
     RTE.apS('store', RTE.ask<EventStore, string>()),
     RTE.chainFirst(({remote, local, store}) => RTE.fromTaskEither(pipe(
@@ -161,8 +165,10 @@ export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore,
     RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
 )
 
-export const getAllEvents = (baseUrl: string, uid: string): TaskEither<string, BEvent[]> => TE.tryCatch(() =>
-    fetch(`${baseUrl}/v0/users/${uid}/events`).then(r => r.json()), String)
+export const getAllEvents = (baseUrl: string, uid: string): TaskEither<Response, BEvent[]> => pipe(
+    TE.rightTask(() => fetch(`${baseUrl}/v0/users/${uid}/events`)),
+    TE.chain(r => r.ok ? TE.rightTask(r.json) : TE.left(r)),
+)
 
 export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): ReaderTaskEither<EventStore, string, any> => pipe(
     RTE.ask<EventStore>(),

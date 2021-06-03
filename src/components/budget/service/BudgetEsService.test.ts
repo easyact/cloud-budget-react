@@ -17,13 +17,13 @@ describe('curd', () => {
     }
 
     test('add item', async () => {
-        const addedBudget = service.exec({
+        const addedBudget = await service.exec({
             type: 'PUT_ITEM',
             payload: item,
             user: {id: 't'},
             to: {version: '0'}
         })
-        expectIncludedItem(await addedBudget)
+        expectIncludedItem(addedBudget)
         const newBudget = service.getBudget('0')
         expect(newBudget).not.toEqual({})
         expectIncludedItem(await newBudget)

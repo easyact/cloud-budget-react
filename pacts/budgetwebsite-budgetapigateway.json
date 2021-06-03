@@ -7,6 +7,28 @@
   },
   "interactions": [
     {
+      "description": "new client get",
+      "providerState": "no user",
+      "request": {
+        "method": "GET",
+        "path": "/v0/users/damoco@easyact.cn/events",
+        "headers": {
+          "Origin": "https://easyact.cn"
+        },
+        "matchingRules": {
+          "$.headers.Origin": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "access-control-allow-origin": "*"
+        }
+      }
+    },
+    {
       "description": "first upload",
       "providerState": "no user",
       "request": {
@@ -54,55 +76,6 @@
           "access-control-allow-origin": "*"
         },
         "body": {
-        }
-      }
-    },
-    {
-      "description": "new client get",
-      "providerState": "damoco imported",
-      "request": {
-        "method": "GET",
-        "path": "/v0/users/damoco@easyact.cn/events",
-        "headers": {
-          "Origin": "https://easyact.cn"
-        },
-        "matchingRules": {
-          "$.headers.Origin": {
-            "match": "type"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "headers": {
-          "access-control-allow-origin": "*"
-        },
-        "body": [
-          {
-            "type": "IMPORT_BUDGET",
-            "user": {
-              "id": "damoco@easyact.cn"
-            },
-            "to": {
-              "version": "0"
-            },
-            "payload": {
-              "assets": [
-                {
-                  "id": "",
-                  "name": "food",
-                  "amount": 10
-                }
-              ]
-            },
-            "at": "2021-05-14T00:00:00.012+08",
-            "user.id": "damoco@easyact.cn"
-          }
-        ],
-        "matchingRules": {
-          "$.body[0].at": {
-            "match": "type"
-          }
         }
       }
     }

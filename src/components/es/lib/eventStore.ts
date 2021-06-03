@@ -28,8 +28,6 @@ const id = Lens.fromPath<BEvent>()(['user', 'id'])
 export class MemEventStore extends EventStore {
     private store = new Map()
 
-    put = (id: string, event: BEvent) => this.putList(id, [event])
-
     events = (id: string): TaskEither<never, BEvent[]> => TE.right(this.store.get(id) ?? [])
 
     modifyUser = (oldUid: string, uid: string): TaskEither<ErrorM, any> => pipe(
@@ -45,7 +43,7 @@ export class MemEventStore extends EventStore {
         return pipe(
             this.events(uid),
             TE.map(es => [...es, ...events]),
-            TE.map(es => this.store.set(id, es)),
+            TE.map(es => this.store.set(uid, es)),
         );
     }
 
