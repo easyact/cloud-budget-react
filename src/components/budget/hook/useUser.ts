@@ -24,6 +24,12 @@ const migrateEventsIf1stLogin = (localUser: Option<string>, email: string) => pi
     )
 )
 
+const buildStrategies = (email: string, localUser: Option<string>): ReaderTaskEither<EventStore, string, string> => email ? pipe(
+    migrateEventsIf1stLogin(localUser, email),
+    RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
+    RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
+) : pipe(localUser, O.getOrElse(() => defaultUser), RTE.right)
+
 export default function useUser(eventStore: EventStore) {
     const {user: {email} = {}} = useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
@@ -31,11 +37,7 @@ export default function useUser(eventStore: EventStore) {
     const notifyAuthed = () => setAuthenticated(true)
     const [error, notifyError] = useState<string>()
     const localUser: Option<string> = loadUser()()
-    const task: ReaderTaskEither<EventStore, string, string> = email ? pipe(
-        migrateEventsIf1stLogin(localUser, email),
-        RTE.chainFirst(() => RTE.fromIO(saveUser(email))),
-        RTE.chain(() => RTE.fromOption(() => `读不到用户数据`)(loadUser()())),
-    ) : pipe(localUser, O.getOrElse(() => defaultUser), RTE.right)
+    const task = buildStrategies(email, localUser)
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             notifyError,
