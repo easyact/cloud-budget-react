@@ -33,7 +33,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
     }
     describe(`场景: 注册`, () => {
         describe(`假设服务端没有damoco用户\n并且damoco在本地已有试用数据`, () => {
-            beforeEach(async () => {
+            it(`当damoco注册\n那么从新客户端访问可以拿到所有历史事件`, async () => {
                 await provider.addInteraction({
                     state: 'no user',
                     uponReceiving: 'first upload',
@@ -58,45 +58,41 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                         method: 'GET',
                         path: '/v0/users/damoco@easyact.cn/events',
                         // headers: {Accept: 'application/json'},
-                        headers: {'Origin': like('https://easyact.cn')},
+                        // headers: {'Origin': like('https://easyact.cn')},
                     },
                     willRespondWith: {
                         status: 404,
-                        headers: {'access-control-allow-origin': '*'}
+                        headers: {'access-control-allow-origin': '*'},
                     },
                 })
-            })
-            beforeEach(importBudget(user, {assets: [item]})(eventStore))
-            describe(`当damoco注册`, () => {
-                beforeEach(async () => {
-                    const url = provider.mockService.baseUrl
-                    const {events, resp} = await sync(url, user)(eventStore)()
-                        .then(E.fold(log('sync error'), log('sync success')))
-                    expect(events).not.toHaveLength(0)
-                    expect(resp.ok).toStrictEqual(true)
-                }, 20000)
-                it(`那么从新客户端访问可以拿到所有历史事件`, async () => {
-                    await provider.addInteraction({
-                        state: 'damoco imported',
-                        uponReceiving: 'client get',
-                        withRequest: {
-                            method: 'GET',
-                            path: '/v0/users/damoco@easyact.cn/events',
-                            // headers: {Accept: 'application/json'},
-                            headers: {'Origin': like('https://easyact.cn')},
-                        },
-                        willRespondWith: {
-                            status: 200,
-                            headers: {'access-control-allow-origin': '*'},
-                            body: [{...CMD, at: like(at), 'user.id': user}]
-                        },
-                    })
-                    const baseUrl = provider.mockService.baseUrl
-                    const events = await getAllEvents(baseUrl, user)()
-                    // const [{at, ...expected}] = await getEvents('damoco', eventStore)
-                    expect(events).toEqual([{...CMD, at, 'user.id': user}])
-                }, 20000)
-            })
+                await importBudget(user, {assets: [item]})(eventStore)()
+                const url = provider.mockService.baseUrl
+                const {events, resp} = await sync(url, user)(eventStore)()
+                    .then(E.fold(log('sync error'), log('sync success')))
+                expect(events).not.toHaveLength(0)
+                expect(resp.ok).toStrictEqual(true)
+                await provider.removeInteractions()
+                await provider.addInteraction({
+                    state: 'damoco imported',
+                    uponReceiving: 'client get',
+                    withRequest: {
+                        method: 'GET',
+                        path: '/v0/users/damoco@easyact.cn/events',
+                        // headers: {Accept: 'application/json'},
+                        headers: {'Origin': like('https://easyact.cn')},
+                    },
+                    willRespondWith: {
+                        status: 200,
+                        headers: {'access-control-allow-origin': '*'},
+                        body: [{...CMD, at: like(at), 'user.id': user}]
+                    },
+                })
+                const baseUrl = provider.mockService.baseUrl
+                const events1 = await getAllEvents(baseUrl, user)()
+                    .then(E.fold(log('client get error'), log('client get success')))
+                // const [{at, ...expected}] = await getEvents('damoco', eventStore)
+                expect(events1).toEqual([{...CMD, at, 'user.id': user}])
+            }, 20000)
         })
     })
     // describe(`场景: 登录`, () => {

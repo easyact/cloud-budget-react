@@ -110,17 +110,21 @@ function fixCommand(command: Command): BEvent {
     }
 }
 
+export const getAllEvents = (baseUrl: string, uid: string): TaskEither<Response, BEvent[]> => pipe(
+    TE.rightTask(() => fetch(`${baseUrl}/v0/users/${uid}/events`)),
+    TE.chain(r => r.ok ? TE.rightTask(() => r.json()) : TE.left(r)),
+)
+
 export const post = (url: string, obj: any) => fetch(url, {
     method: 'POST',
-    mode: 'cors',
     headers: {'content-type': 'application/json'},
     body: JSON.stringify(obj)
 })
-
 const findIndexById = (events: BEvent[]) => (id: number): Option<number> => pipe(
     events,
     findIndex(e => eventId.get(e) === id),
 )
+
 const loadSyncOffsetId = (uid: string): Option<number> => pipe(
     eventOffset(uid)(),
     O.chain((s: string) => O.tryCatch(() => parseInt(s))),
@@ -130,7 +134,6 @@ export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.t
     () => post(`${url}/v0/users/${uid}/events`, events),
     e => `上传事件失败因为: ${e}`
 )
-
 const M = getMonoid<BEvent>()
 const getRemoteEvents = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, number> => pipe(
     RTE.Do,
@@ -149,6 +152,7 @@ const getRemoteEvents = (baseUrl: string, uid: string): ReaderTaskEither<EventSt
     RTE.map(({remote}) => pipe(last(remote), O.map(eventId.get), O.map(x => x + 1), O.getOrElse(() => 0))),
 )
 type SyncResult = { events: BEvent[]; resp: Response }
+
 export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, SyncResult> => pipe(
     loadSyncOffsetId(uid),
     O.fold(() => getRemoteEvents(baseUrl, uid), RTE.right),
@@ -163,11 +167,6 @@ export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore,
     ))),
     RTE.bind('resp', ({events}) => RTE.fromTaskEither(uploadEvents(baseUrl, uid, events))),
     RTE.chainFirst(({events}) => setOffsetByEvents(uid, events)),
-)
-
-export const getAllEvents = (baseUrl: string, uid: string): TaskEither<Response, BEvent[]> => pipe(
-    TE.rightTask(() => fetch(`${baseUrl}/v0/users/${uid}/events`)),
-    TE.chain(r => r.ok ? TE.rightTask(r.json) : TE.left(r)),
 )
 
 export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): ReaderTaskEither<EventStore, string, any> => pipe(
