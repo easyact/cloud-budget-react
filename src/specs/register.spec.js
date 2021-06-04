@@ -118,7 +118,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                 const actual = await r2.resp.json()
                 const eventImport = makeEvent(CMD_IMPORT)
                 expect(actual).toEqual([eventImport, eventImport])
-            }, 20000)
+            }, 200000)
         })
     })
 })
