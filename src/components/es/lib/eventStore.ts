@@ -2,17 +2,22 @@ import {Event} from './es'
 import {Budget} from '../../budget/Model'
 import * as TE from 'fp-ts/TaskEither'
 import {TaskEither} from 'fp-ts/TaskEither'
+import * as O from 'fp-ts/Option'
 import {pipe} from 'fp-ts/lib/function'
 import Dexie from 'dexie'
 import {Command} from '../../budget/service/budgetEsService'
-import {map} from 'fp-ts/lib/Array'
+import {filter, last, map} from 'fp-ts/lib/Array'
 import {Lens} from 'monocle-ts'
 
 export type ErrorM = string
 export type BEvent = Event<Budget> & Command
 
+export type UnUploadedCommands = { commands: BEvent[]; beginAt?: string }
+
 export abstract class EventStore {
     put = (id: string, event: BEvent): TaskEither<ErrorM, any> => this.putList(id, [event])
+
+    abstract unUploadedCommands(uid: string): TE.TaskEither<ErrorM, UnUploadedCommands>
 
     abstract events(id: string): TaskEither<ErrorM, BEvent[]>
 
@@ -44,9 +49,19 @@ export class MemEventStore extends EventStore {
             this.events(uid),
             TE.map(es => [...es, ...events]),
             TE.map(es => this.store.set(uid, es)),
-        );
+        )
     }
 
+    unUploadedCommands = (uid: string): TaskEither<ErrorM, UnUploadedCommands> => pipe(
+        this.events(uid), TE.bindTo('events'),
+        TE.bind('commands', ({events}) => TE.right(events.filter(e => !e.at))),
+        TE.map(({events, commands}) => pipe(
+            events,
+            filter(e => !!e.at),
+            map(e => e.at),
+            last,
+            O.fold(() => ({commands}), beginAt => ({commands, beginAt}))
+        )))
 }
 
 class MyAppDatabase extends Dexie {
@@ -81,7 +96,7 @@ export class DBEventStore extends EventStore {
     clear = (uid: string): TaskEither<ErrorM, any> => TE.fromTask(() => this.findByUid(uid).delete())
 
     putList(uid: string, events: BEvent[]): TaskEither<ErrorM, any> {
-        return TE.fromTask(() => this.table.bulkPut(events));
+        return TE.fromTask(() => this.table.bulkPut(events))
     }
 }
 

@@ -5,16 +5,14 @@ import * as RT from 'fp-ts/lib/ReaderTask'
 import * as T from 'fp-ts/lib/Task'
 import * as O from 'fp-ts/lib/Option'
 import {pipe} from 'fp-ts/lib/function'
-import {BEvent, DBEventStore, ErrorM, EventStore} from '../../es/lib/eventStore'
+import {BEvent, DBEventStore, ErrorM, EventStore, UnUploadedCommands} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
-import {getItem, setItem} from 'fp-ts-local-storage'
 import {findIndex, getMonoid, last} from 'fp-ts/Array'
 import {Lens} from 'monocle-ts'
-import {IO} from 'fp-ts/IO'
 import log from '../../log'
 import {Option} from 'fp-ts/Option'
 import {TaskEither} from 'fp-ts/TaskEither'
@@ -80,6 +78,9 @@ export const getBudgetE = (uid: string, version: string): ReaderTaskEither<Event
 export const getEvents = (uid: string): ReaderTaskEither<EventStore, string, BEvent[]> =>
     pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.events(uid)))
 
+export const unUploadedCommands = (uid: string): ReaderTaskEither<EventStore, any, UnUploadedCommands> =>
+    pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.unUploadedCommands(uid)))
+
 const getVersions = (uid: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
     getEvents(uid),
     RTE.chain(es => RTE.fromEither(budgetSnapshot(es))),
@@ -125,11 +126,6 @@ const findIndexById = (events: BEvent[]) => (id: number): Option<number> => pipe
     findIndex(e => eventId.get(e) === id),
 )
 
-const loadSyncOffsetId = (uid: string): Option<number> => pipe(
-    eventOffset(uid)(),
-    O.chain((s: string) => O.tryCatch(() => parseInt(s))),
-)
-
 export const uploadEvents = (url: string, uid: string, events: BEvent[]) => TE.tryCatch(
     () => post(`${url}/v0/users/${uid}/events`, events),
     e => `上传事件失败因为: ${e}`
@@ -155,8 +151,7 @@ type SyncResult = { events: BEvent[]; resp: Response }
 
 export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, SyncResult> => pipe(
     loadSyncOffsetId(uid),
-    O.fold(() => getRemoteEvents(baseUrl, uid), RTE.right),
-    RTE.bindTo('offset'),
+    RTE.bindTo('at'),
     RTE.apS('all', getEvents(uid)),
     RTE.bind('events', ({all, offset}) => RTE.of(pipe(
         findIndexById(all)(offset),
@@ -174,13 +169,4 @@ export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): Re
     RTE.chain(store => RTE.fromTaskEither(store.modifyUser(oldUid, uid)))
 )
 
-export const eventOffset = (uid: string) => getItem(`${uid}.offset`)
-export const setEventOffset = (uid: string) => (offset: number): IO<void> => setItem(`${uid}.offset`, String(offset))
 const eventId: Lens<BEvent, BEvent[string]> = Lens.fromProp<BEvent>()('id')
-const setOffsetByEvents = (uid: string, events: BEvent[]): ReaderTaskEither<EventStore, string, void> => pipe(
-    last(events),
-    O.map(eventId.get),
-    O.map(setEventOffset(uid)),
-    RTE.fromOption(() => 'setOffsetByEvents got null id'),
-    RTE.map(f => f()),
-)
