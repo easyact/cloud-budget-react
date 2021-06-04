@@ -10,6 +10,7 @@ import Dexie from 'dexie'
 import {Command} from '../../budget/service/budgetEsService'
 import {filter, last, map} from 'fp-ts/lib/Array'
 import {Lens} from 'monocle-ts'
+import {sequenceT} from 'fp-ts/Apply'
 
 export type ErrorM = string
 export type BEvent = Event<Budget> & Command
@@ -101,15 +102,32 @@ export class DBEventStore extends EventStore {
         return TE.fromTask(() => this.table.bulkPut(events))
     }
 
+    // unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
+    //     return pipe(
+    //         () => this.table.where({at: null}).last(),
+    //         T.map(flow(O.fromNullable, O.chain((e: BEvent) => O.fromNullable(e.at)))),
+    //         T.bindTo('beginAt'),
+    //         T.apS('commands', pipe(() => this.table.filter(e => !e.at).sortBy('id'), T.map(O.fromNullable))),
+    //         T.map(r => RR.compact<any>(r) as UnUploadedCommands),
+    //         x => TE.fromTask(x),
+    //         // TE.chain(TE.fromOption(() => 'Found none from DB'))
+    //     )
+    // }
+
     unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
+        const beginAtOption = pipe(
+            () => this.table.where({at: null, uid}).last(),
+            T.map(flow(O.fromNullable,
+                O.chain((e: BEvent) => O.fromNullable(e.at)),
+            )))
+        const commandsOption = pipe(
+            () => this.table.filter(e => uid === e.uid && !e.at).sortBy('id'),
+            T.map(O.fromNullable))
         return pipe(
-            () => this.table.where({at: null}).last(),
-            T.map(flow(O.fromNullable, O.chain((e: BEvent) => O.fromNullable(e.at)))),
-            T.bindTo('beginAt'),
-            T.apS('commands', pipe(() => this.table.filter(e => !e.at).sortBy('id'), T.map(O.fromNullable))),
+            sequenceT(T.ApplicativeSeq)(beginAtOption, commandsOption),
+            T.map(([beginAt, commands]) => ({beginAt, commands})),
             T.map(r => RR.compact<any>(r) as UnUploadedCommands),
             x => TE.fromTask(x),
-            // TE.chain(TE.fromOption(() => 'Found none from DB'))
         )
     }
 }
