@@ -7,16 +7,45 @@
   },
   "interactions": [
     {
-      "description": "new client get",
+      "description": "first upload",
       "providerState": "no user",
       "request": {
-        "method": "GET",
+        "method": "POST",
         "path": "/v0/users/damoco@easyact.cn/events",
         "headers": {
-          "Origin": "https://easyact.cn"
+          "Content-Type": "application/json",
+          "origin": "http://localhost:3000"
+        },
+        "body": {
+          "commands": [
+            {
+              "type": "IMPORT_BUDGET",
+              "user": {
+                "id": "damoco@easyact.cn"
+              },
+              "to": {
+                "version": "0"
+              },
+              "payload": {
+                "assets": [
+                  {
+                    "id": "1",
+                    "name": "food",
+                    "amount": 10
+                  }
+                ]
+              }
+            }
+          ]
         },
         "matchingRules": {
-          "$.headers.Origin": {
+          "$.headers.origin": {
+            "match": "type"
+          },
+          "$.body.commands": {
+            "min": 1
+          },
+          "$.body.commands[*].*": {
             "match": "type"
           }
         }
@@ -29,57 +58,6 @@
         "body": [
 
         ]
-      }
-    },
-    {
-      "description": "first upload",
-      "providerState": "no user",
-      "request": {
-        "method": "POST",
-        "path": "/v0/users/damoco@easyact.cn/events",
-        "headers": {
-          "Content-Type": "application/json",
-          "origin": "http://localhost:3000"
-        },
-        "body": [
-          {
-            "type": "IMPORT_BUDGET",
-            "user": {
-              "id": "damoco@easyact.cn"
-            },
-            "to": {
-              "version": "0"
-            },
-            "payload": {
-              "assets": [
-                {
-                  "id": "",
-                  "name": "food",
-                  "amount": 10
-                }
-              ]
-            }
-          }
-        ],
-        "matchingRules": {
-          "$.headers.origin": {
-            "match": "type"
-          },
-          "$.body": {
-            "min": 1
-          },
-          "$.body[*].*": {
-            "match": "type"
-          }
-        }
-      },
-      "response": {
-        "status": 200,
-        "headers": {
-          "access-control-allow-origin": "*"
-        },
-        "body": {
-        }
       }
     },
     {
@@ -114,7 +92,7 @@
             "payload": {
               "assets": [
                 {
-                  "id": "",
+                  "id": "1",
                   "name": "food",
                   "amount": 10
                 }
