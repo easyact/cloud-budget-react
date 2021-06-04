@@ -2,8 +2,10 @@ import {Event} from './es'
 import {Budget} from '../../budget/Model'
 import * as TE from 'fp-ts/TaskEither'
 import {TaskEither} from 'fp-ts/TaskEither'
+import * as T from 'fp-ts/Task'
+import * as RR from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
-import {pipe} from 'fp-ts/lib/function'
+import {flow, pipe} from 'fp-ts/lib/function'
 import Dexie from 'dexie'
 import {Command} from '../../budget/service/budgetEsService'
 import {filter, last, map} from 'fp-ts/lib/Array'
@@ -97,6 +99,18 @@ export class DBEventStore extends EventStore {
 
     putList(uid: string, events: BEvent[]): TaskEither<ErrorM, any> {
         return TE.fromTask(() => this.table.bulkPut(events))
+    }
+
+    unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
+        return pipe(
+            () => this.table.where({at: null}).last(),
+            T.map(flow(O.fromNullable, O.chain((e: BEvent) => O.fromNullable(e.at)))),
+            T.bindTo('beginAt'),
+            T.apS('commands', pipe(() => this.table.filter(e => !e.at).sortBy('id'), T.map(O.fromNullable))),
+            T.map(r => RR.compact<any>(r) as UnUploadedCommands),
+            x => TE.fromTask(x),
+            // TE.chain(TE.fromOption(() => 'Found none from DB'))
+        )
     }
 }
 
