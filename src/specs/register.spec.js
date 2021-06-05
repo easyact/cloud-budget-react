@@ -26,7 +26,8 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
     afterAll(() => provider.finalize())
     const item = {name: 'food', amount: 10}
 
-    const eventStore = new MemEventStore()
+    const eventStore1 = new MemEventStore()
+    const eventStore2 = new MemEventStore()
     const CMD_IMPORT = {
         type: 'IMPORT_BUDGET',
         user: {id: user},
@@ -40,6 +41,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
         to: {version: '0'},
         payload: {id: '1', from: 'assets'},
     }
+    const eventDelete = makeEvent(CMD_DELETE)
     describe(`场景: 注册后再登录`, () => {
         describe(`假设服务端没有damoco用户\n并且damoco在本地已有试用数据`, () => {
             it(`当damoco注册\n那么从新客户端访问可以拿到所有历史事件`, async () => {
@@ -60,9 +62,9 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                         body: [eventImport]
                     },
                 })
-                await importBudget(user, {assets: [item]})(eventStore)()
+                await importBudget(user, {assets: [item]})(eventStore1)()
                 const url = provider.mockService.baseUrl
-                const r1 = await sync(url, user)(eventStore)()
+                const r1 = await sync(url, user)(eventStore1)()
                     .then(E.fold(log('sync error'), log('sync success')))
                 expect(r1.commands.commands).not.toHaveLength(0)
                 expect(r1.commands.beginAt).toBeUndefined()
@@ -92,6 +94,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                 //场景: 登录
                 //场景: 假设服务端damoco用户已经有事件
                 const eventImportLike = {...CMD_IMPORT, at: like(at), 'user.id': user}
+                const eventDeleteLike = {...CMD_DELETE, at: like(at), 'user.id': user}
                 await provider.addInteraction({
                     state: 'damoco has 1 import event',
                     uponReceiving: 'upload',
@@ -99,23 +102,24 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                         method: 'POST',
                         path: '/v0/users/damoco@easyact.cn/events',
                         headers: {'Content-Type': 'application/json', 'origin': like('http://localhost:3000')},
-                        body: {commands: eachLike(CMD_IMPORT), beginAt: like(at)},
+                        body: {commands: [like(CMD_IMPORT), like(CMD_DELETE)]},
                     },
                     willRespondWith: {
                         status: 200,
                         headers: {'access-control-allow-origin': '*'},
-                        body: [eventImportLike, eventImportLike]
+                        body: [eventImportLike, eventImportLike, eventDeleteLike]
                     },
                 })
-                //并且damoco在本地有未上传的命令
-                exec(user, CMD_DELETE)(eventStore)().then(log('并且damoco在本地有未上传的命令'))
-                //当damoco登录
+                //并且在一个新客户端damoco在本地有未上传的命令
+                await importBudget(user, {assets: [item]})(eventStore2)()
+                await exec(user, CMD_DELETE)(eventStore2)().then(log('并且damoco在本地有未上传的命令'))
+                //当damoco在一个新客户端登录
                 //那么本地命令会叠加在服务端事件列表之上
-                const r2 = await sync(url, user)(eventStore)()
+                const r2 = await sync(url, user)(eventStore2)()
                     .then(E.getOrElse(log('Error at 当damoco登录\n那么本地命令会叠加在服务端事件列表之上', console.error)))
-                expect(r2.commands.commands).toHaveLength(1)
-                expect(r2.commands.beginAt).toEqual(0)
-                expect(r2.events).toEqual([eventImport, eventImport])
+                expect(r2.commands.commands).toHaveLength(2)
+                expect(r2.commands.beginAt).toBeUndefined()
+                expect(r2.events).toEqual([eventImport, eventImport, eventDelete])
             }, 200000)
         })
     })
