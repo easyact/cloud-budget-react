@@ -33,6 +33,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
         to: {version: '0'},
         payload: {assets: [{id: '1', ...item}]},
     }
+    const eventImport = makeEvent(CMD_IMPORT)
     const CMD_DELETE = {
         type: 'PUT_ITEM',
         user: {id: user},
@@ -56,16 +57,16 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                     willRespondWith: {
                         status: 200,
                         headers: {'access-control-allow-origin': '*'},
-                        body: []
+                        body: [eventImport]
                     },
                 })
                 await importBudget(user, {assets: [item]})(eventStore)()
                 const url = provider.mockService.baseUrl
                 const r1 = await sync(url, user)(eventStore)()
                     .then(E.fold(log('sync error'), log('sync success')))
-                expect(r1.events.commands).not.toHaveLength(0)
-                expect(r1.events.beginAt).toBeUndefined()
-                expect(r1.resp.ok).toStrictEqual(true)
+                expect(r1.commands.commands).not.toHaveLength(0)
+                expect(r1.commands.beginAt).toBeUndefined()
+                expect(r1.events).toStrictEqual([eventImport])
                 // await provider.removeInteractions()
                 await provider.addInteraction({
                     state: 'damoco imported',
@@ -90,6 +91,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                 await provider.verify()
                 //场景: 登录
                 //场景: 假设服务端damoco用户已经有事件
+                const eventImportLike = {...CMD_IMPORT, at: like(at), 'user.id': user}
                 await provider.addInteraction({
                     state: 'damoco has 1 import event',
                     uponReceiving: 'upload',
@@ -102,8 +104,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                     willRespondWith: {
                         status: 200,
                         headers: {'access-control-allow-origin': '*'},
-                        body: [{...CMD_IMPORT, at: like(at), 'user.id': user},
-                            {...CMD_IMPORT, at: like(at), 'user.id': user}]
+                        body: [eventImportLike, eventImportLike]
                     },
                 })
                 //并且damoco在本地有未上传的命令
@@ -112,12 +113,9 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                 //那么本地命令会叠加在服务端事件列表之上
                 const r2 = await sync(url, user)(eventStore)()
                     .then(E.getOrElse(log('Error at 当damoco登录\n那么本地命令会叠加在服务端事件列表之上', console.error)))
-                expect(r2.events.commands).toHaveLength(1)
-                expect(r2.events.beginAt).toEqual(0)
-                expect(r2.resp.ok).toStrictEqual(true)
-                const actual = await r2.resp.json()
-                const eventImport = makeEvent(CMD_IMPORT)
-                expect(actual).toEqual([eventImport, eventImport])
+                expect(r2.commands.commands).toHaveLength(1)
+                expect(r2.commands.beginAt).toEqual(0)
+                expect(r2.events).toEqual([eventImport, eventImport])
             }, 200000)
         })
     })

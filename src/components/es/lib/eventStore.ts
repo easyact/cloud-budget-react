@@ -114,7 +114,7 @@ export class DBEventStore extends EventStore {
 
     // unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
     //     return pipe(
-    //         () => this.table.where({at: null}).last(),
+    //         () => this.table.where({at: null,uid}).last(),
     //         T.map(flow(O.fromNullable, O.chain((e: BEvent) => O.fromNullable(e.at)))),
     //         T.bindTo('beginAt'),
     //         T.apS('commands', pipe(() => this.table.filter(e => !e.at).sortBy('id'), T.map(O.fromNullable))),
@@ -139,6 +139,11 @@ export class DBEventStore extends EventStore {
             T.map(r => RR.compact<any>(r) as UnUploadedCommands),
             x => TE.fromTask(x),
         )
+    }
+
+    deleteList(uid: string, commands: UnUploadedCommands): TaskEither<never, any> {
+        const ids = commands.commands.map(c => c.id)
+        return TE.fromTask(() => this.table.filter(c => uid === c.user.id && ids.includes(c.id)).delete())
     }
 }
 

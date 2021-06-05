@@ -56,7 +56,26 @@
           "access-control-allow-origin": "*"
         },
         "body": [
-
+          {
+            "type": "IMPORT_BUDGET",
+            "user": {
+              "id": "damoco@easyact.cn"
+            },
+            "to": {
+              "version": "0"
+            },
+            "payload": {
+              "assets": [
+                {
+                  "id": "1",
+                  "name": "food",
+                  "amount": 10
+                }
+              ]
+            },
+            "at": "2021-05-14T00:00:00.012+08",
+            "user.id": "damoco@easyact.cn"
+          }
         ]
       }
     },
