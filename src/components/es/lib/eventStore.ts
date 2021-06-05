@@ -29,6 +29,8 @@ export abstract class EventStore {
     abstract clear(uid: string): TaskEither<ErrorM, any>
 
     abstract putList(uid: string, events: BEvent[]): TaskEither<ErrorM, any>
+
+    abstract deleteList(uid: string, commands: UnUploadedCommands): TE.TaskEither<never, any>
 }
 
 const id = Lens.fromPath<BEvent>()(['user', 'id'])
@@ -65,6 +67,14 @@ export class MemEventStore extends EventStore {
             last,
             O.fold(() => ({commands}), beginAt => ({commands, beginAt}))
         )))
+
+    deleteList(uid: string, commands: UnUploadedCommands): TaskEither<never, any> {
+        return pipe(
+            this.events(uid),
+            TE.map(filter(c => !commands.commands.includes(c))),
+            TE.map(es => this.store.set(uid, es)),
+        )
+    }
 }
 
 class MyAppDatabase extends Dexie {

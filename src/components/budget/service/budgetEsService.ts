@@ -117,16 +117,24 @@ export const post = (url: string, obj: any) => fetch(url, {
     body: JSON.stringify(obj)
 })
 
-export const uploadEvents = (url: string, uid: string, events: UnUploadedCommands) => TE.tryCatch(
-    () => post(`${url}/v0/users/${uid}/events`, events),
-    e => `上传事件失败因为: ${e}`
+export const uploadEvents = (url: string, uid: string, events: UnUploadedCommands): TaskEither<string, BEvent[]> => pipe(
+    TE.tryCatch(() => post(`${url}/v0/users/${uid}/events`, events),
+        e => `上传事件失败因为: ${e}`),
+    TE.chain(resp => resp.ok ? TE.rightTask(() => resp.json()) :
+        TE.left(`${resp.status}: ${resp.statusText}: ${resp.body}`)),
 )
-type SyncResult = { events: UnUploadedCommands; resp: Response }
+type SyncResult = { commands: UnUploadedCommands; events: BEvent[] }
+
+const updateEvents = (uid: string) => (r: SyncResult): ReaderTaskEither<EventStore, string, any> => pipe(
+    RTE.ask<EventStore>(),
+    RTE.chainFirst(store => RTE.fromTaskEither(store.deleteList(uid, r.commands))),
+    RTE.chainFirst(store => RTE.fromTaskEither(store.putList(uid, r.events))),
+)
 
 export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, SyncResult> => pipe(
-    unUploadedCommands(uid),
-    RTE.bindTo('events'),
-    RTE.bind('resp', ({events}) => RTE.fromTaskEither(uploadEvents(baseUrl, uid, events))),
+    unUploadedCommands(uid), RTE.bindTo('commands'),
+    RTE.bind('events', ({commands}) => RTE.fromTaskEither(uploadEvents(baseUrl, uid, commands))),
+    RTE.chainFirst(updateEvents(uid)),
 )
 
 export const migrateEventsToUser = (uid: string, oldUid: string = 'default'): ReaderTaskEither<EventStore, string, any> => pipe(
