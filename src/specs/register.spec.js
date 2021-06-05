@@ -102,6 +102,33 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                         method: 'POST',
                         path: '/v0/users/damoco@easyact.cn/events',
                         headers: {'Content-Type': 'application/json', 'origin': like('http://localhost:3000')},
+                        body: {commands: [like(CMD_DELETE)], beginAt: at},
+                    },
+                    willRespondWith: {
+                        status: 200,
+                        headers: {'access-control-allow-origin': '*'},
+                        body: [eventDeleteLike]
+                    },
+                })
+                await exec(user, CMD_DELETE)(eventStore1)()
+                //当damoco登录
+                //那么本地命令会叠加在服务端事件列表之上
+                const r1_2 = await sync(url, user)(eventStore1)()
+                    .then(E.getOrElse(log('Error at 当damoco登录', console.error)))
+                expect(r1_2.commands.commands).toEqual([CMD_DELETE])
+                expect(r1_2.commands.beginAt).toEqual(at)
+                expect(r1_2.events).toEqual([eventDelete])
+                await provider.verify()
+                // await provider.removeInteractions()
+                //场景: 新客户端登录
+                //场景: 假设服务端damoco用户已经有事件
+                await provider.addInteraction({
+                    state: 'damoco has 1 import event',
+                    uponReceiving: 'upload from new client',
+                    withRequest: {
+                        method: 'POST',
+                        path: '/v0/users/damoco@easyact.cn/events',
+                        headers: {'Content-Type': 'application/json', 'origin': like('http://localhost:3000')},
                         body: {commands: [like(CMD_IMPORT), like(CMD_DELETE)]},
                     },
                     willRespondWith: {
@@ -116,7 +143,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                 //当damoco在一个新客户端登录
                 //那么本地命令会叠加在服务端事件列表之上
                 const r2 = await sync(url, user)(eventStore2)()
-                    .then(E.getOrElse(log('Error at 当damoco登录\n那么本地命令会叠加在服务端事件列表之上', console.error)))
+                    .then(E.getOrElse(log('Error at 当damoco在一个新客户端登录', console.error)))
                 expect(r2.commands.commands).toHaveLength(2)
                 expect(r2.commands.beginAt).toBeUndefined()
                 expect(r2.events).toEqual([eventImport, eventImport, eventDelete])
