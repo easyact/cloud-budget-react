@@ -5,6 +5,8 @@ import {BudgetState} from './budgetState'
 import * as E from 'fp-ts/Either'
 import {DBEventStore} from '../../es/lib/eventStore'
 import useUser from './useUser'
+import {pipe} from 'fp-ts/lib/function'
+import * as RTE from 'fp-ts/ReaderTaskEither'
 
 const eventStore = new DBEventStore()
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
@@ -29,9 +31,9 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
-        sync(apiBase, uid)(eventStore)()
-            .then(E.fold(notifyError, () => dispatch({type: 'SYNC_SUCCESS'})))
-    }, [apiBase, uid, isAuthenticated, syncNeeded])
+        pipe(sync(apiBase, uid), RTE.chain(() => getBudgetE(uid, version)))(eventStore)()
+            .then(E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
+    }, [apiBase, uid, isAuthenticated, syncNeeded, version])
     useEffect(function execCmd() {
         if (!cmd) return
         console.log('useBudget.setting', cmd, version, eventStore)

@@ -54,6 +54,7 @@ function handle(state, action) {
             return {
                 ...state,
                 syncNeeded: false,
+                budget: action.payload
             }
 
         case 'FETCH_BUDGET_ERROR':
