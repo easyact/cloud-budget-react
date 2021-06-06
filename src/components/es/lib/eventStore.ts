@@ -43,6 +43,7 @@ export class MemEventStore extends EventStore {
 
     modifyUser = (oldUid: string, uid: string): TaskEither<ErrorM, any> => pipe(
         this.events(oldUid),
+        TE.map(log('modifyUser.events')),
         TE.map(map(id.set(uid))),
         TE.chainFirst(es => TE.of(this.store.set(uid, es))),
         TE.chainFirst(() => TE.of(this.store.delete(oldUid)))

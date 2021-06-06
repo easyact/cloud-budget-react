@@ -1,10 +1,13 @@
 import path from 'path'
 import {Pact} from '@pact-foundation/pact'
 import {MemEventStore} from '../components/es/lib/eventStore'
-import {exec, getAllEvents, importBudget, sync} from '../components/budget/service/budgetEsService'
+import {exec, getAllEvents, importBudget, migrateEventsToUser, sync} from '../components/budget/service/budgetEsService'
 import * as E from 'fp-ts/lib/Either'
 import {eachLike, like} from '@pact-foundation/pact/src/dsl/matchers'
 import log from '../components/log'
+import {uidKey} from '../components/budget/hook/useUser'
+import {pipe} from 'fp-ts/function'
+import * as RTE from 'fp-ts/ReaderTaskEither'
 
 const provider = new Pact({
     consumer: 'BudgetWebsite',
@@ -138,11 +141,19 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                     },
                 })
                 //并且在一个新客户端damoco在本地有未上传的命令
-                await importBudget(user, {assets: [item]})(eventStore2)()
-                await exec(user, CMD_DELETE)(eventStore2)().then(log('并且damoco在本地有未上传的命令'))
+                localStorage.removeItem(uidKey)
+                const unLoginUser = 'default'
+                await importBudget(unLoginUser, {assets: [item]})(eventStore2)()
+                await exec(unLoginUser, {
+                    ...CMD_DELETE,
+                    user: {id: unLoginUser}
+                })(eventStore2)().then(log('并且damoco在本地有未上传的命令'))
                 //当damoco在一个新客户端登录
                 //那么本地命令会叠加在服务端事件列表之上
-                const r2 = await sync(url, user)(eventStore2)()
+                const r2 = await pipe(
+                    migrateEventsToUser(user),
+                    RTE.chain(() => sync(url, user))
+                )(eventStore2)()
                     .then(E.getOrElse(log('Error at 当damoco在一个新客户端登录', console.error)))
                 expect(r2.commands.commands).toHaveLength(2)
                 expect(r2.commands.beginAt).toBeUndefined()

@@ -12,7 +12,7 @@ import {IO} from 'fp-ts/IO'
 import {getItem, setItem} from 'fp-ts-local-storage'
 import {useEffect, useState} from 'react'
 
-const uidKey = 'user.id'
+export const uidKey = 'user.id'
 const loadUser = (): IO<Option<string>> => getItem(uidKey)
 const saveUser = (user: string): IO<void> => setItem(uidKey, user)
 const defaultUser = 'default'
