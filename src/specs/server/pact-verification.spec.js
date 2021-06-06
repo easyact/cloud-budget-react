@@ -18,7 +18,7 @@ describe('Pact Verification', () => {
             'no user': () => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'}),
             'damoco has 1 import event': () => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'})
                 .then(() => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events/2021-05-14T00:00:00.012+08`, {
-                    method: 'PUT', body: {
+                    method: 'PUT', body: JSON.stringify({
                         'payload': {
                             'assets': [
                                 {
@@ -35,7 +35,7 @@ describe('Pact Verification', () => {
                         'user': {
                             'id': 'damoco@easyact.cn'
                         }
-                    }
+                    })
                 }))
         }
     }
