@@ -17,7 +17,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         kpi: {expenses: 0},
         saving: false,
         eventStore,
-        apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn/`,
+        apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn`,
         syncNeeded: true
     })
     const notifyError = <E>(payload: E) => dispatch({type: 'FETCH_BUDGET_ERROR', payload})

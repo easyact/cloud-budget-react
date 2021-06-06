@@ -11,6 +11,7 @@ import {Command} from '../../budget/service/budgetEsService'
 import {filter, last, map} from 'fp-ts/lib/Array'
 import {Lens} from 'monocle-ts'
 import {sequenceT} from 'fp-ts/Apply'
+import log from '../../log'
 
 export type ErrorM = string
 export type BEvent = Event<Budget> & Command
@@ -126,19 +127,19 @@ export class DBEventStore extends EventStore {
 
     unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
         console.log('unUploadedCommands')
-        const isCmd = (e: BEvent) => !e.at && e.user.id === uid
         const beginAtOption = pipe(
-            () => this.table.filter(isCmd).last(),
+            () => this.table.filter((e: BEvent) => !!e.at && e.user.id === uid).last(),
             T.map(flow(O.fromNullable,
                 O.chain((e: BEvent) => O.fromNullable(e.at)),
             )))
         const commandsOption = pipe(
-            () => this.table.filter(isCmd).sortBy('id'),
+            () => this.table.filter((e: BEvent) => !e.at && e.user.id === uid).sortBy('id'),
             T.map(O.fromNullable))
         return pipe(
             sequenceT(T.ApplicativeSeq)(beginAtOption, commandsOption),
             T.map(([beginAt, commands]) => ({beginAt, commands})),
             T.map(r => RR.compact<any>(r) as UnUploadedCommands),
+            T.map(log('unUploadedCommands return')),
             x => TE.fromTask(x),
         )
     }
