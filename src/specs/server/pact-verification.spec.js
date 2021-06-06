@@ -16,9 +16,27 @@ describe('Pact Verification', () => {
         // verbose: true,
         stateHandlers: {
             'no user': () => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'}),
-            // 'damoco has 1 import event': () => fetch(
-            //     `${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'})
-            //     .then(fetch())
+            'damoco has 1 import event': () => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'})
+                .then(() => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events/2021-05-14T00:00:00.012+08`, {
+                    method: 'PUT', body: {
+                        'payload': {
+                            'assets': [
+                                {
+                                    'amount': 10,
+                                    'name': 'food',
+                                    'id': '1'
+                                }
+                            ]
+                        },
+                        'to': {
+                            'version': '0'
+                        },
+                        'type': 'IMPORT_BUDGET',
+                        'user': {
+                            'id': 'damoco@easyact.cn'
+                        }
+                    }
+                }))
         }
     }
 
