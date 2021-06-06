@@ -34,10 +34,10 @@ const userStrategy = (loginUser: string, cacheUser: Option<string>): ReaderTaskE
     : pipe(cacheUser, O.getOrElse(() => defaultUser), RTE.right)
 
 export default function useUser(eventStore: EventStore) {
-    const {user: {email} = {}} = useAuth0()
+    const {user: {email} = {}, isAuthenticated} = useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
-    const [isAuthenticated, setAuthenticated] = useState(false)
-    const notifyAuthed = () => setAuthenticated(true)
+    const [isAuthOk, setAuthOk] = useState(false)
+    const notifyAuthed = () => setAuthOk(true)
     const [error, notifyError] = useState<string>()
     const task = userStrategy(email, loadUser()())
     useEffect(function execTask() {
@@ -46,7 +46,7 @@ export default function useUser(eventStore: EventStore) {
             flow(setUid, notifyAuthed))
         ).catch(notifyError)
     }, [task, eventStore])
-    return {uid, error, isAuthenticated}
+    return {uid, error, isAuthenticated: isAuthenticated && isAuthOk}
 }
 
 // import {match, select} from 'ts-pattern'
