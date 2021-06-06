@@ -36,7 +36,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
     }
     const eventImport = makeEvent(CMD_IMPORT)
     const CMD_DELETE = {
-        type: 'PUT_ITEM',
+        type: 'DELETE_ITEM',
         user: {id: user},
         to: {version: '0'},
         payload: {id: '1', from: 'assets'},

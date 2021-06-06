@@ -15,7 +15,10 @@ describe('Pact Verification', () => {
         providerVersion: '1.0.' + process.env.HOSTNAME,
         // verbose: true,
         stateHandlers: {
-            'no user': () => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'})
+            'no user': () => fetch(`${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'}),
+            // 'damoco has 1 import event': () => fetch(
+            //     `${providerBaseUrl}v0/users/damoco@easyact.cn/events`, {method: 'DELETE'})
+            //     .then(fetch())
         }
     }
 

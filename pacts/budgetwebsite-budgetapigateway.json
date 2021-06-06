@@ -146,7 +146,7 @@
         "body": {
           "commands": [
             {
-              "type": "PUT_ITEM",
+              "type": "DELETE_ITEM",
               "user": {
                 "id": "damoco@easyact.cn"
               },
@@ -177,7 +177,7 @@
         },
         "body": [
           {
-            "type": "PUT_ITEM",
+            "type": "DELETE_ITEM",
             "user": {
               "id": "damoco@easyact.cn"
             },
@@ -230,7 +230,7 @@
               }
             },
             {
-              "type": "PUT_ITEM",
+              "type": "DELETE_ITEM",
               "user": {
                 "id": "damoco@easyact.cn"
               },
@@ -303,7 +303,7 @@
             "user.id": "damoco@easyact.cn"
           },
           {
-            "type": "PUT_ITEM",
+            "type": "DELETE_ITEM",
             "user": {
               "id": "damoco@easyact.cn"
             },
