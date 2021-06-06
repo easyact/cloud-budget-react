@@ -21,7 +21,7 @@ export default function reducer(state, action) {
 
 function handle(state, action) {
     switch (action.type) {
-        case 'LOGGED_IN':
+        case 'USER_CHANGE':
             return {
                 ...state,
                 uid: action.payload

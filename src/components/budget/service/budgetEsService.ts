@@ -78,6 +78,7 @@ export const unUploadedCommands = (uid: string): ReaderTaskEither<EventStore, an
 
 const getVersions = (uid: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
     getEvents(uid),
+    // RTE.map(log('getVersions')),
     RTE.chain(es => RTE.fromEither(budgetSnapshot(es))),
     RTE.map(ss => ss.get(uid) ?? new Map()),
 )

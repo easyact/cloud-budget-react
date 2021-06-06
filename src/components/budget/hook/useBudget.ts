@@ -23,10 +23,9 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     const notifyError = <E>(payload: E) => dispatch({type: 'FETCH_BUDGET_ERROR', payload})
     const {cmd, apiBase, syncNeeded}: BudgetState = state
     // console.log('useBudgeting', uid, version, state, eventStore)
-    useEffect(function loggedIn() {
-        if (!isAuthenticated) return
-        dispatch({type: 'LOGGED_IN', payload: uid})
-    }, [uid, isAuthenticated])
+    useEffect(function userChange() {
+        dispatch({type: 'USER_CHANGE', payload: uid})
+    }, [uid])
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)

@@ -15,6 +15,7 @@ function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event<Budget>): BUDGET
 }
 
 function updateBudget(e: Event<Budget>, budget: Budget): Budget {
+    // console.log('updateBudget', e, budget)
     switch (e.type) {
         case 'IMPORT_BUDGET':
             return importBudget(budget, e.payload)
