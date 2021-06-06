@@ -125,13 +125,15 @@ export class DBEventStore extends EventStore {
     // }
 
     unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
+        console.log('unUploadedCommands')
+        const isCmd = (e: BEvent) => !e.at && e.user.id === uid
         const beginAtOption = pipe(
-            () => this.table.where({at: null, uid}).last(),
+            () => this.table.filter(isCmd).last(),
             T.map(flow(O.fromNullable,
                 O.chain((e: BEvent) => O.fromNullable(e.at)),
             )))
         const commandsOption = pipe(
-            () => this.table.filter(e => uid === e.uid && !e.at).sortBy('id'),
+            () => this.table.filter(isCmd).sortBy('id'),
             T.map(O.fromNullable))
         return pipe(
             sequenceT(T.ApplicativeSeq)(beginAtOption, commandsOption),

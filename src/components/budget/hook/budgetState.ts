@@ -9,5 +9,5 @@ export interface BudgetState {
     budget: Budget
     cmd: Command
     apiBase: string
-    syncNeeded: true
+    syncNeeded: boolean
 }
