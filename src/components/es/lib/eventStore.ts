@@ -106,7 +106,7 @@ export class DBEventStore extends EventStore {
     put = (id: string, event: BEvent): TaskEither<ErrorM, any> => TE.fromTask(() => this.table.put(event))
 
     modifyUser = (oldUid: string, uid: string): TaskEither<ErrorM, any> => TE.fromTask(() =>
-        this.findByUid(oldUid).modify(id.set(uid)))
+        this.findByUid(oldUid).modify(e => e.user.id = uid))
 
     clear = (uid: string): TaskEither<ErrorM, any> => TE.fromTask(() => this.findByUid(uid).delete())
 
