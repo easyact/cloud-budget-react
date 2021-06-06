@@ -17,7 +17,7 @@ const provider = new Pact({
 
 const at = '2021-05-14T00:00:00.012+08'
 const user = 'damoco@easyact.cn'
-const makeEvent = CMD => ({...CMD, at, 'user.id': user})
+const makeEvent = (CMD, isExpect = false) => ({...CMD, at: isExpect ? like(at) : at, 'user.id': user})
 
 describe(`功能: 作为用户, 为了注册后保留数据`, () => {
 
@@ -59,7 +59,7 @@ describe(`功能: 作为用户, 为了注册后保留数据`, () => {
                     willRespondWith: {
                         status: 200,
                         headers: {'access-control-allow-origin': '*'},
-                        body: [eventImport]
+                        body: [makeEvent(CMD_IMPORT, true)]
                     },
                 })
                 await importBudget(user, {assets: [item]})(eventStore1)()

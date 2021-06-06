@@ -76,7 +76,12 @@
             "at": "2021-05-14T00:00:00.012+08",
             "user.id": "damoco@easyact.cn"
           }
-        ]
+        ],
+        "matchingRules": {
+          "$.body[0].at": {
+            "match": "type"
+          }
+        }
       }
     },
     {
