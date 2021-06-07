@@ -111,6 +111,7 @@ export class DBEventStore extends EventStore {
     clear = (uid: string): TaskEither<ErrorM, any> => TE.fromTask(() => this.findByUid(uid).delete())
 
     putList(uid: string, events: BEvent[]): TaskEither<ErrorM, any> {
+        console.log('putting list:', events)
         return TE.fromTask(() => this.table.bulkPut(events))
     }
 
