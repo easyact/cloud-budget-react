@@ -11,6 +11,7 @@ import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {TaskEither} from 'fp-ts/TaskEither'
+import {Lens} from 'monocle-ts'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -126,10 +127,11 @@ export const uploadEvents = (url: string, uid: string, events: UnUploadedCommand
 )
 type SyncResult = { commands: UnUploadedCommands; events: BEvent[] }
 
+const id = Lens.fromProp<BEvent>()('id')
 const updateEvents = (uid: string) => (r: SyncResult): ReaderTaskEither<EventStore, string, any> => pipe(
     RTE.ask<EventStore>(),
     RTE.chainFirst(store => RTE.fromTaskEither(store.deleteList(uid, r.commands))),
-    RTE.chainFirst(store => RTE.fromTaskEither(store.putList(uid, r.events))),
+    RTE.chainFirst(store => RTE.fromTaskEither(store.putList(uid, r.events.map(id.set(undefined))))),
 )
 
 export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, SyncResult> => pipe(
