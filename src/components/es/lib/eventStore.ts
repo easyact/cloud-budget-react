@@ -85,7 +85,7 @@ class MyAppDatabase extends Dexie {
     constructor() {
         super('easyact-budget')
         this.version(1).stores({
-            events: '++id, user.id, at, version',
+            events: '++id, user.id, at, to.version',
             //...other tables goes here...
         })
         // The following line is needed if your typescript
