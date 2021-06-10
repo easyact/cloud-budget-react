@@ -13,7 +13,7 @@ export function LandingPage() {
                 </h2>
                 <p>预算无需记账, 只需每月比对估算与实际的偏差, 调整计划.</p>
                 <p>选择适合的投资, 开始行动.</p>
-                <Link to="/budget" className="button is-large is-primary">开始预算</Link>
+                <Link to="/budget" className="button is-large is-primary">免费试用</Link>
             </div>
         </div>
     </section>
