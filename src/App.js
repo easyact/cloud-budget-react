@@ -75,6 +75,7 @@ function App() {
                     <div className="column is-3">
                         {/*<p className="bd-footer-link-title"></p>*/}
                         <p><a href="https://beian.miit.gov.cn/">沪ICP备2021014272号</a></p>
+                        <p>v{process.env.REACT_APP_VERSION}-{process.env.NODE_ENV}</p>
                     </div>
                 </div>
             </footer>

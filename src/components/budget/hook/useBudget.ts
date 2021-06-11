@@ -28,21 +28,25 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function userChange() {
         if (error)
             return dispatch({type: 'FETCH_BUDGET_ERROR', payload: error})
+        alert('userChange')
         dispatch({type: 'USER_CHANGE', payload: uid})
     }, [error, uid])
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
+        alert('whenLoggedIn')
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
         pipe(sync(apiBase, uid), RTE.chain(() => getBudgetE(uid, version)))(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
     }, [apiBase, uid, isAuthenticated, syncNeeded, version])
     useEffect(function execCmd() {
         if (!cmd) return
+        alert('execCmd')
         console.log('useBudget.setting', cmd, version, eventStore)
         exec(uid, cmd)(eventStore)()
             .then(payload => dispatch({type: 'CMD_SUCCESS', payload}))
     }, [version, cmd, uid])
     useEffect(function load() {
+        alert('load')
         console.log('useBudget.loading', uid, version, eventStore)
         // dispatch({type: 'FETCH_BUDGET_REQUEST'})
         getBudgetE(uid, version)(eventStore)()

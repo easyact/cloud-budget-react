@@ -30,7 +30,8 @@ data "aws_iam_policy_document" "apig_dbd" {
   statement {
     actions = [
       "dynamodb:PutItem"]
-    resources = ["arn:aws-cn:dynamodb:cn-northwest-1:020064664914:table/events"]
+    resources = [
+      "arn:aws-cn:dynamodb:cn-northwest-1:020064664914:table/events"]
   }
 }
 
@@ -52,7 +53,9 @@ module "api" {
 
 output "api" {
   value = {
-    sqs = aws_sqs_queue.es
-    role = [aws_iam_role.apig_sqs.arn, aws_iam_role.apig_dbd.arn]
+    //    sqs = aws_sqs_queue.es
+    role = [
+      aws_iam_role.apig_sqs.arn,
+      aws_iam_role.apig_dbd.arn]
   }
 }
