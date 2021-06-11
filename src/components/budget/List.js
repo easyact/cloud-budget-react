@@ -1,5 +1,3 @@
-import {FaPlus} from 'react-icons/all'
-import {useRef} from 'react'
 import * as R from 'ramda'
 import {Item} from './Item'
 import {reduce} from 'fp-ts/Array'
@@ -40,19 +38,6 @@ export default function List(
         dispatch,
     }
 ) {
-    const adding = {}
-    for (const c of columns) {
-        const initValueElement = initValue[c.type]
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        adding[c.key] = useRef(initValueElement)
-    }
-
-    function add() {
-        console.log('List add', adding)
-        put(R.mapObjIndexed(r => r.current.value)(adding))
-        columns.map(c => c.key).forEach(t => adding[t].current.value = null)
-    }
-
     function put(item) {
         dispatch({type: 'PUT_ITEM', payload: {...item, type: name}})
     }
@@ -75,22 +60,7 @@ export default function List(
                     </tr>
                     </thead>
                     <tfoot>
-                    <tr>
-                        {columns.map(c => (//TODO duration control
-                            <td key={c.key}>
-                                <input type={c.type} className="input is-small" ref={adding[c.key]}/>
-                            </td>
-                        ))}
-                        <th>
-                            <div className="field has-addons">
-                                <div className="control">
-                                    <button className="button is-small is-success" onClick={add}>
-                                        <FaPlus/>
-                                    </button>
-                                </div>
-                            </div>
-                        </th>
-                    </tr>
+                    <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>
                     <tr>
                         <td>
                             总{title}
