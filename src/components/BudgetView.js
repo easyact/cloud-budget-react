@@ -4,7 +4,7 @@ import useBudget from './budget/hook/useBudget'
 const AMOUNT = '数额'
 
 function BudgetView() {
-    const [{budget}, dispatch] = useBudget('current')
+    const [{budget, error}, dispatch] = useBudget('current')
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -19,8 +19,13 @@ function BudgetView() {
             dispatch({type: 'IMPORT_BUDGET', payload})
         }
     }
+
     return (
         <div>
+            {error ? <div className="notification is-danger">
+                <button className="delete" onClick={() => dispatch({type: 'CLOSE_ERROR'})}/>
+                {error}
+            </div> : <div/>}
             <div className="level is-mobile">
                 <div className="level-item has-text-centered">
                     {/*R.sum(expenses.map(e => e[AMOUNT]))*/}

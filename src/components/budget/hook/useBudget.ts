@@ -10,7 +10,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 
 const eventStore = new DBEventStore()
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
-    const {uid, isAuthenticated} = useUser(eventStore)
+    const {uid, isAuthenticated, error} = useUser(eventStore)
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer, {
         uid,
         version,
@@ -26,8 +26,10 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     const {cmd, apiBase, syncNeeded}: BudgetState = state
     // console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function userChange() {
+        if (error)
+            return dispatch({type: 'FETCH_BUDGET_ERROR', payload: error})
         dispatch({type: 'USER_CHANGE', payload: uid})
-    }, [uid])
+    }, [error, uid])
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)

@@ -44,7 +44,7 @@ export default function useUser(eventStore: EventStore) {
         task(eventStore)().then(E.fold(
             notifyError,
             flow(setUid, notifyAuthed))
-        ).catch(notifyError)
+        ).catch(notifyError)//.then(x => notifyError('test user error'))
     }, [task, eventStore])
     return {uid, error, isAuthenticated: isAuthenticated && isAuthOk}
 }

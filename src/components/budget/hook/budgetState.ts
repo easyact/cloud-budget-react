@@ -10,4 +10,5 @@ export interface BudgetState {
     cmd: Command
     apiBase: string
     syncNeeded: boolean
+    error: string
 }

@@ -64,6 +64,12 @@ function handle(state, action) {
                 error: action.payload
             }
 
+        case 'CLOSE_ERROR':
+            return {
+                ...state,
+                error: undefined
+            }
+
         default:
             return {...state, cmd: {user: {id: state.uid}, to: {version: state.version}, ...action}}
     }

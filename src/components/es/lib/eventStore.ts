@@ -68,7 +68,9 @@ export class MemEventStore extends EventStore {
             map(e => e.at),
             last,
             O.fold(() => ({commands}), beginAt => ({commands, beginAt}))
-        )))
+        )),
+        // TE.chain(() => TE.left('test error'))
+    )
 
     deleteList(uid: string, commands: UnUploadedCommands): TaskEither<never, any> {
         return pipe(

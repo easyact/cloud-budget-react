@@ -29,7 +29,7 @@ resource "null_resource" "remove_and_upload_to_s3" {
     c = sha1(join("", [for f in local.files: filesha1("${local.dist}/${f}")]))
   }
   provisioner "local-exec" {
-    command = "aws s3 sync ${local.dist} s3://${aws_s3_bucket.www.bucket}"
+    command = "aws s3 sync ${local.dist} s3://${aws_s3_bucket.www.bucket} && aws cloudfront create-invalidation --distribution-id E13X6MHH6IEBAQ --paths \"/*\""
   }
 }
 
