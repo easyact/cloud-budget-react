@@ -41,7 +41,7 @@ function BudgetView() {
                         <List items={budget.assets} dispatch={dispatch}/>
                     </div>
                     <div className="panel">
-                        <List name={'liabilities'} title="负债" hint="不断从你口袋掏钱出来" items={budget.liabilities}
+                        <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
                               dispatch={dispatch}
                               columns={[{title: '条目', type: 'text', key: 'name'}, {
                                   title: '总数',

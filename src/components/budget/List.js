@@ -31,7 +31,7 @@ export default function List(
     {
         name = 'assets',
         title = '资产',
-        hint = '产生被动收入',
+        hint = '带来被动收入',
         columns = [
             {title: '项目', type: 'text', key: 'name'},
             {title: '价值', type: 'number', key: 'amount'},
