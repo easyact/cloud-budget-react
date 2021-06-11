@@ -1,27 +1,14 @@
 import * as R from 'ramda'
 import {Item} from './Item'
-import {reduce} from 'fp-ts/Array'
-import getWeeksInMonth from 'date-fns/getWeeksInMonth'
-import getDaysInMonth from 'date-fns/getDaysInMonth'
+import {timesPerMonth} from './util'
 
 export const initValue = {text: '空', number: 0, duration: {months: 1}}
-const count = {
-    'years': 1 / 12,
-    'months': 1,
-    'weeks': getWeeksInMonth(new Date()),
-    'days': getDaysInMonth(new Date()),
-}
-const countInMonth = duration => {
-    if (!duration) return 1
-    const es = Object.entries(duration)
-    return reduce(0, (s, [unit, n]) => n * count[unit])(es)
-}
 
 function sum(items, columns) {
     const amountKey = columns[1].key
     const unitKey = 'duration'
     // console.log(items)
-    const numbers = items.map(item => item[amountKey] * countInMonth(item[unitKey]))
+    const numbers = items.map(item => item[amountKey] * timesPerMonth(item[unitKey]))
     return R.sum(numbers)
 }
 
