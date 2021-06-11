@@ -22,31 +22,34 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn`,
         syncNeeded: true
     })
-    const notifyError = <E>(payload: E) => dispatch({type: 'FETCH_BUDGET_ERROR', payload})
+    const notifyError = <E>(payload: E) => {
+        // alert(JSON.stringify(payload))
+        dispatch({type: 'FETCH_BUDGET_ERROR', payload})
+    }
     const {cmd, apiBase, syncNeeded}: BudgetState = state
     // console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function userChange() {
         if (error)
             return dispatch({type: 'FETCH_BUDGET_ERROR', payload: error})
-        alert('userChange')
+        // alert('userChange')
         dispatch({type: 'USER_CHANGE', payload: uid})
     }, [error, uid])
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
-        alert('whenLoggedIn')
+        // alert('whenLoggedIn')
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
         pipe(sync(apiBase, uid), RTE.chain(() => getBudgetE(uid, version)))(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
     }, [apiBase, uid, isAuthenticated, syncNeeded, version])
     useEffect(function execCmd() {
         if (!cmd) return
-        alert('execCmd')
+        // alert('execCmd')
         console.log('useBudget.setting', cmd, version, eventStore)
         exec(uid, cmd)(eventStore)()
             .then(payload => dispatch({type: 'CMD_SUCCESS', payload}))
     }, [version, cmd, uid])
     useEffect(function load() {
-        alert('load')
+        // alert('load')
         console.log('useBudget.loading', uid, version, eventStore)
         // dispatch({type: 'FETCH_BUDGET_REQUEST'})
         getBudgetE(uid, version)(eventStore)()

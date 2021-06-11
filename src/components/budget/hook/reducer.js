@@ -13,6 +13,7 @@ const kpi = R.pipe(
 )
 
 export default function reducer(state, action) {
+    // alert(`${JSON.stringify(action)}`)
     console.log('reducing', action, state)
     const r = handle(state, action)
     console.log('reduced', r)
