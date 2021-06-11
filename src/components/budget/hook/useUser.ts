@@ -29,12 +29,17 @@ const updateCache = (loginUser: string):
 )
 const updateCacheIO = (loginUser: string): IO<Option<string>> => pipe(saveUser(loginUser), io.chain(loadUser))
 
-const userStrategy = (loginUser: string, cacheUser: Option<string>): ReaderTaskEither<EventStore, string, string> => loginUser
+const userStrategy = (loginUser: string | undefined, cacheUser: Option<string>): ReaderTaskEither<EventStore, string, string> => loginUser
     ? pipe(cacheUser, migrateEventsIf1stLogin(loginUser), updateCache(loginUser))
     : pipe(cacheUser, O.getOrElse(() => defaultUser), RTE.right)
 
 export default function useUser(eventStore: EventStore) {
-    const {user: {email} = {}, isAuthenticated} = useAuth0()
+    const {user: {email} = {email: undefined}, isAuthenticated} =
+        // {
+        //     user: {email: 'zhaolei@easyact.cn'},
+        //     isAuthenticated: true
+        // }
+        useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
     const [isAuthOk, setAuthOk] = useState(false)
     const notifyAuthed = () => setAuthOk(true)

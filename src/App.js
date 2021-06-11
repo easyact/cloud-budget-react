@@ -20,7 +20,9 @@ function Sync() {
 
 function App() {
     const [active, setActive] = useState(false)
-    const {isAuthenticated} = useAuth0()
+    const {isAuthenticated} =
+        // {isAuthenticated: true}
+        useAuth0()
     return <Router>
         <div className="App">
             <header>
