@@ -10,7 +10,7 @@ ReactDOM.render(
     <Auth0Provider
         domain="easyact.auth0.com"
         clientId="Bwz18PS92Z990oihatGERFIFrVsveVtm"
-        redirectUri={window.location.origin}
+        redirectUri={window.location.origin + '/loggedIn'}
     >
         <App/>
     </Auth0Provider>,

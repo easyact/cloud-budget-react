@@ -1,4 +1,7 @@
-export function LoggedIn() {
+import {useNavigate} from 'react-router'
 
-    return <div>正在获取预算...</div>
+export function LoggedIn() {
+    const navigate = useNavigate()
+    navigate('/budget')
+    return <h1>欢迎回来!</h1>
 }

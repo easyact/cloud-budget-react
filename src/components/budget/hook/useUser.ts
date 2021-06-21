@@ -42,13 +42,19 @@ export default function useUser(eventStore: EventStore) {
         useAuth0()
     const [uid, setUid] = useState(email ?? defaultUser)
     const [isAuthOk, setAuthOk] = useState(false)
-    const notifyAuthed = () => setAuthOk(true)
+    const notifyAuthed = (s: string) => {
+        gtag('set', {
+            'user_id': s,
+        })
+        setUid(s)
+        setAuthOk(true)
+    }
     const [error, notifyError] = useState<string>()
     const task = userStrategy(email, loadUser()())
     useEffect(function execTask() {
         task(eventStore)().then(E.fold(
             notifyError,
-            flow(setUid, notifyAuthed))
+            notifyAuthed)
         ).catch(notifyError)//.then(x => notifyError('test user error'))
     }, [task, eventStore])
     return {uid, error, isAuthenticated: isAuthenticated && isAuthOk}
