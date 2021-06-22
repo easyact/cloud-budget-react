@@ -20,8 +20,11 @@ function DurationControl(fields) {
             <div className="field has-addons" key={`duration-${index}`}>
                 <div className="field has-addons">
                     <p className="control">
-                        <input defaultValue={value} className="input is-small"
-                               onChange={v => current.value[unit] = v}/>
+                        <input defaultValue={value} className="input is-small" type="number"
+                               onChange={event => {
+                                   current.value[unit] = parseInt(event.target.value)
+                                   console.log('DurationEditor inputting', unit, current.value[unit], current, fields)
+                               }}/>
                     </p>
                     <p className="control">
                     <span className="select is-small is-narrow">
@@ -72,6 +75,7 @@ export function Item({index, columns, value, update, rm}) {
     const td = (type, editing) => durationControl[type]?.[editing] ?? ((v, key) => editing
         ? <input type={type} className="input is-small" defaultValue={v} ref={fields[key]}/>
         : v)
+    // console.log('td', value, columns)
     return <tr key={index}>
         {columns.map(c => <td key={c.key + index}>{td(c.type, editing)(value?.[c.key], c.key)}</td>)}
         <td key={`td${index}`}>
