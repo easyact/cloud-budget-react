@@ -55,6 +55,9 @@ function App() {
                                 <FaSync/>
                                 <span>同步至云端</span>
                             </Link>}
+                            <div className="navbar-item">
+                                定价(限时免费)
+                            </div>
                         </div>
                         <div className="navbar-end"><Profile/></div>
                     </div>
