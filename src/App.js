@@ -8,6 +8,7 @@ import Profile from './auth/Profile'
 import {useAuth0} from '@auth0/auth0-react'
 import LoginButton from './auth/LoginButton'
 import {LoggedIn} from './auth/LoggedIn'
+import {init} from './components/budget/service/analytics'
 
 function Sync() {
     return <div className="hero is-light">
@@ -19,6 +20,7 @@ function Sync() {
 }
 
 function App() {
+    init()
     const [active, setActive] = useState(false)
     const {isAuthenticated} =
         // {isAuthenticated: true}
