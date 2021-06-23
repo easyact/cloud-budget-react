@@ -21,8 +21,8 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
-      gtag('config', 'G-3ZE3YFHFZY');
+      if(process.env.NODE_ENV==='production')
+        gtag('config', 'G-3ZE3YFHFZY');
     </script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
