@@ -15,10 +15,10 @@ ReactDOM.render(
         clientId="Bwz18PS92Z990oihatGERFIFrVsveVtm"
         redirectUri={window.location.origin + '/loggedIn'}
         scope={scope}
-        // audience={audience}
+        audience={audience}
         // useRefreshTokens={true}
         // advancedOptions={{defaultScope: scope}}
-        // prompt="none"
+        prompt="none"
     >
         <App/>
     </Auth0Provider>,
