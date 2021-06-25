@@ -11,6 +11,7 @@ import * as io from 'fp-ts/IO'
 import {IO} from 'fp-ts/IO'
 import {getItem, setItem} from 'fp-ts-local-storage'
 import {useEffect, useState} from 'react'
+import {sign_up} from '../service/analytics'
 
 export const uidKey = 'user.id'
 const loadUser = (): IO<Option<string>> => getItem(uidKey)
@@ -34,7 +35,7 @@ const userStrategy = (loginUser: string | undefined, cacheUser: Option<string>):
     : pipe(cacheUser, O.getOrElse(() => defaultUser), RTE.right)
 
 export default function useUser(eventStore: EventStore) {
-    const {user: {email} = {email: undefined}, isAuthenticated} =
+    const {user: {email, firstLogin} = {email: undefined}, isAuthenticated} =
         // {
         //     user: {email: 'zhaolei@easyact.cn'},
         //     isAuthenticated: true
@@ -46,6 +47,7 @@ export default function useUser(eventStore: EventStore) {
         gtag('set', {
             'user_id': s,
         })
+        if (firstLogin) sign_up()
         setUid(s)
         setAuthOk(true)
     }
