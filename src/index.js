@@ -18,7 +18,7 @@ ReactDOM.render(
         audience={audience}
         // useRefreshTokens={true}
         // advancedOptions={{defaultScope: scope}}
-        prompt="none"
+        // prompt="none"
     >
         <App/>
     </Auth0Provider>,
