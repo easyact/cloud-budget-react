@@ -11,7 +11,6 @@ import * as io from 'fp-ts/IO'
 import {IO} from 'fp-ts/IO'
 import {getItem, setItem} from 'fp-ts-local-storage'
 import {useEffect, useState} from 'react'
-import {sign_up} from '../service/analytics'
 
 export const uidKey = 'user.id'
 const loadUser = (): IO<Option<string>> => getItem(uidKey)
@@ -19,10 +18,7 @@ const saveUser = (user: string): IO<void> => setItem(uidKey, user)
 const defaultUser = 'default'
 
 const migrateEventsIf1stLogin = (loginUser: string) => O.fold(
-    () => {
-        sign_up()
-        return migrateEventsToUser(loginUser)
-    },
+    () => migrateEventsToUser(loginUser),
     RTE.right
 )
 
