@@ -4,7 +4,7 @@ import {useAuth0} from '@auth0/auth0-react'
 const LoginButton = () => {
     const {loginWithRedirect} = useAuth0()
 
-    return <button className="button is-success" onClick={() => loginWithRedirect()}>Log In</button>
+    return <button className="button is-success" onClick={() => loginWithRedirect()}>登录</button>
 }
 
 export default LoginButton

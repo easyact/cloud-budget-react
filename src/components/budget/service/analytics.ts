@@ -13,5 +13,6 @@ export function init() {
 }
 
 export function sign_up() {
+    console.log('First login!')
     active('sign_up', {method: 'auth0'})
 }
