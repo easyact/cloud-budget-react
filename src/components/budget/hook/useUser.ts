@@ -73,7 +73,7 @@ export default function useUser(eventStore: EventStore) {
         }
 
         getUserMetadata().then(() => console.log('getUserMetadata success'))
-    }, [getAccessTokenSilently, sub, email])
+    }, [getAccessTokenSilently, sub])
     console.log('useUser', userMetadata)
     const [uid, setUid] = useState(email ?? defaultUser)
     const [isAuthOk, setAuthOk] = useState(false)
