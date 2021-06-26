@@ -14,8 +14,8 @@ ReactDOM.render(
         domain={domain}
         clientId="Bwz18PS92Z990oihatGERFIFrVsveVtm"
         redirectUri={window.location.origin + '/loggedIn'}
-        scope={scope}
-        audience={audience}
+        // scope={scope}
+        // audience={audience}
         // useRefreshTokens={true}
         // advancedOptions={{defaultScope: scope}}
         // prompt="none"
