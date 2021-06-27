@@ -1,3 +1,5 @@
+import mixpanel from 'mixpanel-browser'
+
 export function active(action: string = 'PUT_ITEM', otherParams = {}) {
     const params = {
         'event_category': 'engagement',
@@ -7,9 +9,11 @@ export function active(action: string = 'PUT_ITEM', otherParams = {}) {
 }
 
 export function init() {
-    if (process.env.NODE_ENV === 'production')
+    if (process.env.NODE_ENV === 'production') {
         gtag('config', 'G-3ZE3YFHFZY')
-    else console.log('Ignore GA because NODE_ENV', process.env.NODE_ENV)
+        mixpanel.init('a578b85c3ac38e9679b31602d1160994')
+        mixpanel.track('page_view')
+    } else console.log('Ignore analytics because NODE_ENV', process.env.NODE_ENV)
 }
 
 export function sign_up() {

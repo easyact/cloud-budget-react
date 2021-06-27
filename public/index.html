@@ -26,42 +26,17 @@
 
         gtag('js', new Date())
     </script>
-    <script>
-        !function () {
-            var analytics = window.analytics = window.analytics || []
-            if (!analytics.initialize)
-                if (analytics.invoked) window.console && console.error && console.error('Segment snippet included twice.')
-                else {
-                    analytics.invoked = !0
-                    analytics.methods = ['trackSubmit', 'trackClick', 'trackLink', 'trackForm', 'pageview', 'identify', 'reset', 'group', 'track', 'ready', 'alias', 'debug', 'page', 'once', 'off', 'on', 'addSourceMiddleware', 'addIntegrationMiddleware', 'setAnonymousId', 'addDestinationMiddleware']
-                    analytics.factory = function (e) {
-                        return function () {
-                            var t = Array.prototype.slice.call(arguments)
-                            t.unshift(e)
-                            analytics.push(t)
-                            return analytics
-                        }
-                    }
-                    for (var e = 0; e < analytics.methods.length; e++) {
-                        var key = analytics.methods[e]
-                        analytics[key] = analytics.factory(key)
-                    }
-                    analytics.load = function (key, e) {
-                        var t = document.createElement('script')
-                        t.type = 'text/javascript'
-                        t.async = !0
-                        t.src = 'https://cdn.segment.com/analytics.js/v1/' + key + '/analytics.min.js'
-                        var n = document.getElementsByTagName('script')[0]
-                        n.parentNode.insertBefore(t, n)
-                        analytics._loadOptions = e
-                    }
-                    analytics._writeKey = 'rby8Ra6FZio91uCE8jALqtJKYQeW5xQw'
-                    analytics.SNIPPET_VERSION = '4.13.2'
-                    analytics.load('rby8Ra6FZio91uCE8jALqtJKYQeW5xQw')
-                    analytics.page()
-                }
-        }()
+    <!-- Start of Survicate (www.survicate.com) code -->
+    <script type='text/javascript'>
+        (function(w) {
+            var s = document.createElement('script');
+            s.src = 'https://survey.survicate.com/workspaces/089b410b12ade7d96644135bf1919fdb/web_surveys.js';
+            s.async = true;
+            var e = document.getElementsByTagName('script')[0];
+            e.parentNode.insertBefore(s, e);
+        })(window);
     </script>
+    <!-- End of Survicate code -->
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
