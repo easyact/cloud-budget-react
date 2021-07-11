@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import {Item} from './Item'
 import {timesPerMonth} from './util'
-import {active} from './service/analytics'
+import {track} from './service/analytics'
 
 export const initValue = {text: '空', number: 0, duration: {months: 1}}
 
@@ -28,14 +28,14 @@ export default function List(
 ) {
     function put(item) {
         const type = 'PUT_ITEM'
-        active(type)
+        track(type)
         dispatch({type, payload: {...item, type: name}})
     }
 
     function rm(id) {
         console.log('rm', id)
         const type = 'DELETE_ITEM'
-        active(type)
+        track(type)
         dispatch({type, payload: {id, from: name}})
     }
 
