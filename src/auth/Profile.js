@@ -7,7 +7,7 @@ import Loading from './Loading'
 
 const Profile = () => {
     const {user, isAuthenticated, isLoading} = useAuth0()
-
+    // console.log('User', user)
     if (isLoading) {
         return <div className="navbar-item"><Loading/></div>
     }

@@ -12,6 +12,7 @@ import {IO} from 'fp-ts/IO'
 import {getItem, setItem} from 'fp-ts-local-storage'
 import {useEffect, useState} from 'react'
 import {sign_up} from '../service/analytics'
+import {identify} from '../service/segment'
 
 export const uidKey = 'user.id'
 const loadUser = (): IO<Option<string>> => getItem(uidKey)
@@ -38,29 +39,31 @@ const userStrategy = (loginUser: string | undefined, cacheUser: Option<string>):
     : pipe(cacheUser, O.getOrElse(() => defaultUser), RTE.right)
 
 export default function useUser(eventStore: EventStore) {
-    const {user: {email} = {email: undefined}, isAuthenticated} =
+    const {user = {email: undefined}, isAuthenticated} =
         // {
         //     user: {email: 'zhaolei@easyact.cn'},
         //     isAuthenticated: true
         // }
         useAuth0()
+    const {email} = user
     const [uid, setUid] = useState(email ?? defaultUser)
     const [isAuthOk, setAuthOk] = useState(false)
-    const notifyAuthed = (s: string) => {
-        gtag('set', {
-            'user_id': s,
-        })
-        setUid(s)
-        setAuthOk(true)
-    }
     const [error, notifyError] = useState<string>()
     const task = userStrategy(email, loadUser()())
     useEffect(function execTask() {
+        const notifyAuthed = (s: string) => {
+            gtag('set', {
+                'user_id': s,
+            })
+            identify(user)
+            setUid(s)
+            setAuthOk(true)
+        }
         task(eventStore)().then(E.fold(
             notifyError,
             notifyAuthed)
         ).catch(notifyError)//.then(x => notifyError('test user error'))
-    }, [task, eventStore])
+    }, [task, eventStore, user])
     return {uid, error, isAuthenticated: isAuthenticated && isAuthOk}
 }
 
