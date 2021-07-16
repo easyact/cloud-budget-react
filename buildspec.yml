@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  build:
+    commands:
+      - ./build test
+      - echo $CODEBUILD_SRC_DIR
+artifacts:
+  files:
+    - '**/*'
+  name: BuildArtifact
+  base-directory: build
