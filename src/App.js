@@ -19,6 +19,15 @@ function Sync() {
     </div>
 }
 
+function Price() {
+    return <div className="hero is-light">
+        <div className="hero-body">
+            <p>登录后即可同步至云端</p>
+            <LoginButton/>
+        </div>
+    </div>
+}
+
 function App() {
     init()
     const [active, setActive] = useState(false)
@@ -60,6 +69,9 @@ function App() {
                             <div className="navbar-item">
                                 定价(限时免费)
                             </div>
+                            {/*<Link to="price" className="navbar-item">*/}
+                            {/*    定价*/}
+                            {/*</Link>*/}
                         </div>
                         <div className="navbar-end"><Profile/></div>
                     </div>
@@ -74,6 +86,7 @@ function App() {
                 <Route path="target" element={<BudgetView/>}/>
                 <Route path="sync" element={<Sync/>}/>
                 <Route path="loggedIn" element={<LoggedIn/>}/>
+                <Route path="price" element={<Price/>}/>
             </Routes>
             <footer className="footer">
                 <div className="columns">
