@@ -5,6 +5,7 @@ phases:
       nodejs: 12
   build:
     commands:
+      - ls -al
       - ./build test
       - echo $CODEBUILD_SRC_DIR
 artifacts:
