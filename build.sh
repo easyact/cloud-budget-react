@@ -26,7 +26,7 @@ elif [ "$1" = "deploy" ] && [ $# -eq 2 ]; then
   STAGE=$2
 
   npm install
-  ./deploy.sh
+  deploy/deploy.sh
 else
   instruction
   exit 1

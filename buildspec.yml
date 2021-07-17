@@ -7,6 +7,7 @@ phases:
     commands:
       - ls -al
       - ./build.sh test
+      - npm run build
       - echo $CODEBUILD_SRC_DIR
 artifacts:
   files:
