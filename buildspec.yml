@@ -5,6 +5,7 @@ phases:
       nodejs: 12
   build:
     commands:
+      - echo "\$CI=$CI"
       - ls -al
       - ./build.sh test
       - npm run build

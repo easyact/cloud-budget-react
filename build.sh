@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+echo "\$CI=$CI"
+
 instruction()
 {
   echo "usage: ./build.sh deploy <env>"
