@@ -42,5 +42,5 @@ describe('Pact Verification', () => {
 
     it('should validate the expectations of Order Web', () => {
         return new Verifier(opts).verifyProvider()
-    }, 20000)
+    }, 40000)
 })
