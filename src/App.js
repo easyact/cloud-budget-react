@@ -10,6 +10,7 @@ import LoginButton from './auth/LoginButton'
 import {LoggedIn} from './auth/LoggedIn'
 import {init} from './components/budget/service/analytics'
 import {Price} from './components/price/Price'
+import {Pay} from './components/price/Pay'
 
 function Sync() {
     return <div className="hero is-light">
@@ -79,6 +80,7 @@ function App() {
                 <Route path="sync" element={<Sync/>}/>
                 <Route path="loggedIn" element={<LoggedIn/>}/>
                 <Route path="price" element={<Price/>}/>
+                <Route path="pay" element={<Pay/>}/>
             </Routes>
             <footer className="footer">
                 <div className="columns">

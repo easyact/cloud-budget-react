@@ -1,5 +1,6 @@
 import LoginButton from '../../auth/LoginButton'
 import {FaCheck} from 'react-icons/all'
+import {Link} from 'react-router-dom'
 
 export function Price() {
     return <div>
@@ -81,7 +82,7 @@ export function Price() {
                                 </div>
                             </li>
                         </ul>
-                        <button className="is-disabled button is-fullwidth">马上购买</button>
+                        <Link to="/pay" className="button is-fullwidth is-primary">马上购买</Link>
                     </div>
                 </div>
             </div>
