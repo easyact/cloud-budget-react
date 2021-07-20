@@ -3,7 +3,7 @@ phases:
   install:
     runtime-versions:
       nodejs: 12
-  pre-build:
+  pre_build:
     commands:
       - echo "\$CI=$CI"
       - ls -al
@@ -12,7 +12,7 @@ phases:
     commands:
       - npm run build
       - echo $CODEBUILD_SRC_DIR
-  post-build:
+  post_build:
     commands:
       - cd deploy
       - ./deploy.sh
