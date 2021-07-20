@@ -9,17 +9,9 @@ import {useAuth0} from '@auth0/auth0-react'
 import LoginButton from './auth/LoginButton'
 import {LoggedIn} from './auth/LoggedIn'
 import {init} from './components/budget/service/analytics'
+import {Price} from './components/price/Price'
 
 function Sync() {
-    return <div className="hero is-light">
-        <div className="hero-body">
-            <p>登录后即可同步至云端</p>
-            <LoginButton/>
-        </div>
-    </div>
-}
-
-function Price() {
     return <div className="hero is-light">
         <div className="hero-body">
             <p>登录后即可同步至云端</p>
@@ -66,12 +58,12 @@ function App() {
                                 <FaSync/>
                                 <span>同步至云端</span>
                             </Link>}
-                            <div className="navbar-item">
-                                定价(限时免费)
-                            </div>
-                            {/*<Link to="price" className="navbar-item">*/}
-                            {/*    定价*/}
-                            {/*</Link>*/}
+                            {/*<div className="navbar-item">*/}
+                            {/*    定价(限时免费)*/}
+                            {/*</div>*/}
+                            <Link to="price" className="navbar-item">
+                                定价
+                            </Link>
                         </div>
                         <div className="navbar-end"><Profile/></div>
                     </div>
