@@ -12,10 +12,6 @@ phases:
     commands:
       - npm run build
       - echo $CODEBUILD_SRC_DIR
-  post_build:
-    commands:
-      - cd deploy
-      - ./deploy.sh
 artifacts:
   files:
     - '**/*'
