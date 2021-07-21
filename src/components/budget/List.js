@@ -19,7 +19,7 @@ export default function List(
         title = '资产',
         hint = '',
         columns = [
-            {title: '项目', type: 'text', key: 'name'},
+            {title: '资产', type: 'text', key: 'name'},
             {title: '价值', type: 'number', key: 'amount'},
             {title: '首付', type: 'number', key: 'downPayment'}],
         items = [],

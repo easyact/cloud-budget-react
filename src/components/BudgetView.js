@@ -59,7 +59,7 @@ function BudgetView() {
                     <div className="panel">
                         <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
                               dispatch={dispatch}
-                              columns={[{title: '条目', type: 'text', key: 'name'}, {
+                              columns={[{title: '负债', type: 'text', key: 'name'}, {
                                   title: '总数',
                                   type: 'number',
                                   key: 'amount'
@@ -70,7 +70,7 @@ function BudgetView() {
                     <div className="panel">
                         <List name={'incomes'} title="收入" items={budget.incomes}
                               dispatch={dispatch}
-                              columns={[{title: '条目', type: 'text', key: 'name'}, {
+                              columns={[{title: '收入', type: 'text', key: 'name'}, {
                                   title: AMOUNT,
                                   type: 'number',
                                   key: 'amount'
@@ -79,7 +79,7 @@ function BudgetView() {
                     <div className=" panel">
                         <List name={'expenses'} title="支出" items={budget.expenses}
                               dispatch={dispatch}
-                              columns={[{title: '条目', type: 'text', key: 'name'}, {
+                              columns={[{title: '支出', type: 'text', key: 'name'}, {
                                   title: AMOUNT,
                                   type: 'number',
                                   key: 'amount'
