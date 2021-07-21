@@ -12,7 +12,7 @@
   "liabilities": [
     {
       "amortized": "18/24",
-      "name": "mac",
+      "name": "笔记本电脑分期",
       "amount": 18000,
       "duration": {
         "months": 1
@@ -21,7 +21,7 @@
     {
       "amortized": "10/240",
       "name": "房贷",
-      "amount": 500000,
+      "amount": 300000,
       "duration": {
         "months": 1
       }
@@ -56,13 +56,13 @@
         "months": 1
       },
       "name": "房贷",
-      "amount": 3125
+      "amount": 1125
     },
     {
       "duration": {
         "months": 1
       },
-      "name": "mac",
+      "name": "笔记本电脑分期",
       "amount": 759
     },
     {
@@ -98,21 +98,14 @@
       "duration": {
         "months": 1
       },
-      "name": "父母存"
+      "name": "给父母"
     },
     {
-      "amount": 300,
+      "amount": 3000,
       "duration": {
         "months": 1
       },
-      "name": "物业电"
-    },
-    {
-      "name": "税",
-      "amount": 500,
-      "duration": {
-        "months": 1
-      }
+      "name": "租房"
     },
     {
       "name": "社保",

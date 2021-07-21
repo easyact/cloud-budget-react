@@ -1,5 +1,7 @@
 import List from './budget/List'
 import useBudget from './budget/hook/useBudget'
+import EXAMPLE from './budget/service/example.json'
+import {Link} from 'react-router-dom'
 
 const AMOUNT = '数额'
 
@@ -19,6 +21,20 @@ function BudgetView() {
             dispatch({type: 'IMPORT_BUDGET', payload})
         }
     }
+
+    if (error === 'none') return <div>
+        <div className="hero">
+            <section className="hero-body block">
+                <p className="subtitle">第一次使用?</p>
+                <p className="title">是否需要在示例的基础上创建预算?</p>
+                <div className="buttons">
+                    <button className="button is-large is-success"
+                            onClick={() => dispatch({type: 'IMPORT_BUDGET', payload: EXAMPLE})}>导入示例预算
+                    </button>
+                    <Link to="/sync" className="button is-light is-large">先登录, 然后从远程获取数据</Link></div>
+            </section>
+        </div>
+    </div>
 
     return (
         <div>

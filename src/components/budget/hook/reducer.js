@@ -25,7 +25,8 @@ function handle(state, action) {
         case 'USER_CHANGE':
             return {
                 ...state,
-                uid: action.payload
+                uid: action.payload,
+                error: undefined,
             }
         case 'FETCH_BUDGET_REQUEST':
             return {
@@ -41,6 +42,7 @@ function handle(state, action) {
                 ...state,
                 isLoading: false,
                 // saving: false,
+                error: undefined,
                 budget,
                 kpi: kpi(budget),
             }
@@ -50,12 +52,14 @@ function handle(state, action) {
                 syncNeeded: true,
                 budget: action.payload,
                 kpi: kpi(action.payload),
+                error: undefined,
             }
         case 'SYNC_SUCCESS':
             return {
                 ...state,
                 syncNeeded: false,
-                budget: action.payload
+                budget: action.payload,
+                error: undefined,
             }
 
         case 'FETCH_BUDGET_ERROR':
@@ -72,6 +76,7 @@ function handle(state, action) {
             }
 
         default:
-            return {...state, cmd: {user: {id: state.uid}, to: {version: state.version}, ...action}}
+            return {...state, cmd: {user: {id: state.uid}, to: {version: state.version},
+                    error: undefined, ...action}}
     }
 }

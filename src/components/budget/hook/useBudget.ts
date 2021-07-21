@@ -1,6 +1,6 @@
 import {Dispatch, Reducer, ReducerAction, useEffect, useReducer} from 'react'
 import reducer from './reducer'
-import {exec, getBudgetE, getBudgetOrImportExampleIfNone, sync} from '../service/budgetEsService'
+import {exec, getBudgetE, sync} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
 import * as E from 'fp-ts/Either'
 import {DBEventStore} from '../../es/lib/eventStore'
@@ -53,7 +53,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         if (isLoading) return
         // alert('load')
         // dispatch({type: 'FETCH_BUDGET_REQUEST'})
-        getBudgetOrImportExampleIfNone(uid, version)(eventStore)()
+        getBudgetE(uid, version)(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})))
     }, [version, uid, isLoading])
     return [state, dispatch]

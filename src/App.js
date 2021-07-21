@@ -6,20 +6,11 @@ import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
 import Profile from './auth/Profile'
 import {useAuth0} from '@auth0/auth0-react'
-import LoginButton from './auth/LoginButton'
 import {LoggedIn} from './auth/LoggedIn'
 import {init} from './components/budget/service/analytics'
 import {Price} from './components/price/Price'
 import {Pay} from './components/price/Pay'
-
-function Sync() {
-    return <div className="hero is-light">
-        <div className="hero-body">
-            <p>登录后即可同步至云端</p>
-            <LoginButton/>
-        </div>
-    </div>
-}
+import {Sync} from './components/Sync'
 
 function App() {
     init()
