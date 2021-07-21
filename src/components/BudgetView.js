@@ -31,7 +31,7 @@ function BudgetView() {
                     <button className="button is-large is-success"
                             onClick={() => dispatch({type: 'IMPORT_BUDGET', payload: EXAMPLE})}>导入示例预算
                     </button>
-                    <Link to="/sync" className="button is-light is-large">先登录, 然后从远程获取数据</Link></div>
+                    <Link to="/sync" className="button is-light is-large">先登录, 从远程获取数据</Link></div>
             </section>
         </div>
     </div>
@@ -54,7 +54,7 @@ function BudgetView() {
             <div className="columns">
                 <fieldset className="column">
                     <div className="panel">
-                        <List items={budget.assets} dispatch={dispatch}/>
+                        <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
                     </div>
                     <div className="panel">
                         <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
@@ -68,7 +68,7 @@ function BudgetView() {
                 </fieldset>
                 <fieldset className="column">
                     <div className="panel">
-                        <List name={'incomes'} title="收入" hint="每月" items={budget.incomes}
+                        <List name={'incomes'} title="收入" items={budget.incomes}
                               dispatch={dispatch}
                               columns={[{title: '条目', type: 'text', key: 'name'}, {
                                   title: AMOUNT,
@@ -77,7 +77,7 @@ function BudgetView() {
                               }, {title: '周期', type: 'duration', key: 'duration'}]}/>
                     </div>
                     <div className=" panel">
-                        <List name={'expenses'} title="支出" hint="每月" items={budget.expenses}
+                        <List name={'expenses'} title="支出" items={budget.expenses}
                               dispatch={dispatch}
                               columns={[{title: '条目', type: 'text', key: 'name'}, {
                                   title: AMOUNT,
