@@ -12,6 +12,8 @@ import {budgetSnapshot} from './snapshot'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {TaskEither} from 'fp-ts/TaskEither'
 import {Lens} from 'monocle-ts'
+import EXAMPLE from './example.json'
+import log from '../../log'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -44,7 +46,7 @@ export class BudgetEsService {
 
 }
 
-export const importBudget = (uid: string, payload: Budget, version: string = '0'): ReaderTask<EventStore, Budget> =>
+export const importBudget = (uid: string, payload: Budget, version: string = 'current'): ReaderTask<EventStore, Budget> =>
     exec(uid, {
         type: 'IMPORT_BUDGET',
         user: {id: uid},
@@ -68,7 +70,14 @@ export const getBudgetE = (uid: string, version: string): ReaderTaskEither<Event
     // E.orElse(_ => pipe(
     getVersions(uid),
     // )),
-    RTE.map(versions => versions.get(version) ?? {}),
+    RTE.map(versions => log(`getBudgetE ${uid} ${version}`)(versions.get(version))),
+    RTE.chain(budget => budget ? RTE.right(budget) : RTE.left('none')),
+)
+
+export const getBudgetOrImportExampleIfNone = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
+    getBudgetE(uid, version),
+    RTE.orElse(e => ('none' === e) ? RTE.rightReaderTask(importBudget(uid, EXAMPLE)) : RTE.left(e)),
+    // RTE.chain(() => getBudgetE(uid, version)),
 )
 
 export const getEvents = (uid: string): ReaderTaskEither<EventStore, string, BEvent[]> =>

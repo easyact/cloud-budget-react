@@ -1,6 +1,6 @@
 import {Dispatch, Reducer, ReducerAction, useEffect, useReducer} from 'react'
 import reducer from './reducer'
-import {exec, getBudgetE, sync} from '../service/budgetEsService'
+import {exec, getBudgetE, getBudgetOrImportExampleIfNone, sync} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
 import * as E from 'fp-ts/Either'
 import {DBEventStore} from '../../es/lib/eventStore'
@@ -10,7 +10,7 @@ import * as RTE from 'fp-ts/ReaderTaskEither'
 
 const eventStore = new DBEventStore()
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
-    const {uid, isAuthenticated, error} = useUser(eventStore)
+    const {uid, isAuthenticated, error, isLoading} = useUser(eventStore)
     const [state, dispatch] = useReducer<Reducer<any, any>>(reducer, {
         uid,
         version,
@@ -49,11 +49,12 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
             .then(payload => dispatch({type: 'CMD_SUCCESS', payload}))
     }, [version, cmd, uid])
     useEffect(function load() {
+        console.log('useBudget.loading', isLoading, uid, version, eventStore)
+        if (isLoading) return
         // alert('load')
-        console.log('useBudget.loading', uid, version, eventStore)
         // dispatch({type: 'FETCH_BUDGET_REQUEST'})
-        getBudgetE(uid, version)(eventStore)()
+        getBudgetOrImportExampleIfNone(uid, version)(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})))
-    }, [version, uid])
+    }, [version, uid, isLoading])
     return [state, dispatch]
 }

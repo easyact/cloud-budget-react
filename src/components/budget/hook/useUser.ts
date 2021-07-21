@@ -39,7 +39,7 @@ const userStrategy = (loginUser: string | undefined, cacheUser: Option<string>):
     : pipe(cacheUser, O.getOrElse(() => defaultUser), RTE.right)
 
 export default function useUser(eventStore: EventStore) {
-    const {user = {email: undefined}, isAuthenticated} =
+    const {user = {email: undefined}, isAuthenticated, isLoading} =
         // {
         //     user: {email: 'zhaolei@easyact.cn'},
         //     isAuthenticated: true
@@ -64,7 +64,7 @@ export default function useUser(eventStore: EventStore) {
             notifyAuthed)
         ).catch(notifyError)//.then(x => notifyError('test user error'))
     }, [task, eventStore, user])
-    return {uid, error, isAuthenticated: isAuthenticated && isAuthOk}
+    return {uid, error, isAuthenticated: isAuthenticated && isAuthOk, isLoading}
 }
 
 // import {match, select} from 'ts-pattern'

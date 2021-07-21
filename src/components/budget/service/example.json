@@ -1,0 +1,132 @@
+{
+  "assets": [
+    {
+      "downPayment": 10000,
+      "amount": 10000,
+      "duration": {
+        "months": 1
+      },
+      "name": "余额宝"
+    }
+  ],
+  "liabilities": [
+    {
+      "amortized": "18/24",
+      "name": "mac",
+      "amount": 18000,
+      "duration": {
+        "months": 1
+      }
+    },
+    {
+      "amortized": "10/240",
+      "name": "房贷",
+      "amount": 500000,
+      "duration": {
+        "months": 1
+      }
+    }
+  ],
+  "incomes": [
+    {
+      "name": "余额宝",
+      "amount": 0.5,
+      "duration": {
+        "days": 1
+      }
+    },
+    {
+      "name": "工资",
+      "amount": 13000,
+      "duration": {
+        "months": 1
+      }
+    },
+    {
+      "name": "期权",
+      "amount": 10000,
+      "duration": {
+        "years": 3
+      }
+    }
+  ],
+  "expenses": [
+    {
+      "duration": {
+        "months": 1
+      },
+      "name": "房贷",
+      "amount": 3125
+    },
+    {
+      "duration": {
+        "months": 1
+      },
+      "name": "mac",
+      "amount": 759
+    },
+    {
+      "duration": {
+        "months": 1
+      },
+      "amount": 1280,
+      "name": "英语学费"
+    },
+    {
+      "amount": 1000,
+      "name": "其他",
+      "duration": {
+        "months": 1
+      }
+    },
+    {
+      "duration": {
+        "days": 1
+      },
+      "amount": 100,
+      "name": "吃"
+    },
+    {
+      "name": "咖啡",
+      "amount": 17,
+      "duration": {
+        "days": 2
+      }
+    },
+    {
+      "amount": 1000,
+      "duration": {
+        "months": 1
+      },
+      "name": "父母存"
+    },
+    {
+      "amount": 300,
+      "duration": {
+        "months": 1
+      },
+      "name": "物业电"
+    },
+    {
+      "name": "税",
+      "amount": 500,
+      "duration": {
+        "months": 1
+      }
+    },
+    {
+      "name": "社保",
+      "duration": {
+        "months": 1
+      },
+      "amount": 700
+    },
+    {
+      "amount": 186,
+      "duration": {
+        "months": 1
+      },
+      "name": "通信"
+    }
+  ]
+}
