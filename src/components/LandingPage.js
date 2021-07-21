@@ -1,11 +1,12 @@
 import {Link} from 'react-router-dom'
+import {FaAngleRight} from 'react-icons/all'
 
 export function LandingPage() {
     // useScript('https://jinshuju.net/f/KdziDP/embedded.js?inner_redirect=false&banner=show&background=white&height=1326')
     return <div>
-        <section className="hero is-light is-bold">
+        <section className="hero is-light is-bold has-text-centered">
             <div className="hero-body">
-                <div className="container is-max-desktop">
+                <div className="container is-full-desktop">
                     <h1 className="title">
                         从996到财务自由
                     </h1>
@@ -18,31 +19,45 @@ export function LandingPage() {
                 </div>
             </div>
         </section>
-        <section className="section columns">
-            <article className="content column is-3">
-                <p className="title">理财难?</p>
-                <p className="subtitle">极简预算管理</p>
-                <p className="">怎样分配每月的收入才算合理? 利用预算工具仔细管理重要事项的投入比例. </p>
-            </article>
-            <article className="column is-8">
-                <img/>
-            </article>
-        </section>
-        <section className="section container is-max-desktop">
-            <div className="columns">
-                <article className="content column">
-                    <p className="title">没时间创业?</p>
-                    <p className="subtitle">996加班到头秃</p>
-                    <p>在线众包(建设中)</p>
-                </article>
-                <article className="content column">
-                    <p className="title">没钱创业?</p>
-                    <p className="subtitle">投资人那么多为什么就不投我?</p>
-                    <p>微服务/API计费平台(建设中)</p>
-                    <p>创业孵化资源列表(建设中)</p>
-                    <p>在线众筹(建设中)</p>
-                </article>
+        <section className="hero is-primary is-light">
+            <div className="hero-body">
+                <div className="container is-full-desktop">
+                    <div className="columns">
+                        <article className="content column is-3">
+                            <p className="subtitle">理财难?</p>
+                            <p className="title">极简预算管理</p>
+                            <p className="">怎样分配每月的收入才算合理? 利用预算工具仔细管理重要事项的投入比例. </p>
+                            <Link to="/budget" className="button is-large  is-primary">探索预算管理<FaAngleRight/></Link>
+                        </article>
+                        <article className="column is-7 is-offset-1">
+                            <img alt="预算管理UI示例"
+                                 src="https://s3.cn-northwest-1.amazonaws.com.cn/assets.easyact.cn/example.png"/>
+                        </article>
+                    </div>
+                </div>
             </div>
         </section>
+        <div className="container is-max-desktop">
+            <section className="section is-medium">
+                <div className="columns">
+                    <article className="content column">
+                        <p className="title">没时间创业?</p>
+                        <p className="subtitle">996加班到头秃</p>
+                        <ul>
+                            <li>微服务/API计费平台(建设中)</li>
+                            <li>在线众包(建设中)</li>
+                        </ul>
+                    </article>
+                    <article className="content column">
+                        <p className="title">没钱创业?</p>
+                        <p className="subtitle">投资人那么多为什么就不投我?</p>
+                        <ul>
+                            <li>创业孵化资源列表(建设中)</li>
+                            <li>在线众筹(建设中)</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+        </div>
     </div>
 }
