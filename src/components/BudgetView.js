@@ -2,7 +2,7 @@ import List from './budget/List'
 import useBudget from './budget/hook/useBudget'
 import EXAMPLE from './budget/service/example.json'
 import {Link} from 'react-router-dom'
-import {TimelineViz} from './TimelineViz'
+import {StreamViz} from './StreamViz'
 
 const AMOUNT = '数额'
 
@@ -51,7 +51,7 @@ function BudgetView() {
             {/*    <Progress/>*/}
             {/*</div>*/}
         </div>
-        <TimelineViz/>
+        <StreamViz/>
         <div className="columns">
             <fieldset className="column">
                 <div className="panel">

@@ -1,10 +1,19 @@
 import {useState} from 'react'
+import {stack} from 'd3-shape'
+import {dateRange} from '../util/Viz'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
 }
 
-export function TimelineViz() {
+function toStackData(budget) {
+    const data = dateRange()
+    return [data]
+}
+
+export function StreamViz({budget}) {
+    const [data, keys] = toStackData(budget)
+    stack().keys(keys)
     const state = useState(true)
     if (state[0])
         return <Switch state={state}/>
