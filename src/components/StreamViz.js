@@ -37,8 +37,8 @@ function toStackData(budget = {}) {
         R.apply(Math.max))
     const {arr: data, max} = reduce({arr: [], last: {}, max: 0}, ({arr, last, max}, date) => {
         const cur = semigroupDailyData.concat(last, dailyData)
-        const max1 = R.pipe(getMax, R.max(max))(cur)
-        return {arr: [...arr, {...cur, date}], last: cur, max: max1}
+        const newMax = R.pipe(getMax, R.max(max))(cur)
+        return {arr: [...arr, {...cur, date}], last: cur, max: newMax}
     })(dates)
     // console.log('data', data)
     return {data, keys, max}
