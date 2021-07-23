@@ -3,14 +3,19 @@ import {area, stack} from 'd3-shape'
 import {dateRange} from '../util/Viz'
 import {scaleLinear, scaleThreshold} from 'd3-scale'
 import * as R from 'ramda'
+import log from './log'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
 }
 
-function toStackData(budget = {}) {
+function toStackKeys(budget) {
     const pluck = R.pluck('name')
-    const keys = [...pluck(budget.expenses || []), ...pluck(budget.incomes || [])]
+    return [...pluck(budget.expenses || []), ...pluck(budget.incomes || [])]
+}
+
+function toStackData(budget = {}) {
+    const keys = toStackKeys(budget)
     const randomData = R.pipe(R.map(k => [k, Math.random() * 10]), R.fromPairs)
     const data = dateRange().map(date => ({date, ...randomData(keys)}))
     console.log('data', data)
@@ -32,7 +37,7 @@ export function StreamViz({budget, width = window.innerWidth, height = 300}) {
         .range(['#75739F', '#5EAFC6', 'green', 'blue', 'red'])
     const stacks = stackLayout(data).map((d, i) =>
         <path key={`stack${i}`} d={stackArea(d)} style={{
-            fill: colorScale(Math.random() * 5), stroke: 'black', strokeOpacity: 0.25
+            fill: log('colorScale')(colorScale(Math.random() * 5)), stroke: 'black', strokeOpacity: 0.25
         }}/>)
 
     const state = useState()
