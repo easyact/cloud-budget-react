@@ -51,7 +51,7 @@ function BudgetView() {
             {/*    <Progress/>*/}
             {/*</div>*/}
         </div>
-        <StreamViz/>
+        <StreamViz budget={budget}/>
         <div className="columns">
             <fieldset className="column">
                 <div className="panel">
