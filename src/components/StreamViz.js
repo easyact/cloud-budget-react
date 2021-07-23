@@ -4,7 +4,8 @@ import {dateRange, semigroupDailyData} from '../util/Viz'
 import {scaleLinear} from 'd3-scale'
 import * as R from 'ramda'
 import {reduce} from 'fp-ts/Array'
-import log from './log'
+import {isBefore} from 'date-fns'
+import subMonths from 'date-fns/subMonths'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
@@ -23,11 +24,10 @@ function toStackData(budget = {}) {
         // R.set(typeLens, 'expense')
     ))(budget.expenses || [])
     const items = [...expenses, .../*R.map(R.set(typeLens, 'income'))*/(budget.incomes || [])]
-    console.log(items)
+    // console.log(items)
     const keys = toStackKeys(items)
     // const randomData = R.pipe(R.map(k => [k, Math.random() * 10]), R.fromPairs)
-    const dates = dateRange()//.map(date => ({date, ...randomData(keys)}))
-    const dailyData = R.pipe(R.map(R.props(['name', 'amount'])), R.fromPairs)(items)
+    const dates = dateRange(subMonths(new Date(), 6))//.map(date => ({date, ...randomData(keys)}))
     // console.log('dailyData', dailyData, items)
     const getMax = R.pipe(
         R.values,
@@ -36,6 +36,10 @@ function toStackData(budget = {}) {
         R.map(R.pipe(R.sum, Math.abs)),
         R.apply(Math.max))
     const {arr: data, max} = reduce({arr: [], last: {}, max: 0}, ({arr, last, max}, date) => {
+        const filter = items.filter(i => isBefore((i.start), (date)))
+        const dailyData = R.pipe(
+            R.map(R.props(['name', 'amount'])), R.fromPairs
+        )(filter)
         const cur = semigroupDailyData.concat(last, dailyData)
         const newMax = R.pipe(getMax, R.max(max))(cur)
         return {arr: [...arr, {...cur, date}], last: cur, max: newMax}
@@ -52,15 +56,15 @@ export function StreamViz({budget, width = window.innerWidth, height = 300}) {
     const stackArea = area()
         .x((d, i) => xScale(i))
         .y0(d => yScale(d[0]))
-        .y1(d => yScale(d[1]))
+        .y1(d => yScale(d[1] || 0))
     // .curve(curveBasis)
 
     const colorScale = scaleLinear()
         // .domain([0, 1])
         .range(['#336666', '#ccffcc'])
     const stacks = stackLayout(data).map((d, i) =>
-        <path key={`stack${i}`} d={stackArea(d)} style={{
-            fill: log('colorScale')(colorScale(Math.random())), stroke: 'black', strokeOpacity: 0.25
+        <path key={`stack${i}`} d={stackArea((d))} style={{
+            fill: (colorScale(Math.random())), stroke: 'black', strokeOpacity: 0.25
         }}/>)
 
     const state = useState()
