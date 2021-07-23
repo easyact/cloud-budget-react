@@ -1,4 +1,5 @@
 import {dateRange, myAddDays} from './Viz'
+import parseISO from 'date-fns/parseISO'
 
 test('dateRange', () => {
     const start = new Date(2000, 0, 1)
@@ -9,4 +10,7 @@ test('dateRange', () => {
     expect(myAddDaysFn(1)).toEqual(next)
     const a = dateRange(start, 1)
     expect(a).toEqual([start, next])
+})
+test('iso', () => {
+    expect(isNaN(parseISO(undefined))).toEqual(true)
 })

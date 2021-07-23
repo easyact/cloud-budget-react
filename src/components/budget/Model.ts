@@ -12,8 +12,8 @@ import * as R from 'ramda'
 //     incomes?: Item[] = []
 //     expenses?: Item[] = []
 // }
-const BudgetKeys = ['assets', 'liabilities', 'incomes', 'expenses']
-type BKeys = typeof BudgetKeys[number]
+export const BUDGET_KEYS = ['assets', 'liabilities', 'incomes', 'expenses']
+type BKeys = typeof BUDGET_KEYS[number]
 export type Budget = { [K in BKeys]: Item[] }
 
 export interface Item {
@@ -21,9 +21,12 @@ export interface Item {
     name: String
     amount: number
     lastModifiedDate?: Date
+    start?: Date
+    end?: Date
 }
+
 export const budgetAdditionMonoid: Monoid<Budget> = {
-    concat: (x, y) => pipe(BudgetKeys,
+    concat: (x, y) => pipe(BUDGET_KEYS,
         map(k => R.objOf(k)(listAdditionMonoid.concat(x[k] ?? [], y[k] ?? []))),
         R.mergeAll) as Budget,
     empty: {}
