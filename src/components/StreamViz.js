@@ -6,7 +6,6 @@ import * as R from 'ramda'
 import {reduce} from 'fp-ts/Array'
 import {add, isAfter, isBefore} from 'date-fns'
 import subMonths from 'date-fns/subMonths'
-import log from './log'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
@@ -39,7 +38,7 @@ function toStackData(budget = {}) {
         R.map(R.pipe(R.sum, Math.abs)),
         R.apply(Math.max))
     const day0 = dates[0]
-    const durations = R.pipe(R.map(R.props(['name', 'start'])), R.fromPairs)(items)
+    const durations = R.pipe(R.map(R.props(['name', 'duration'])), R.fromPairs)(items)
     const firstOccurredDates = items.map(R.props(['name', 'start']))
         .map(([name, start]) => [name, new Date(start.setHours(0, 0, 0, 0))])
         .map(([name, start]) => {
@@ -54,28 +53,27 @@ function toStackData(budget = {}) {
     const {arr: data, max} = reduce({arr: [], last: {}, next: firstOccurredDates, max: 0},
         ({arr, last, next: occurredDates, max}, date) => {
             // const filter = items.filter(i => isBefore(i.start, date))
-            const filter = occurredDates.filter(([_, start]) => start.getTime() === date.getTime())
-            console.log('filter', filter)
-            const occurredThisDay = R.pluck(0, filter)
-            console.log('occurredThisDay', occurredThisDay,)
+            const occurredThisDayPairs = occurredDates.filter(([_, start]) => start.getTime() === date.getTime())
+            // console.log('filter', occurredThisDayPairs)
+            const occurredThisDay = R.pluck(0, occurredThisDayPairs)
+            // console.log('occurredThisDay', occurredThisDay,)
             const dailyData = R.pipe(
-                log(`init ${date}`),
-                R.filter(i => !isAfter(i.start, date)), log('isBefore'),
+                R.filter(i => !isAfter(i.start, date)),
                 R.map(R.props(['name', 'amount'])),
-                R.fromPairs, log('fromPairs'),
-                R.pick(occurredThisDay), log('pick' + occurredThisDay),
+                R.fromPairs,
+                R.pick(occurredThisDay),// log('pick' + occurredThisDay),
             )(items)
-            console.log('dailyData', dailyData)
+            // console.log('dailyData', dailyData)
             const cur = semigroupDailyData.concat(last, dailyData)
             const newMax = R.pipe(getMax, R.max(max))(cur)
-            const next = occurredThisDay.reduce((dates, name) => {
-                // console.log('reduce', dates, name)
-                return dates.map(R.when(d => (d[0]) === name, ([_, date]) => {
+            const next = occurredDates.map(R.when(
+                ([name]) => occurredThisDay.includes(name),
+                ([name, date]) => {
                     const duration = durations[name]
-                    // console.log('dates.map', date, name, duration)
+                    // console.log('duration', duration)
                     return [name, add(date, duration)]
-                }))
-            }, occurredDates)
+                }
+            ))
             // console.log('next', next, occurredDates)
             return {arr: [...arr, {...cur, date}], last: cur, max: newMax, next}
         })(dates)

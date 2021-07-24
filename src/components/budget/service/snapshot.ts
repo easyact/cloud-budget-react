@@ -36,10 +36,12 @@ function updateBudget(e: Event<Budget>, budget: Budget): Budget {
 }
 
 const importBudget = (budget: Budget, importing: Budget, at = new Date()) => {
-    const completeStart = (budget: Budget, list = 'assets') => R.over(R.lensProp(list),
-        R.pipe(R.defaultTo([]), R.map(({start = at, ...item}) => ({...item, start})))
+    const clean = (budget: Budget, list = 'assets') => R.over(R.lensProp(list),
+        R.pipe(R.defaultTo([]), R.map(({start = at, amount, ...item}) => ({
+            ...item, start, amount: R.when(s => R.type(s) === 'String', parseFloat, amount)
+        })))
     )(budget)
-    const y = BUDGET_KEYS.reduce(completeStart, importing)
+    const y = BUDGET_KEYS.reduce(clean, importing)
     // console.log('importBudget', y)
     return budgetAdditionMonoid.concat(budget, y)
 }
