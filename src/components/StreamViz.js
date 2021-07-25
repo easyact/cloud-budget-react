@@ -1,11 +1,15 @@
 import {useState} from 'react'
 import {area, stack} from 'd3-shape'
 import {dateRange, semigroupDailyData} from '../util/Viz'
-import {scaleLinear} from 'd3-scale'
+import {scaleLinear, scaleTime} from 'd3-scale'
 import * as R from 'ramda'
 import {reduce} from 'fp-ts/Array'
 import {add, isAfter, isBefore} from 'date-fns'
 import subMonths from 'date-fns/subMonths'
+import {axisRight, axisTop} from 'd3-axis'
+import {select} from 'd3-selection'
+import {formatISOWithOptions} from 'date-fns/esm/fp'
+import log from './log'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
@@ -59,6 +63,7 @@ function toStackData(budget = {}) {
             // console.log('occurredThisDay', occurredThisDay,)
             const dailyData = R.pipe(
                 R.filter(i => !isAfter(i.start, date)),
+                // R.filter(i => i.amount > 0),
                 R.map(R.props(['name', 'amount'])),
                 R.fromPairs,
                 R.pick(occurredThisDay),// log('pick' + occurredThisDay),
@@ -84,31 +89,37 @@ function toStackData(budget = {}) {
 export function StreamViz({budget, width = window.innerWidth, height = 300}) {
     const {data, keys, max} = toStackData(budget)
     const stackLayout = stack().keys(keys)
-    const xScale = scaleLinear().domain([0, 400]).range([0, width])
-    const yScale = scaleLinear().domain([0, max * 2]).range([height, 0])
+    // const xScale = scaleLinear().domain([0, 400]).range([0, width])
+    const xScale = scaleTime().domain([data[0].date, data[data.length - 1].date]).range([0, width])
+    const yScale = scaleLinear().domain([-max, max]).range([height, 0])
     const stackArea = area()
-        .x((d, i) => xScale(i))
+        .x(d => xScale(d.data.date))
         .y0(d => yScale(d[0]))
         .y1(d => yScale(d[1] || 0))
     // .curve(curveBasis)
 
     const colorScale = scaleLinear()
         // .domain([0, 1])
-        .range(['#336666', '#ccffcc'])
-    const stacks = stackLayout(data).map((d, i) =>
-        <path key={`stack${i}`} d={stackArea((d))} style={{
+        .range(['#06D1B2', '#ffffff'])
+    const stacks = stackLayout(data).map(log('stackLayout')).map((d, i) =>
+        <path id={d.key} key={`stack${i}`} d={stackArea(d)} style={{
             fill: (colorScale(Math.random())), stroke: 'black', strokeOpacity: 0.25
         }}/>)
-
+    const xAxis = axisTop().scale(xScale)
+        .tickFormat(formatISOWithOptions({representation: 'date'}))
+    const yAxis = axisRight().scale(yScale)
+    const axisRef = axis => node => node && select(node).call(axis)
     const state = useState()
     if (state[0])
         return <Switch state={state}/>
     return <section>
         <Switch state={state}/>
         <svg width="100%" height={300}>
-            <g transform={'translate(0,' + (-height / 2) + ')'}>
-                {stacks}
-            </g>
+            <g>{stacks}</g>
+            <g id="xAxisG" ref={axisRef(xAxis)}
+               transform={'translate(0,' + (height) + ')'}
+            />
+            <g id="yAxisG" ref={axisRef(yAxis)}/>
         </svg>
     </section>
 }

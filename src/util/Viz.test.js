@@ -14,3 +14,9 @@ test('dateRange', () => {
 test('iso', () => {
     expect(isNaN(parseISO(undefined))).toEqual(true)
 })
+test('and', () => {
+    expect(null && 123).toEqual(null)
+    expect(undefined && 123).toEqual(undefined)
+    expect("a" && 123).toEqual(123)
+    expect("a" && new Date(0)).toEqual(new Date(0))
+})
