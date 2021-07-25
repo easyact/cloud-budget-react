@@ -9,7 +9,6 @@ import subMonths from 'date-fns/subMonths'
 import {axisRight, axisTop} from 'd3-axis'
 import {select} from 'd3-selection'
 import {formatISOWithOptions} from 'date-fns/esm/fp'
-import log from './log'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
@@ -27,7 +26,7 @@ function toStackData(budget = {}) {
         R.over(amountLens, R.negate),
         // R.set(typeLens, 'expense')
     ))(budget.expenses || [])
-    const items = [...expenses, .../*R.map(R.set(typeLens, 'income'))*/(budget.incomes || [])]
+    const items = [.../*R.map(R.set(typeLens, 'income'))*/(budget.incomes || []), ...expenses,]
     // console.log(items)
     const keys = toStackKeys(items)
     // const randomData = R.pipe(R.map(k => [k, Math.random() * 10]), R.fromPairs)
@@ -86,10 +85,21 @@ function toStackData(budget = {}) {
     return {data, keys, max}
 }
 
+function CursorLine({width, height}) {
+    const [x, setX] = useState(100)
+    // console.log('x', x)
+    return <g id="cursorLine" width={width} height={height}>
+        <rect x={0} y={0} width={width} height={height} onMouseMove={event => setX(event.clientX)} opacity={0}/>
+        <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}}/>
+    </g>
+}
+
 export function StreamViz({budget, width = window.innerWidth, height = 300}) {
+    const state = useState()
+    if (state[0])
+        return <Switch state={state}/>
     const {data, keys, max} = toStackData(budget)
     const stackLayout = stack().keys(keys)
-    // const xScale = scaleLinear().domain([0, 400]).range([0, width])
     const xScale = scaleTime().domain([data[0].date, data[data.length - 1].date]).range([0, width])
     const yScale = scaleLinear().domain([-max, max]).range([height, 0])
     const stackArea = area()
@@ -101,25 +111,23 @@ export function StreamViz({budget, width = window.innerWidth, height = 300}) {
     const colorScale = scaleLinear()
         // .domain([0, 1])
         .range(['#06D1B2', '#ffffff'])
-    const stacks = stackLayout(data).map(log('stackLayout')).map((d, i) =>
-        <path id={d.key} key={`stack${i}`} d={stackArea(d)} style={{
+    const stacks = stackLayout(data)
+        // .map(log('stackLayout'))
+        .map((d, i) => <path id={d.key} key={`stack${i}`} d={stackArea(d)} style={{
             fill: (colorScale(Math.random())), stroke: 'black', strokeOpacity: 0.25
         }}/>)
     const xAxis = axisTop().scale(xScale)
         .tickFormat(formatISOWithOptions({representation: 'date'}))
     const yAxis = axisRight().scale(yScale)
     const axisRef = axis => node => node && select(node).call(axis)
-    const state = useState()
-    if (state[0])
-        return <Switch state={state}/>
     return <section>
         <Switch state={state}/>
-        <svg width="100%" height={300}>
+        <svg width={width} height={height}>
             <g>{stacks}</g>
-            <g id="xAxisG" ref={axisRef(xAxis)}
-               transform={'translate(0,' + (height) + ')'}
-            />
+            <g id="xAxisG" ref={axisRef(xAxis)} transform={`translate(0,${height})`}/>
             <g id="yAxisG" ref={axisRef(yAxis)}/>
+            <CursorLine width={width} height={height}/>
+            {/*<g id="cursorLine" ref={cursorLineRef}/>*/}
         </svg>
     </section>
 }
