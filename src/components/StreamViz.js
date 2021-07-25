@@ -85,12 +85,21 @@ function toStackData(budget = {}) {
     return {data, keys, max}
 }
 
-function CursorLine({width, height}) {
+function CursorLine({width, height, stackLayout, data}) {
     const [x, setX] = useState(100)
-    // console.log('x', x)
+    // const index = scaleLinear().domain([0, data.length]).range([0, width]).invert(x)
+    const index = x / (width / data.length)
+    const {date, ...datum} = data[Math.floor(index)]
+    const layout = stackLayout([datum])[0]
+    console.log('x', x, index, datum, layout)
+    const points = Object.entries(datum).map((name, amount) => <g>
+        <circle cx={x} cy={100} r={2}/>
+        <text x={x} y={100}>{name}:{amount}</text>
+    </g>)
     return <g id="cursorLine" width={width} height={height}>
         <rect x={0} y={0} width={width} height={height} onMouseMove={event => setX(event.clientX)} opacity={0}/>
         <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}}/>
+        {points}
     </g>
 }
 
@@ -126,7 +135,7 @@ export function StreamViz({budget, width = window.innerWidth, height = 300}) {
             <g>{stacks}</g>
             <g id="xAxisG" ref={axisRef(xAxis)} transform={`translate(0,${height})`}/>
             <g id="yAxisG" ref={axisRef(yAxis)}/>
-            <CursorLine width={width} height={height}/>
+            <CursorLine width={width} height={height} data={data} stackLayout={stackLayout}/>
             {/*<g id="cursorLine" ref={cursorLineRef}/>*/}
         </svg>
     </section>
