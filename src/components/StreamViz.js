@@ -32,7 +32,7 @@ function toStackData(budget = {}) {
     // const randomData = R.pipe(R.map(k => [k, Math.random() * 10]), R.fromPairs)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const dates = dateRange(subMonths(today, 6))//.map(date => ({date, ...randomData(keys)}))
+    const dates = dateRange(subMonths(today, 3))//.map(date => ({date, ...randomData(keys)}))
     // console.log('dailyData', dailyData, items)
     const getMax = R.pipe(
         R.values,
@@ -87,35 +87,55 @@ function toStackData(budget = {}) {
 
 const fontSize = 10
 
+// function myX(height, yScale, amount, index, x) {
+//     const middle = height / 2
+//     const margin = Math.abs(yScale(amount ?? 0)) - middle
+//     const offset = margin < fontSize ? index % 2 * -250 + 100 : index % 2 * -100
+//     return x + offset + 10
+// }
+
 function CursorLine({width, height, stackLayout, data, yScale}) {
     const [x, setX] = useState(100)
+    const [highLight, setHighLight] = useState()
     // const index = scaleLinear().domain([0, data.length]).range([0, width]).invert(x)
     const index = x / (width / data.length)
     const {date, ...datum} = data[Math.floor(index)]
     const layout = stackLayout([datum])
     // console.log('x', x, index, datum, layout)
-    const points = layout.map(({'0': d, key, index}) => {
+    const points = layout.map(({'0': d, key, index: i}) => {
         // console.log(d, name, i, layout)
         const y = yScale(d[1] || d[0])
         const amount = d.data[key]
-        const middle = height / 2
-        const margin = Math.abs(yScale(amount ?? 0)) - middle
-        const b = margin < fontSize
-        const offset = b ? index % 2 * -250 + 100 : index % 2 * -100
-        // console.log(b, margin)
+        const offset = i % 2 * -100
+        const textX = 10 + x + (highLight === i ? offset * 3 : offset)
         return <g key={key}>
-            <circle cx={x} cy={y} r={3}/>
-            <text x={x + offset + 10} y={y} fontSize={`${fontSize}px`}>{key}:{amount?.toFixed(2)}</text>
+            <circle cx={x} cy={y} r={highLight === i ? 4 : 3}
+                    onMouseOver={() => setHighLight(i)}
+                    onClick={() => setHighLight(highLight ? null : i)}
+                    fill={highLight === i ? 'white' : 'light-green'}
+                    stroke={highLight === i ? 'black' : 'white'}
+            />
+            <text x={textX} y={y}
+                  fontSize={`${highLight === i ? fontSize << 2 : fontSize}px`}
+                  fill={highLight === i ? '#ffffff' : 'black'}
+                  stroke={highLight === i ? 'black' : null}
+            >
+                {key}:{amount?.toFixed(2)}
+            </text>
         </g>
     })
     return <g id="cursorLine" width={width} height={height}>
         <rect x={0} y={0} width={width} height={height} onMouseMove={event => setX(event.clientX)} opacity={0}/>
-        <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}}/>
+        <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}} strokeDasharray="5, 5"/>
         {points}
     </g>
 }
 
-export function StreamViz({budget, width = window.innerWidth, height = 500}) {
+export function StreamViz({
+                              budget,
+                              width = window.innerWidth,
+                              height = 500
+                          }) {
     const state = useState()
     if (state[0])
         return <Switch state={state}/>
