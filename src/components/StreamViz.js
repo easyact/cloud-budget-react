@@ -85,17 +85,29 @@ function toStackData(budget = {}) {
     return {data, keys, max}
 }
 
-function CursorLine({width, height, stackLayout, data}) {
+const fontSize = 10
+
+function CursorLine({width, height, stackLayout, data, yScale}) {
     const [x, setX] = useState(100)
     // const index = scaleLinear().domain([0, data.length]).range([0, width]).invert(x)
     const index = x / (width / data.length)
     const {date, ...datum} = data[Math.floor(index)]
-    const layout = stackLayout([datum])[0]
-    console.log('x', x, index, datum, layout)
-    const points = Object.entries(datum).map((name, amount) => <g>
-        <circle cx={x} cy={100} r={2}/>
-        <text x={x} y={100}>{name}:{amount}</text>
-    </g>)
+    const layout = stackLayout([datum])
+    // console.log('x', x, index, datum, layout)
+    const points = layout.map(({'0': d, key, index}) => {
+        // console.log(d, name, i, layout)
+        const y = yScale(d[1] || d[0])
+        const amount = d.data[key]
+        const middle = height / 2
+        const margin = Math.abs(yScale(amount ?? 0)) - middle
+        const b = margin < fontSize
+        const offset = b ? index % 2 * -250 + 100 : index % 2 * -100
+        // console.log(b, margin)
+        return <g key={key}>
+            <circle cx={x} cy={y} r={3}/>
+            <text x={x + offset + 10} y={y} fontSize={`${fontSize}px`}>{key}:{amount?.toFixed(2)}</text>
+        </g>
+    })
     return <g id="cursorLine" width={width} height={height}>
         <rect x={0} y={0} width={width} height={height} onMouseMove={event => setX(event.clientX)} opacity={0}/>
         <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}}/>
@@ -103,7 +115,7 @@ function CursorLine({width, height, stackLayout, data}) {
     </g>
 }
 
-export function StreamViz({budget, width = window.innerWidth, height = 300}) {
+export function StreamViz({budget, width = window.innerWidth, height = 500}) {
     const state = useState()
     if (state[0])
         return <Switch state={state}/>
@@ -135,7 +147,7 @@ export function StreamViz({budget, width = window.innerWidth, height = 300}) {
             <g>{stacks}</g>
             <g id="xAxisG" ref={axisRef(xAxis)} transform={`translate(0,${height})`}/>
             <g id="yAxisG" ref={axisRef(yAxis)}/>
-            <CursorLine width={width} height={height} data={data} stackLayout={stackLayout}/>
+            <CursorLine width={width} height={height} data={data} stackLayout={stackLayout} yScale={yScale}/>
             {/*<g id="cursorLine" ref={cursorLineRef}/>*/}
         </svg>
     </section>
