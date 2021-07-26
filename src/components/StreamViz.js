@@ -11,7 +11,7 @@ import {select} from 'd3-selection'
 import {formatISOWithOptions} from 'date-fns/esm/fp'
 
 function Switch({state: [hiding, setHiding]}) {
-    return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}</button>
+    return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}图表</button>
 }
 
 function toStackKeys(items) {
