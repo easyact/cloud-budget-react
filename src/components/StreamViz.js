@@ -117,7 +117,7 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
             <circle cx={x} cy={y} r={highLight === i ? 4 : 3}
                     onMouseOverCapture={preventFirst(() => setHighLight(i))}
                     onTouchStartCapture={preventFirst(() => setHighLight(i))}
-                    onTouchMove={preventFirst(() => setHighLight(i))}
+                    onTouchMoveCapture={preventFirst(() => setHighLight(i))}
                     onClickCapture={preventFirst(() => setHighLight(highLight ? null : i))}
                     fill={highLight === i ? 'white' : 'light-green'}
                     stroke={highLight === i ? 'black' : 'white'}
@@ -133,8 +133,8 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
     })
     return <g id="cursorLine" width={width} height={height}>
         <rect x={0} y={0} width={width} height={height} opacity={0}
-              onTouchMove={preventFirst(event => setX(event.touches[0].clientX))}
-              onTouchStart={preventFirst(event => setX(event.touches[0].clientX))}
+              onTouchMoveCapture={preventFirst(event => setX(event.touches[0].clientX))}
+              onTouchStartCapture={preventFirst(event => setX(event.touches[0].clientX))}
               onMouseMoveCapture={preventFirst(event => setX(event.clientX))}
               onMouseOverCapture={preventFirst(event => setX(event.clientX))}
         />
