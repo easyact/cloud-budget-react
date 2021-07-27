@@ -94,6 +94,11 @@ const fontSize = 10
 //     return x + offset + 10
 // }
 
+const preventFirst = func => event => {
+    event.preventDefault()
+    func(event)
+}
+
 function CursorLine({width, height, stackLayout, data, yScale}) {
     const [x, setX] = useState(100)
     const [highLight, setHighLight] = useState()
@@ -110,8 +115,10 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
         const textX = 10 + x + (highLight === i ? offset * 3 : offset)
         return <g key={key}>
             <circle cx={x} cy={y} r={highLight === i ? 4 : 3}
-                    onMouseOver={() => setHighLight(i)}
-                    onClick={() => setHighLight(highLight ? null : i)}
+                    onMouseOverCapture={preventFirst(() => setHighLight(i))}
+                    onTouchStartCapture={preventFirst(() => setHighLight(i))}
+                    onTouchMove={preventFirst(() => setHighLight(i))}
+                    onClickCapture={preventFirst(() => setHighLight(highLight ? null : i))}
                     fill={highLight === i ? 'white' : 'light-green'}
                     stroke={highLight === i ? 'black' : 'white'}
             />
@@ -125,7 +132,12 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
         </g>
     })
     return <g id="cursorLine" width={width} height={height}>
-        <rect x={0} y={0} width={width} height={height} onMouseMove={event => setX(event.clientX)} opacity={0}/>
+        <rect x={0} y={0} width={width} height={height} opacity={0}
+              onTouchMove={preventFirst(event => setX(event.touches[0].clientX))}
+              onTouchStart={preventFirst(event => setX(event.touches[0].clientX))}
+              onMouseMoveCapture={preventFirst(event => setX(event.clientX))}
+              onMouseOverCapture={preventFirst(event => setX(event.clientX))}
+        />
         <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}} strokeDasharray="5, 5"/>
         {points}
     </g>
