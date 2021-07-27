@@ -110,28 +110,31 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
     const points = layout.map(({'0': d, key, index: i}) => {
         // console.log(d, name, i, layout)
         const y = yScale(d[1] || d[0])
+        return <circle key={`point${key}`} cx={x} cy={y} r={highLight === i ? 4 : 3}
+                       onMouseOverCapture={preventFirst(() => setHighLight(i))}
+                       onTouchStartCapture={preventFirst(() => setHighLight(i))}
+                       onTouchMoveCapture={preventFirst(() => setHighLight(i))}
+                       onClickCapture={preventFirst(() => setHighLight(highLight ? null : i))}
+                       fill={highLight === i ? 'white' : 'light-green'}
+                       stroke={highLight === i ? 'black' : 'white'}
+        />
+    })
+    const texts = layout.map(({'0': d, key, index: i}) => {
+        // console.log(d, name, i, layout)
+        const y = yScale(d[1] || d[0])
         const amount = d.data[key]
         const offset = i % 2 * -100
         const textX = 10 + x + (highLight === i ? offset * 3 : offset)
-        return <g key={key}>
-            <circle cx={x} cy={y} r={highLight === i ? 4 : 3}
-                    onMouseOverCapture={preventFirst(() => setHighLight(i))}
-                    onTouchStartCapture={preventFirst(() => setHighLight(i))}
-                    onTouchMoveCapture={preventFirst(() => setHighLight(i))}
-                    onClickCapture={preventFirst(() => setHighLight(highLight ? null : i))}
-                    fill={highLight === i ? 'white' : 'light-green'}
-                    stroke={highLight === i ? 'black' : 'white'}
-            />
-            <text x={textX} y={y}
-                  fontSize={`${highLight === i ? fontSize << 2 : fontSize}px`}
-                  fill={highLight === i ? '#ffffff' : 'black'}
-                  stroke={highLight === i ? 'black' : null}
-            >
-                {key}:{amount?.toFixed(2)}
-            </text>
-        </g>
+        return <text key={`text${i}`} x={textX} y={y}
+                     fontSize={`${highLight === i ? fontSize << 2 : fontSize}px`}
+                     fill={highLight === i ? '#ffffff' : 'black'}
+                     stroke={highLight === i ? 'black' : null}
+        >
+            {key}:{amount?.toFixed(2)}
+        </text>
     })
     return <g id="cursorLine" width={width} height={height}>
+        {texts}
         <rect x={0} y={0} width={width} height={height} opacity={0}
               onTouchMoveCapture={preventFirst(event => setX(event.touches[0].clientX))}
               onTouchStartCapture={preventFirst(event => setX(event.touches[0].clientX))}
