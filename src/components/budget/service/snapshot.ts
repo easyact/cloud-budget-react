@@ -4,10 +4,10 @@ import {Either} from 'fp-ts/Either'
 import * as R from 'ramda'
 import {parseISO} from 'date-fns'
 
-export const budgetSnapshot = (es: Event<Budget>[]): Either<string, BUDGET_SNAPSHOT<Budget>> =>
+export const budgetSnapshot = (es: Event[]): Either<string, BUDGET_SNAPSHOT<Budget>> =>
     snapshot(updateState, es)
 
-function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event<Budget>): BUDGET_SNAPSHOT<Budget> {
+function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event): BUDGET_SNAPSHOT<Budget> {
     const {user: {id}, to: {version}} = e
     const versions = initial.get(id) ?? new Map<string, Budget>()
     const budget = versions.get(version) ?? {}
@@ -15,11 +15,11 @@ function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event<Budget>): BUDGET
     return initial.set(id, versions.set(version, updatedBudget))
 }
 
-function getAt(e: Event<Budget>) {
+function getAt(e: Event) {
     return e.at ? parseISO(e.at) : undefined
 }
 
-function updateBudget(e: Event<Budget>, budget: Budget): Budget {
+function updateBudget(e: Event, budget: Budget): Budget {
     // console.log('updateBudget', e, budget)
     switch (e.type) {
         case 'IMPORT_BUDGET':

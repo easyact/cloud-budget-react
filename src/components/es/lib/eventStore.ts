@@ -1,5 +1,4 @@
 import {Event} from './es'
-import {Budget} from '../../budget/Model'
 import * as TE from 'fp-ts/TaskEither'
 import {TaskEither} from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
@@ -14,7 +13,7 @@ import {sequenceT} from 'fp-ts/Apply'
 import log from '../../log'
 
 export type ErrorM = string
-export type BEvent = Event<Budget> & Command
+export type BEvent = Event & Command
 
 export type UnUploadedCommands = { commands: BEvent[]; beginAt?: string }
 
