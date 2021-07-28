@@ -8,7 +8,6 @@ import {add, isAfter, isBefore} from 'date-fns'
 import subMonths from 'date-fns/subMonths'
 import {axisRight, axisTop} from 'd3-axis'
 import {select} from 'd3-selection'
-import {formatISOWithOptions} from 'date-fns/esm/fp'
 
 function Switch({state: [hiding, setHiding]}) {
     return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}图表</button>
@@ -156,7 +155,7 @@ export function StreamViz({
         return <Switch state={state}/>
     const {data, keys, max} = toStackData(budget)
     const stackLayout = stack().keys(keys)
-    const xScale = scaleTime().domain([data[0].date, data[data.length - 1].date]).range([0, width])
+    const xScale = scaleTime().domain([data[0].date, R.last(data)?.date]).range([0, width])
     const yScale = scaleLinear().domain([-max, max]).range([height, 0])
     const stackArea = area()
         .x(d => xScale(d.data.date))
@@ -173,7 +172,7 @@ export function StreamViz({
             fill: (colorScale(Math.random())), stroke: 'black', strokeOpacity: 0.25
         }}/>)
     const xAxis = axisTop().scale(xScale)
-        .tickFormat(formatISOWithOptions({representation: 'date'}))
+        // .tickFormat(formatISOWithOptions({representation: 'date'}))
     const yAxis = axisRight().scale(yScale)
     const axisRef = axis => node => node && select(node).call(axis)
     return <section>
