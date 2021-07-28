@@ -5,6 +5,7 @@ import App from './App'
 import reportWebVitals from './reportWebVitals'
 import './../node_modules/bulma/css/bulma.css'
 import {Auth0Provider} from '@auth0/auth0-react'
+import {BrowserRouter as Router} from 'react-router-dom'
 
 export const domain = 'easyact.auth0.com'
 export const scope = 'openid profile email read:current_user update:current_user_metadata offline_access'
@@ -20,7 +21,7 @@ ReactDOM.render(
         // advancedOptions={{defaultScope: scope}}
         // prompt="none"
     >
-        <App/>
+        <Router><App/></Router>
     </Auth0Provider>,
     document.getElementById('root')
 )
