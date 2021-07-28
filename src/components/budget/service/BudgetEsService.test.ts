@@ -13,7 +13,7 @@ describe('curd', () => {
     })
 
     function expectIncludedItem(addedBudget: Budget) {
-        expect(addedBudget.assets).toEqual([{...item, id: expect.anything()}])
+        expect(addedBudget.assets).toEqual([{...item, id: expect.anything(), start: expect.anything()}])
     }
 
     test('add item', async () => {
@@ -33,10 +33,11 @@ describe('curd', () => {
             user: {id: 't'},
             to: {version: '0'}
         })
-        expect(addedBudget2.assets).toEqual([{...item, id: expect.anything()}, {
+        expect(addedBudget2.assets).toEqual([{...item, id: expect.anything(), start: expect.anything()}, {
             name: 'another',
             type: 'assets',
-            id: expect.anything()
+            id: expect.anything(),
+            start: expect.anything()
         }])
     })
 

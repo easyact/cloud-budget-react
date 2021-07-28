@@ -29,7 +29,8 @@ function updateBudget(e: Event<Budget>, budget: Budget): Budget {
             return importBudget(budget, {[payload.type]: [payload]}, getAt(e))
         case 'DELETE_ITEM':
             const {payload: {from, id: deletingId}} = e
-            return R.over(R.lensProp(from), R.filter(({id}) => id !== deletingId))(budget)
+            const others = R.filter(({id}) => id !== deletingId)
+            return R.over(R.lensProp(from), R.unless(R.isNil, others))(budget)
         default:
             return budget
     }
