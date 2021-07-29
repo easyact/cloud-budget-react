@@ -7,6 +7,6 @@ phases:
     commands:
       - echo "\$CI=$CI"
       - ls -al
-#      - npm run build
+      - npm i
       - cd deploy
       - ./deploy.sh
