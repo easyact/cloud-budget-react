@@ -113,7 +113,7 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
                        onMouseOverCapture={preventFirst(() => setHighLight(i))}
                        onTouchStartCapture={preventFirst(() => setHighLight(i))}
                        onTouchMoveCapture={preventFirst(() => setHighLight(i))}
-                       onClickCapture={preventFirst(() => setHighLight(highLight ? null : i))}
+                       onMouseDownCapture={preventFirst(() => setHighLight(highLight ? null : i))}
                        fill={highLight === i ? 'white' : 'light-green'}
                        stroke={highLight === i ? 'black' : 'white'}
         />
@@ -123,7 +123,7 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
         const y = yScale(d[1] || d[0])
         const amount = d.data[key]
         const offset = i % 2 * -100
-        const textX = 10 + x + (highLight === i ? offset * 3 : offset)
+        const textX = 10 + x + (highLight === i ? -150 : offset)
         return <text key={`text${i}`} x={textX} y={y}
                      fontSize={`${highLight === i ? fontSize << 2 : fontSize}px`}
                      fill={highLight === i ? '#ffffff' : 'black'}
