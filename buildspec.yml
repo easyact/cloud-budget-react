@@ -3,17 +3,15 @@ phases:
   install:
     runtime-versions:
       nodejs: 12
-  pre_build:
+  build:
     commands:
       - echo "\$CI=$CI"
       - ls -al
       - ./build.sh test
-  build:
-    commands:
-      - npm run build
+#      - npm run build
       - echo $CODEBUILD_SRC_DIR
-artifacts:
-  files:
-    - '**/*'
-  name: BuildArtifact
-  base-directory: build
+#artifacts:
+#  files:
+#    - '**/*'
+#  name: BuildArtifact
+#  base-directory: build
