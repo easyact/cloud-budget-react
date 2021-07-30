@@ -9,5 +9,4 @@ phases:
       - ls -al
       - git version prepatch
       - npm i
-      - cd deploy
       - ./deploy.sh
