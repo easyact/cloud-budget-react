@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import {area, stack} from 'd3-shape'
 import {dateRange, semigroupDailyData} from '../util/Viz'
-import {scaleLinear, scaleTime} from 'd3-scale'
+import {scaleLinear, scaleOrdinal, scaleTime} from 'd3-scale'
 import * as R from 'ramda'
 import {reduce} from 'fp-ts/Array'
 import {add, isAfter, isBefore} from 'date-fns'
@@ -113,6 +113,8 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
                        onMouseOverCapture={preventFirst(() => setHighLight(i))}
                        onTouchStartCapture={preventFirst(() => setHighLight(i))}
                        onTouchMoveCapture={preventFirst(() => setHighLight(i))}
+                       onTouchEndCapture={preventFirst(() => setHighLight(i))}
+                       onTouchCancelCapture={preventFirst(() => setHighLight(i))}
                        onMouseDownCapture={preventFirst(() => setHighLight(highLight ? null : i))}
                        fill={highLight === i ? 'white' : 'light-green'}
                        stroke={highLight === i ? 'black' : 'white'}
@@ -163,16 +165,19 @@ export function StreamViz({
         .y1(d => yScale(d[1] || 0))
     // .curve(curveBasis)
 
-    const colorScale = scaleLinear()
-        // .domain([0, 1])
-        .range(['#06D1B2', '#ffffff'])
+    // const colorScale = scaleLinear()
+    //     .range(['#06D1B2', '#ffffff'])
+
+    const fillScale = scaleOrdinal()
+        .domain(keys)
+        .range(['#fcd88a', '#cf7c1c', '#93c464', '#75734F', '#5eafc6', '#41a368'])
     const stacks = stackLayout(data)
         // .map(log('stackLayout'))
         .map((d, i) => <path id={d.key} key={`stack${i}`} d={stackArea(d)} style={{
-            fill: (colorScale(Math.random())), stroke: 'black', strokeOpacity: 0.25
+            fill: fillScale(d.key), stroke: 'black', strokeOpacity: 0.25
         }}/>)
     const xAxis = axisTop().scale(xScale)
-        // .tickFormat(formatISOWithOptions({representation: 'date'}))
+    // .tickFormat(formatISOWithOptions({representation: 'date'}))
     const yAxis = axisRight().scale(yScale)
     const axisRef = axis => node => node && select(node).call(axis)
     return <section>
