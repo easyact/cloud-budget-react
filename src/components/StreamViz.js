@@ -110,12 +110,12 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
         // console.log(d, name, i, layout)
         const y = yScale(d[1] || d[0])
         return <circle key={`point${key}`} cx={x} cy={y} r={highLight === i ? 4 : 3}
-                       onMouseOverCapture={preventFirst(() => setHighLight(i))}
-                       onTouchStartCapture={preventFirst(() => setHighLight(i))}
-                       onTouchMoveCapture={preventFirst(() => setHighLight(i))}
-                       onTouchEndCapture={preventFirst(() => setHighLight(i))}
-                       onTouchCancelCapture={preventFirst(() => setHighLight(i))}
-                       onMouseDownCapture={preventFirst(() => setHighLight(highLight ? null : i))}
+                       onMouseOver={preventFirst(() => setHighLight(i))}
+                       onTouchStart={preventFirst(() => setHighLight(i))}
+                       onTouchMove={preventFirst(() => setHighLight(i))}
+                       onTouchEnd={preventFirst(() => setHighLight(i))}
+                       onTouchCancel={preventFirst(() => setHighLight(i))}
+                       onMouseDown={preventFirst(() => setHighLight(highLight ? null : i))}
                        fill={highLight === i ? 'white' : 'light-green'}
                        stroke={highLight === i ? 'black' : 'white'}
         />
@@ -137,10 +137,10 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
     return <g id="cursorLine" width={width} height={height}>
         {texts}
         <rect x={0} y={0} width={width} height={height} opacity={0}
-              onTouchMoveCapture={preventFirst(event => setX(event.touches[0].clientX))}
-              onTouchStartCapture={preventFirst(event => setX(event.touches[0].clientX))}
-              onMouseMoveCapture={preventFirst(event => setX(event.clientX))}
-              onMouseOverCapture={preventFirst(event => setX(event.clientX))}
+              onTouchMove={preventFirst(event => setX(event.touches[0].clientX))}
+              onTouchStart={preventFirst(event => setX(event.touches[0].clientX))}
+              onMouseMove={preventFirst(event => setX(event.clientX))}
+              onMouseOver={preventFirst(event => setX(event.clientX))}
         />
         <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}} strokeDasharray="5, 5"/>
         {points}
