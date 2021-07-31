@@ -12,6 +12,6 @@ phases:
       - aws configure set region ${AWS_DEFAULT_REGION}
       - cat ~/.aws/config
       - cat ~/.aws/credentials
-      - git version prepatch
+      - npm version prepatch
       - npm i
       - ./deploy.sh
