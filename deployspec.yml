@@ -9,7 +9,7 @@ phases:
       - ls -al
 #      - aws configure set aws_access_key_id ${AWS_ACCESS_KEY_ID}
 #      - aws configure set aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-      - npm version prepatch
+#      - npm version prepatch
 #      - git push #no .git on codebuild
       - npm i
       - ./deploy.sh
