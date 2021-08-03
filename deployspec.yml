@@ -6,7 +6,6 @@ phases:
   build:
     commands:
       - echo "\$CI=$CI"
-#      - ls -al
 #      - npm version prepatch
 #      - git push #no .git on codebuild
       - npm i
