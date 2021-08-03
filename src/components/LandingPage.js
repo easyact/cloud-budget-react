@@ -39,7 +39,7 @@ export function LandingPage() {
                 </div>
             </div>
         </section>
-        <div className="container is-max-desktop">
+        <div className="container is-max-desktop" hidden={true}>
             <section className="section is-medium">
                 <div className="columns">
                     <article className="content column">
