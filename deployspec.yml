@@ -10,3 +10,8 @@ phases:
 #      - git push #no .git on codebuild
       - npm i
       - ./deploy.sh
+artifacts:
+  files:
+    - '**/*'
+  name: BuildArtifact
+  base-directory: build
