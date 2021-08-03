@@ -30,14 +30,15 @@ function updateBudget(e: Event, budget: Budget): Budget {
         case 'DELETE_ITEM':
             const {payload: {from, id: deletingId}} = e
             const others = R.filter(({id}) => id !== deletingId)
-            return R.over(R.lensProp(from), R.unless(R.isNil, others))(budget)
+            return R.over<Budget, any>(R.lensProp(from), R.unless(R.isNil, others))(budget)
         default:
             return budget
     }
 }
 
 const importBudget = (budget: Budget, importing: Budget, at = new Date()) => {
-    const clean = (budget: Budget, list = 'assets') => R.over(R.lensProp(list),
+    const clean = (budget: Budget, list = 'assets') => R.over<Budget, any>(
+        R.lensProp(list),
         R.pipe(R.defaultTo([]), R.map(({start = at, amount, ...item}) => ({
             ...item, start, amount: R.when(s => R.type(s) === 'String', parseFloat, amount)
         })))

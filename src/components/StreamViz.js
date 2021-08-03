@@ -9,6 +9,8 @@ import subMonths from 'date-fns/subMonths'
 import {axisRight, axisTop} from 'd3-axis'
 import {select} from 'd3-selection'
 import {FaCaretSquareDown, FaCaretSquareUp} from 'react-icons/all'
+import 'd3-transition'
+import {legendColor} from 'd3-svg-legend'
 
 function Switch({
                     hiding: [hiding, setHiding],
@@ -194,15 +196,16 @@ export function StreamViz({
     const xAxis = axisTop().scale(xScale)
     // .tickFormat(formatISOWithOptions({representation: 'date'}))
     const yAxis = axisRight().scale(yScale)
-    const axisRef = axis => node => node && select(node).call(axis)
+    const legendA = legendColor().scale(fillScale)
+    const callRef = f => node => node && select(node).call(f)
     return <section>
         <Switch hiding={hiding} overlaying={overlaying}/>
         <svg width={width} height={height}>
             <g>{stacks}</g>
-            <g id="xAxisG" ref={axisRef(xAxis)} transform={`translate(0,${height})`}/>
-            <g id="yAxisG" ref={axisRef(yAxis)}/>
+            <g id="legend" ref={callRef(legendA)} transform="translate(60, 10)"/>
+            <g id="xAxisG" ref={callRef(xAxis)} transform={`translate(0,${height})`}/>
+            <g id="yAxisG" ref={callRef(yAxis)}/>
             <CursorLine width={width} height={height} data={data} stackLayout={stackLayout} yScale={yScale}/>
-            {/*<g id="cursorLine" ref={cursorLineRef}/>*/}
         </svg>
     </section>
 }

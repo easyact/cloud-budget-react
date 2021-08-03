@@ -107,7 +107,7 @@ function fixCommand(command: Command): BEvent {
             const idFilled = R.mapObjIndexed(R.map(({id = uuid(), ...vs}) => ({id, ...vs})))(payload)
             return {...command, payload: idFilled}
         case 'PUT_ITEM':
-            const lens = R.lensProp('id')
+            const lens = R.lensProp<string, any>('id')
             const item = R.over(lens, R.defaultTo(uuid()))(payload)
             return {...command, payload: item}
         case 'DELETE_ITEM':
