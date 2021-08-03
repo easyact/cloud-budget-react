@@ -20,7 +20,7 @@ function Switch({
                 现金流图{hiding ? <FaCaretSquareDown/> : <FaCaretSquareUp/>}
             </button>
         </p>
-        <p className="control">
+        <p className="control" hidden={true}>
             <button onClick={() => setOverlaying(!overlaying)}
                     className="button">收入支出{overlaying ? '分离' : '叠加'}</button>
         </p>
@@ -167,7 +167,7 @@ export function StreamViz({
                               height = 500
                           }) {
     const hiding = useState()
-    const overlaying = useState()
+    const overlaying = useState(true)
     if (hiding[0])
         return <Switch hiding={hiding}/>
     const {data, keys, max} = toStackData(budget)
@@ -196,7 +196,7 @@ export function StreamViz({
     const yAxis = axisRight().scale(yScale)
     const axisRef = axis => node => node && select(node).call(axis)
     return <section>
-        <Switch hiding={hiding}/>
+        <Switch hiding={hiding} overlaying={overlaying}/>
         <svg width={width} height={height}>
             <g>{stacks}</g>
             <g id="xAxisG" ref={axisRef(xAxis)} transform={`translate(0,${height})`}/>
