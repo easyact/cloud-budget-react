@@ -8,9 +8,23 @@ import {add, isAfter, isBefore} from 'date-fns'
 import subMonths from 'date-fns/subMonths'
 import {axisRight, axisTop} from 'd3-axis'
 import {select} from 'd3-selection'
+import {FaCaretSquareDown, FaCaretSquareUp} from 'react-icons/all'
 
-function Switch({state: [hiding, setHiding]}) {
-    return <button onClick={() => setHiding(!hiding)} className="button">{hiding ? '展开' : '收起'}图表</button>
+function Switch({
+                    hiding: [hiding, setHiding],
+                    overlaying: [overlaying, setOverlaying] = [true, () => console.log('No setOverlaying')]
+                }) {
+    return <section className="field is-grouped">
+        <p className="control">
+            <button onClick={() => setHiding(!hiding)} className="button">
+                现金流图{hiding ? <FaCaretSquareDown/> : <FaCaretSquareUp/>}
+            </button>
+        </p>
+        <p className="control">
+            <button onClick={() => setOverlaying(!overlaying)}
+                    className="button">收入支出{overlaying ? '分离' : '叠加'}</button>
+        </p>
+    </section>
 }
 
 function toStackKeys(items) {
@@ -152,9 +166,10 @@ export function StreamViz({
                               width = window.innerWidth,
                               height = 500
                           }) {
-    const state = useState()
-    if (state[0])
-        return <Switch state={state}/>
+    const hiding = useState()
+    const overlaying = useState()
+    if (hiding[0])
+        return <Switch hiding={hiding}/>
     const {data, keys, max} = toStackData(budget)
     const stackLayout = stack().keys(keys)
     const xScale = scaleTime().domain([data[0].date, R.last(data)?.date]).range([0, width])
@@ -181,7 +196,7 @@ export function StreamViz({
     const yAxis = axisRight().scale(yScale)
     const axisRef = axis => node => node && select(node).call(axis)
     return <section>
-        <Switch state={state}/>
+        <Switch hiding={hiding}/>
         <svg width={width} height={height}>
             <g>{stacks}</g>
             <g id="xAxisG" ref={axisRef(xAxis)} transform={`translate(0,${height})`}/>
