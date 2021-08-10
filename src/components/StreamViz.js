@@ -207,7 +207,7 @@ export function StreamViz(
     const xAxis = axisTop().scale(xScale)
     // .tickFormat(formatISOWithOptions({representation: 'date'}))
     const yAxis = axisRight().scale(yScale)
-    const legendA = legendColor().scale(fillScale)
+    const legendA = legendColor().scale(fillScale).orient('horizontal').shapeWidth(60)
     const callRef = f => node => node && select(node).call(f)
     return <section>
         <Switch hiding={hiding} overlaying={overlaying}/>
