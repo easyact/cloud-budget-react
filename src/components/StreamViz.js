@@ -1,13 +1,21 @@
 import {useState} from 'react'
-import {area, stack} from 'd3-shape'
 import {dateRange, semigroupDailyData} from '../util/Viz'
-import {scaleLinear, scaleOrdinal, scaleTime} from 'd3-scale'
 import * as R from 'ramda'
 import {reduce} from 'fp-ts/Array'
 import {add, isAfter, isBefore} from 'date-fns'
 import subMonths from 'date-fns/subMonths'
-import {axisRight, axisTop} from 'd3-axis'
-import {select} from 'd3-selection'
+import {
+    area,
+    axisRight,
+    axisTop,
+    scaleLinear,
+    scaleOrdinal,
+    scaleTime,
+    select,
+    stack,
+    stackOffsetDiverging,
+    stackOffsetNone
+} from 'd3'
 import {FaCaretSquareDown, FaCaretSquareUp} from 'react-icons/all'
 import 'd3-transition'
 import {legendColor} from 'd3-svg-legend'
@@ -22,9 +30,10 @@ function Switch({
                 现金流图{hiding ? <FaCaretSquareDown/> : <FaCaretSquareUp/>}
             </button>
         </p>
-        <p className="control" hidden={true}>
+        <p className="control" hidden={hiding}>
             <button onClick={() => setOverlaying(!overlaying)}
-                    className="button">收入支出{overlaying ? '分离' : '叠加'}</button>
+                    className="button">支出{overlaying ? '收入分离' : '叠加到收入'}
+            </button>
         </p>
     </section>
 }
@@ -96,7 +105,7 @@ function toStackData(budget = {}) {
             // console.log('next', next, occurredDates)
             return {arr: [...arr, {...cur, date}], last: cur, max: newMax, next}
         })(dates)
-    console.log('data', data)
+    // console.log('data', data)
     return {data, keys, max}
 }
 
@@ -169,11 +178,11 @@ export function StreamViz({
                               height = 500
                           }) {
     const hiding = useState()
-    const overlaying = useState(true)
+    const overlaying = useState(false)
     if (hiding[0])
-        return <Switch hiding={hiding}/>
+        return <Switch hiding={hiding} overlaying={overlaying}/>
     const {data, keys, max} = toStackData(budget)
-    const stackLayout = stack().keys(keys)
+    const stackLayout = stack().keys(keys).offset(overlaying[0] ? stackOffsetNone : stackOffsetDiverging)
     const xScale = scaleTime().domain([data[0].date, R.last(data)?.date]).range([0, width])
     const yScale = scaleLinear().domain([-max, max]).range([height, 0])
     const stackArea = area()
@@ -181,7 +190,6 @@ export function StreamViz({
         .y0(d => yScale(d[0]))
         .y1(d => yScale(d[1] || 0))
     // .curve(curveBasis)
-
     // const colorScale = scaleLinear()
     //     .range(['#06D1B2', '#ffffff'])
 
@@ -191,7 +199,7 @@ export function StreamViz({
     const stacks = stackLayout(data)
         // .map(log('stackLayout'))
         .map((d, i) => <path id={d.key} key={`stack${i}`} d={stackArea(d)} style={{
-            fill: fillScale(d.key), stroke: 'black', strokeOpacity: 0.25
+            fill: fillScale(d.key), stroke: 'black', strokeOpacity: 0.25, opacity: .5
         }}/>)
     const xAxis = axisTop().scale(xScale)
     // .tickFormat(formatISOWithOptions({representation: 'date'}))

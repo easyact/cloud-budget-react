@@ -8,6 +8,8 @@ phases:
       - echo "\$CI=$CI"
 #      - npm version prepatch
 #      - git push #no .git on codebuild
+      - git config --global user.email "zhaolei@easyact.cn"
+      - git config --global user.name "CI"
       - npm i
       - ./deploy.sh
 artifacts:
