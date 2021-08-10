@@ -16,14 +16,15 @@ import {
     stackOffsetDiverging,
     stackOffsetNone
 } from 'd3'
-import {FaCaretSquareDown, FaCaretSquareUp} from 'react-icons/all'
+import {FaCaretSquareDown, FaCaretSquareUp, FaCompressAlt, FaExpandAlt} from 'react-icons/all'
 import 'd3-transition'
 import {legendColor} from 'd3-svg-legend'
 
-function Switch({
-                    hiding: [hiding, setHiding],
-                    overlaying: [overlaying, setOverlaying] = [true, () => console.log('No setOverlaying')]
-                }) {
+function Switch(
+    {
+        hiding: [hiding, setHiding],
+        overlaying: [overlaying, setOverlaying] = [true, () => console.log('No setOverlaying')]
+    }) {
     return <section className="field is-grouped">
         <p className="control">
             <button onClick={() => setHiding(!hiding)} className="button">
@@ -31,8 +32,9 @@ function Switch({
             </button>
         </p>
         <p className="control" hidden={hiding}>
-            <button onClick={() => setOverlaying(!overlaying)}
-                    className="button">支出{overlaying ? '收入分离' : '叠加到收入'}
+            <button onClick={() => setOverlaying(!overlaying)} className="button">
+                支出{overlaying ? '收入分离' : '叠加到收入'}
+                {overlaying ? <FaExpandAlt/> : <FaCompressAlt/>}
             </button>
         </p>
     </section>
@@ -172,11 +174,12 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
     </g>
 }
 
-export function StreamViz({
-                              budget,
-                              width = window.innerWidth,
-                              height = 500
-                          }) {
+export function StreamViz(
+    {
+        budget,
+        width = window.innerWidth,
+        height = 500
+    }) {
     const hiding = useState()
     const overlaying = useState(false)
     if (hiding[0])
