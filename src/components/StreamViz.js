@@ -207,13 +207,23 @@ export function StreamViz(
     const xAxis = axisTop().scale(xScale)
     // .tickFormat(formatISOWithOptions({representation: 'date'}))
     const yAxis = axisRight().scale(yScale)
-    const legendA = legendColor().scale(fillScale).orient('horizontal').shapeWidth(width/keys.length)
+    const LEGEND_WIDTH = width / keys.length
+    const legendA = legendColor().scale(fillScale).orient('horizontal').shapeWidth(LEGEND_WIDTH)
+        // .labelAlign("start")
+        .labels(({i, genLength, generatedLabels,}) => {
+            const label = generatedLabels[i].split('').join('\\')
+            // const label = <tspan>{generatedLabels[i]}</tspan>
+            console.log('label', label, genLength)
+            // if (label.length) return
+            return label
+        })
+        .labelWrap(LEGEND_WIDTH)
     const callRef = f => node => node && select(node).call(f)
     return <section>
         <Switch hiding={hiding} overlaying={overlaying}/>
         <svg width={width} height={height}>
             <g>{stacks}</g>
-            <g id="legend" ref={callRef(legendA)} transform="translate(0, 10)"/>
+            <g id="legend" ref={callRef(legendA)} transform="translate(0, 0)"/>
             <g id="xAxisG" ref={callRef(xAxis)} transform={`translate(0,${height})`}/>
             <g id="yAxisG" ref={callRef(yAxis)}/>
             <CursorLine width={width} height={height} data={data} stackLayout={stackLayout} yScale={yScale}/>
