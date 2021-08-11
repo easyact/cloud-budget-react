@@ -211,7 +211,7 @@ export function StreamViz(
     const legendA = legendColor().scale(fillScale).orient('horizontal').shapeWidth(LEGEND_WIDTH)
         // .labelAlign("start")
         .labels(({i, genLength, generatedLabels,}) => {
-            const label = generatedLabels[i].split('').join('\\')
+            const label = generatedLabels[i].split('').join(' ')
             // const label = <tspan>{generatedLabels[i]}</tspan>
             console.log('label', label, genLength)
             // if (label.length) return
