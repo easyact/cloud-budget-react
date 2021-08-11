@@ -210,13 +210,7 @@ export function StreamViz(
     const LEGEND_WIDTH = width / keys.length
     const legendA = legendColor().scale(fillScale).orient('horizontal').shapeWidth(LEGEND_WIDTH)
         // .labelAlign("start")
-        .labels(({i, genLength, generatedLabels,}) => {
-            const label = generatedLabels[i].split('').join(' ')
-            // const label = <tspan>{generatedLabels[i]}</tspan>
-            console.log('label', label, genLength)
-            // if (label.length) return
-            return label
-        })
+        .labels(({i, generatedLabels,}) => generatedLabels[i].split('').join(' '))
         .labelWrap(LEGEND_WIDTH)
     const callRef = f => node => node && select(node).call(f)
     return <section>
