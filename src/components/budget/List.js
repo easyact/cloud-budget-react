@@ -40,37 +40,53 @@ export default function List(
     }
 
     // let sum = 0;
-    return (
-        <div className="panel">
-            <p className="panel-heading">{title}<small className="has-text-grey">{hint}</small></p>
-            <div className="panel-block table-container">
-                <table className="table is-hoverable is-fullwidth is-narrow is-striped is-narrow">
-                    <thead>
-                    <tr>
-                        {columns.map(c => (<th key={c.key}>{c.title}</th>))}
-                        <th/>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>
-                    <tr>
-                        <td>
-                            总{title}
-                        </td>
-                        <td>
-                            ¥{sum(items, columns).toFixed(2)}
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                    </tfoot>
-                    <tbody>
-                    {items.map((value, index) =>
-                        <Item key={index} index={index} columns={columns} value={value} update={put} rm={rm}/>
-                    )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    )
+    return <div className="panel b-list">
+        <p className="panel-heading">{title}<small className="has-text-grey">{hint}</small></p>
+        <section className="panel-block columns th">
+            {columns.map(c => <b key={c.key} className="column">{c.title}</b>)}
+            <span className="column"/>
+        </section>
+        {items.map((value, index) =>
+            <Item key={index} index={index} columns={columns} value={value} update={put} rm={rm}/>
+        )}
+        <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>
+        <section className="panel-block th">
+            <b className="column">
+                总{title}
+            </b>
+            <b className="column">
+                ¥{sum(items, columns).toFixed(2)}
+            </b>
+            {/*<td className="column">*/}
+            {/*</td>*/}
+        </section>
+        {/*<div className="panel-block table-container">*/}
+        {/*    <table className="table is-hoverable is-fullwidth is-narrow is-striped is-narrow">*/}
+        {/*        <thead>*/}
+        {/*        <tr>*/}
+        {/*            {columns.map(c => (<th key={c.key}>{c.title}</th>))}*/}
+        {/*            <th/>*/}
+        {/*        </tr>*/}
+        {/*        </thead>*/}
+        {/*        <tfoot>*/}
+        {/*        <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>*/}
+        {/*        <tr>*/}
+        {/*            <td>*/}
+        {/*                总{title}*/}
+        {/*            </td>*/}
+        {/*            <td>*/}
+        {/*                ¥{sum(items, columns).toFixed(2)}*/}
+        {/*            </td>*/}
+        {/*            <td>*/}
+        {/*            </td>*/}
+        {/*        </tr>*/}
+        {/*        </tfoot>*/}
+        {/*        <tbody>*/}
+        {/*        {items.map((value, index) =>*/}
+        {/*            <Item key={index} index={index} columns={columns} value={value} update={put} rm={rm}/>*/}
+        {/*        )}*/}
+        {/*        </tbody>*/}
+        {/*    </table>*/}
+        {/*</div>*/}
+    </div>
 }

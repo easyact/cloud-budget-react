@@ -8,8 +8,10 @@ phases:
       - echo "\$CI=$CI"
 #      - npm version prepatch
 #      - git push #no .git on codebuild
-      - git config --global user.email "zhaolei@easyact.cn"
-      - git config --global user.name "CI"
+#      - git config --global user.email "zhaolei@easyact.cn"
+#      - git config --global user.name "CI"
+#      - echo "https://$git_user:$git_pass@example.com" > .git-credentials
+#      - git config --global credential.helper store
       - npm i
       - ./deploy.sh
 artifacts:

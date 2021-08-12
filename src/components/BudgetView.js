@@ -57,40 +57,32 @@ function BudgetView() {
         </div>
         <StreamViz budget={budget} height={window.innerHeight / 2}/>
         <div className="columns">
-            <fieldset className="column">
-                <div className="panel">
-                    <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
-                </div>
-                <div className="panel">
-                    <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
-                          dispatch={dispatch}
-                          columns={[{title: '负债', type: 'text', key: 'name'}, {
-                              title: '总数',
-                              type: 'number',
-                              key: 'amount'
-                          }, {title: '已还', type: 'number', key: 'amortized'}]}/>
-                </div>
-            </fieldset>
-            <fieldset className="column">
-                <div className="panel">
-                    <List name={'incomes'} title="收入" items={budget.incomes}
-                          dispatch={dispatch}
-                          columns={[{title: '收入', type: 'text', key: 'name'}, {
-                              title: AMOUNT,
-                              type: 'number',
-                              key: 'amount'
-                          }, {title: '周期', type: 'duration', key: 'duration'}]}/>
-                </div>
-                <div className=" panel">
-                    <List name={'expenses'} title="支出" items={budget.expenses}
-                          dispatch={dispatch}
-                          columns={[{title: '支出', type: 'text', key: 'name'}, {
-                              title: AMOUNT,
-                              type: 'number',
-                              key: 'amount'
-                          }, {title: '周期', type: 'duration', key: 'duration'}]}/>
-                </div>
-            </fieldset>
+            <div className="column">
+                <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
+                <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
+                      dispatch={dispatch}
+                      columns={[{title: '负债', type: 'text', key: 'name'}, {
+                          title: '总数',
+                          type: 'number',
+                          key: 'amount'
+                      }, {title: '已还', type: 'number', key: 'amortized'}]}/>
+            </div>
+            <div className="column">
+                <List name={'incomes'} title="收入" items={budget.incomes}
+                      dispatch={dispatch}
+                      columns={[{title: '收入', type: 'text', key: 'name'}, {
+                          title: AMOUNT,
+                          type: 'number',
+                          key: 'amount'
+                      }, {title: '周期', type: 'duration', key: 'duration'}]}/>
+                <List name={'expenses'} title="支出" items={budget.expenses}
+                      dispatch={dispatch}
+                      columns={[{title: '支出', type: 'text', key: 'name'}, {
+                          title: AMOUNT,
+                          type: 'number',
+                          key: 'amount'
+                      }, {title: '周期', type: 'duration', key: 'duration'}]}/>
+            </div>
         </div>
         <div className=" field is-grouped is-grouped-multiline">
             {/*<div className=" field has-addons control">*/}
