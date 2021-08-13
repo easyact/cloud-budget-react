@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react'
+import {useState} from 'react'
 import {flow} from 'fp-ts/es6/function'
 import * as R from 'ramda'
 import {
@@ -14,35 +14,47 @@ import {
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
-import {formatISO} from 'date-fns'
+import {formatDate} from './util'
 
-function DurationControl(fields) {
+const setItemByEvent = (key, item, setItem, change = R.identity) => flow(
+    R.path(['target', 'value']),
+    log(`Before Setting ${key}, item is ${JSON.stringify(item)}, value is`),
+    change,
+    log(`changed is`),
+    R.set(R.lensProp(key), R.__, item),
+    log('Setting item'),
+    setItem)
+
+const DEFAULT_DURATION = {months: 1}
+
+function DurationControl(item, setItem) {
     return {
         duration: {
-            false: formatDurationWithOptions({locale}),
+            false: flow(R.defaultTo(DEFAULT_DURATION), formatDurationWithOptions({locale})),
             true: DurationEditor
         }
     }
 
-    function DurationEditor(duration = {months: 1}, key) {
-        const current = fields[key].current = {value: duration}
+    function DurationEditor(duration = DEFAULT_DURATION, key) {
+        // const current = item[key] = {value: duration}
         return Object.entries(duration).map(([unit, value], index) =>
             <div className="field has-addons" key={`duration-${index}`}>
                 <div className="field has-addons">
                     <p className="control">
-                        <input defaultValue={value} className="input is-small" type="number" onChange={event => {
-                            current.value[unit] = parseInt(event.target.value)
-                            console.log('DurationEditor inputting', unit, current.value[unit], current, fields)
-                        }}/>
+                        <input defaultValue={value} className="input is-small" type="number"
+                               onChange={setItemByEvent(key, item, setItem, parseInt)}/>
                     </p>
                     <p className="control">
                     <span className="select is-small is-narrow">
-                      <select defaultValue={unit} onChange={event => {
-                          const u = event.target.value
-                          console.log('Selecting', unit, u, current, fields)
-                          current.value = {[u]: value}
-                          // delete current[unit]
-                      }}>
+                      <select defaultValue={unit} onChange={
+                          // event => {
+                          //     const u = event.target.value
+                          //     console.log('Selecting', unit, u, current, fields)
+                          //     current.value = {[u]: value}
+                          //     // delete current[unit]
+                          // }
+                          setItemByEvent(key, item, setItem, u => ({[u]: value}))
+                      }>
                         <option value="years">年</option>
                         <option value="months">月</option>
                         <option value="weeks">周</option>
@@ -59,32 +71,53 @@ function DurationControl(fields) {
     }
 }
 
+// function Date({editing, ref, key}) {
+//     return <div>
+//         <div className="field-label is-normal">
+//             <label className="label">开始</label>
+//         </div>
+//         <div className="field-body">
+//             <div className="field">
+//                 {editing ? <p className="control is-expanded has-icons-left">
+//                     <input className="input" type="date" placeholder="开始"
+//                            defaultValue={ref.current[key]}/>
+//                     <span className="icon is-small is-left">
+//                         <FaStepBackward/>
+//                     </span>
+//                 </p> : <p className="control">{ref.current[key]}</p>}
+//             </div>
+//         </div>
+//     </div>
+// }
+
 export function Item({index, columns, value, update, rm}) {
-    // log('Item')(value)
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
-    const fields = {}
-    for (const column of columns) {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        fields[column.key] = useRef(value?.[column.key])
-        // console.log('Item.fields', column.key, fields[column.key])
-    }
+    const [item, setItem] = useState(value)
+    // log('Item')(item)
+    // const fields = {}
+    // for (const column of columns) {
+    //     // eslint-disable-next-line react-hooks/rules-of-hooks
+    //     fields[column.key] = useRef(value?.[column.key])
+    //     // console.log('Item.fields', column.key, fields[column.key])
+    // }
 
     function add() {
-        console.log('List add', fields)
-        update(R.mapObjIndexed(r => r.current.value)(fields))
-        columns.map(c => c.key).forEach(t => fields[t].current.value = null)
+        console.log('List add', item)
+        update(item)
     }
 
-    const save = flow(
-        () => log('Item.saving fields')(R.mapObjIndexed(r => r.current, fields)),
-        () => setEditing(false),
-        () => update(log('Item.saving')({...R.mapObjIndexed(r => r.current.value, fields), id: value.id}), index)
-    )
-    const durationControl = DurationControl(fields)
-    const td = (type, editing) => durationControl[type]?.[editing] ?? ((v, key) => editing
-        ? <input type={type} className="input is-small" defaultValue={v} ref={fields[key]}/>
-        : v)
+    function save() {
+        console.log('List set', item)
+        setEditing(false)
+        update(item)
+    }
+
+    const durationControl = DurationControl(item, setItem)
+    const td = (type, editing) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
+        ? <input type={type} className="input is-small" defaultValue={defaultValue}
+                 onChange={setItemByEvent(key, item, setItem)}/>
+        : defaultValue)
     // console.log('div', value, columns)
     // if (!folded)
     //     return <div>
@@ -126,22 +159,28 @@ export function Item({index, columns, value, update, rm}) {
         {mainCells}
         {opTd}
     </section>
-    if (!folded) return <section className="">
+    if (folded) {
+        return tr
+    }
+    const start = formatDate(value.start)
+    const end = formatDate(value.end)
+    return <section>
         {tr}
         <div className="panel-block">
             <div className="field is-horizontal">
+                {/*<Date editing={editing}/>*/}
                 <div className="field-label is-normal">
                     <label className="label">开始</label>
                 </div>
                 <div className="field-body">
                     <div className="field">
-                        <p className="control is-expanded has-icons-left">
-                            <input className="input" type="date" placeholder="开始时间"
-                                   defaultValue={log('format')(formatISO(value.start, {representation: 'date'}))}/>
+                        {editing ? <p className="control is-expanded has-icons-left">
+                            <input className="input" type="date" placeholder="开始"
+                                   defaultValue={start}/>
                             <span className="icon is-small is-left">
-                                <FaStepBackward/>
-                            </span>
-                        </p>
+                                        <FaStepBackward/>
+                                    </span>
+                        </p> : <p className="control">{start}</p>}
                     </div>
                 </div>
                 <div className="field-label is-normal">
@@ -152,116 +191,12 @@ export function Item({index, columns, value, update, rm}) {
                         <p className="control is-expanded has-icons-left">
                             <input className="input" type="text" placeholder="结束时间"/>
                             <span className="icon is-small is-left">
-                                <FaStepForward/>
-                            </span>
+                                        <FaStepForward/>
+                                    </span>
                         </p>
                     </div>
                 </div>
             </div>
-
-            {/*<div className="field is-horizontal">*/}
-            {/*    <div className="field-label"></div>*/}
-            {/*    <div className="field-body">*/}
-            {/*        <div className="field is-expanded">*/}
-            {/*            <div className="field has-addons">*/}
-            {/*                <p className="control">*/}
-            {/*                     <a className="button is-static">*/}
-            {/*                         +44*/}
-            {/*                     </a>*/}
-            {/*                </p>*/}
-            {/*                <p className="control is-expanded">*/}
-            {/*                    <input className="input" type="tel" placeholder="Your phone number"/>*/}
-            {/*                </p>*/}
-            {/*            </div>*/}
-            {/*            <p className="help">Do not enter the first zero</p>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="field is-horizontal">*/}
-            {/*    <div className="field-label is-normal">*/}
-            {/*        <label className="label">Department</label>*/}
-            {/*    </div>*/}
-            {/*    <div className="field-body">*/}
-            {/*        <div className="field is-narrow">*/}
-            {/*            <div className="control">*/}
-            {/*                <div className="select is-fullwidth">*/}
-            {/*                    <select>*/}
-            {/*                        <option>Business development</option>*/}
-            {/*                        <option>Marketing</option>*/}
-            {/*                        <option>Sales</option>*/}
-            {/*                    </select>*/}
-            {/*                </div>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="field is-horizontal">*/}
-            {/*    <div className="field-label">*/}
-            {/*        <label className="label">Already a member?</label>*/}
-            {/*    </div>*/}
-            {/*    <div className="field-body">*/}
-            {/*        <div className="field is-narrow">*/}
-            {/*            <div className="control">*/}
-            {/*                <label className="radio">*/}
-            {/*                    <input type="radio" name="member"/>*/}
-            {/*                    Yes*/}
-            {/*                </label>*/}
-            {/*                <label className="radio">*/}
-            {/*                    <input type="radio" name="member"/>*/}
-            {/*                    No*/}
-            {/*                </label>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="field is-horizontal">*/}
-            {/*    <div className="field-label is-normal">*/}
-            {/*        <label className="label">Subject</label>*/}
-            {/*    </div>*/}
-            {/*    <div className="field-body">*/}
-            {/*        <div className="field">*/}
-            {/*            <div className="control">*/}
-            {/*                <input className="input is-danger" type="text"*/}
-            {/*                       placeholder="e.g. Partnership opportunity"/>*/}
-            {/*            </div>*/}
-            {/*            <p className="help is-danger">*/}
-            {/*                This field is required*/}
-            {/*            </p>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="field is-horizontal">*/}
-            {/*    <div className="field-label is-normal">*/}
-            {/*        <label className="label">Question</label>*/}
-            {/*    </div>*/}
-            {/*    <div className="field-body">*/}
-            {/*        <div className="field">*/}
-            {/*            <div className="control">*/}
-            {/*                <textarea className="textarea" placeholder="Explain how we can help you"/>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
-            {/*<div className="field is-horizontal">*/}
-            {/*    <div className="field-label">*/}
-            {/*    </div>*/}
-            {/*    <div className="field-body">*/}
-            {/*        <div className="field">*/}
-            {/*            <div className="control">*/}
-            {/*                <button className="button is-primary">*/}
-            {/*                    Send message*/}
-            {/*                </button>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
         </div>
     </section>
-// </div>
-    return tr
 }
