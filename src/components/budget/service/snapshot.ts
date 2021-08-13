@@ -2,7 +2,7 @@ import {BUDGET_SNAPSHOT, Event, snapshot} from '../../es/lib/es'
 import {Budget, BUDGET_KEYS, budgetAdditionMonoid} from '../Model'
 import {Either} from 'fp-ts/Either'
 import * as R from 'ramda'
-import {parseISO} from 'date-fns'
+import {formatISO, parseISO} from 'date-fns'
 
 export const budgetSnapshot = (es: Event[]): Either<string, BUDGET_SNAPSHOT<Budget>> =>
     snapshot(updateState, es)
@@ -39,7 +39,7 @@ function updateBudget(e: Event, budget: Budget): Budget {
 const importBudget = (budget: Budget, importing: Budget, at = new Date()) => {
     const clean = (budget: Budget, list = 'assets') => R.over<Budget, any>(
         R.lensProp(list),
-        R.pipe(R.defaultTo([]), R.map(({start = at, amount, ...item}) => ({
+        R.pipe(R.defaultTo([]), R.map(({start = formatISO(at, {representation: 'date'}), amount, ...item}) => ({
             ...item, start, amount: R.when(s => R.type(s) === 'String', parseFloat, amount)
         })))
     )(budget)

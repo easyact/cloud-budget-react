@@ -2,7 +2,7 @@ import {useState} from 'react'
 import {dateRange, semigroupDailyData} from '../util/Viz'
 import * as R from 'ramda'
 import {reduce} from 'fp-ts/Array'
-import {add, isAfter, isBefore} from 'date-fns'
+import {add, isAfter, isBefore, parseISO} from 'date-fns'
 import subMonths from 'date-fns/subMonths'
 import {
     area,
@@ -69,7 +69,7 @@ function toStackData(budget = {}) {
     const day0 = dates[0]
     const durations = R.pipe(R.map(R.props(['name', 'duration'])), R.fromPairs)(items)
     const firstOccurredDates = items.map(R.props(['name', 'start']))
-        .map(([name, start]) => [name, new Date(start.setHours(0, 0, 0, 0))])
+        .map(([name, start]) => [name, parseISO(start)])
         .map(([name, start]) => {
             // console.log('[name, start]', [name, start], day0)
             const duration = durations[name]
@@ -87,7 +87,7 @@ function toStackData(budget = {}) {
             const occurredThisDay = R.pluck(0, occurredThisDayPairs)
             // console.log('occurredThisDay', occurredThisDay,)
             const dailyData = R.pipe(
-                R.filter(i => !isAfter(i.start, date)),
+                R.filter(i => !isAfter(parseISO(i.start), date)),
                 // R.filter(i => i.amount > 0),
                 R.map(R.props(['name', 'amount'])),
                 R.fromPairs,

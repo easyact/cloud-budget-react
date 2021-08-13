@@ -5,8 +5,6 @@ import {FaChevronDown, FaChevronUp, FaEdit, FaPlus, FaSave, FaStepBackward, FaTr
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
-import {formatDate} from './util'
-import {parseISO} from 'date-fns'
 
 const setItemByEvent = (key, item, setItem, change = R.identity) => flow(
     R.path(['target', 'value']),
@@ -64,7 +62,8 @@ function DurationControl(item, setItem) {
 }
 
 function DateControl({editing, field, item, setItem, label}) {
-    const defaultValue = formatDate(item[field])
+    const defaultValue = item[field]
+    console.log('defaultValue', defaultValue)
     label = label ?? field
     return <div className="field is-horizontal">
         <div className="field-label is-normal">
@@ -74,7 +73,7 @@ function DateControl({editing, field, item, setItem, label}) {
             <div className="field">
                 {editing ? <p className="control is-expanded has-icons-left">
                     <input className="input is-small" type="date" placeholder={label}
-                           defaultValue={defaultValue} onChange={setItemByEvent('start', item, setItem, parseISO)}/>
+                           defaultValue={defaultValue} onChange={setItemByEvent('start', item, setItem)}/>
                     <span className="icon is-small is-left"><FaStepBackward/></span>
                 </p> : <p className="control">{defaultValue}</p>}
             </div>
