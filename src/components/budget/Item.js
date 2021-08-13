@@ -1,16 +1,7 @@
 import {useState} from 'react'
 import {flow} from 'fp-ts/es6/function'
 import * as R from 'ramda'
-import {
-    FaChevronDown,
-    FaChevronUp,
-    FaEdit,
-    FaPlus,
-    FaSave,
-    FaStepBackward,
-    FaStepForward,
-    FaTrash
-} from 'react-icons/all'
+import {FaChevronDown, FaChevronUp, FaEdit, FaPlus, FaSave, FaStepBackward, FaTrash} from 'react-icons/all'
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
@@ -72,24 +63,24 @@ function DurationControl(item, setItem) {
     }
 }
 
-// function Date({editing, ref, key}) {
-//     return <div>
-//         <div className="field-label is-normal">
-//             <label className="label">开始</label>
-//         </div>
-//         <div className="field-body">
-//             <div className="field">
-//                 {editing ? <p className="control is-expanded has-icons-left">
-//                     <input className="input" type="date" placeholder="开始"
-//                            defaultValue={ref.current[key]}/>
-//                     <span className="icon is-small is-left">
-//                         <FaStepBackward/>
-//                     </span>
-//                 </p> : <p className="control">{ref.current[key]}</p>}
-//             </div>
-//         </div>
-//     </div>
-// }
+function DateControl({editing, field, item, setItem, label}) {
+    const defaultValue = formatDate(item[field])
+    label = label ?? field
+    return <div className="field is-horizontal">
+        <div className="field-label is-normal">
+            <label className="label">{label}</label>
+        </div>
+        <div className="field-body">
+            <div className="field">
+                {editing ? <p className="control is-expanded has-icons-left">
+                    <input className="input is-small" type="date" placeholder={label}
+                           defaultValue={defaultValue} onChange={setItemByEvent('start', item, setItem, parseISO)}/>
+                    <span className="icon is-small is-left"><FaStepBackward/></span>
+                </p> : <p className="control">{defaultValue}</p>}
+            </div>
+        </div>
+    </div>
+}
 
 export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(!value)
@@ -158,41 +149,13 @@ export function Item({index, columns, value, update, rm}) {
     if (folded) {
         return tr
     }
-    const start = formatDate(value.start)
-    const end = formatDate(value.end)
+    // const start = formatDate(value.start)
+    // const end = formatDate(value.end)
     return <section>
         {tr}
         <div className="panel-block">
-            <div className="field is-horizontal">
-                {/*<Date editing={editing}/>*/}
-                <div className="field-label is-normal">
-                    <label className="label">开始</label>
-                </div>
-                <div className="field-body">
-                    <div className="field">
-                        {editing ? <p className="control is-expanded has-icons-left">
-                            <input className="input" type="date" placeholder="开始"
-                                   defaultValue={start} onChange={setItemByEvent('start', item, setItem, parseISO)}/>
-                            <span className="icon is-small is-left">
-                                        <FaStepBackward/>
-                                    </span>
-                        </p> : <p className="control">{start}</p>}
-                    </div>
-                </div>
-                <div className="field-label is-normal">
-                    <label className="label">结束</label>
-                </div>
-                <div className="field-body">
-                    <div className="field">
-                        <p className="control is-expanded has-icons-left">
-                            <input className="input" type="text" placeholder="结束时间"/>
-                            <span className="icon is-small is-left">
-                                        <FaStepForward/>
-                                    </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <DateControl editing={editing} item={item} setItem={setItem} field="start" label="开始"/>
+            <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
         </div>
     </section>
 }
