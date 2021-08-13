@@ -15,6 +15,7 @@ import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
 import {formatDate} from './util'
+import {parseISO} from 'date-fns'
 
 const setItemByEvent = (key, item, setItem, change = R.identity) => flow(
     R.path(['target', 'value']),
@@ -94,13 +95,8 @@ export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
     const [item, setItem] = useState(value)
+
     // log('Item')(item)
-    // const fields = {}
-    // for (const column of columns) {
-    //     // eslint-disable-next-line react-hooks/rules-of-hooks
-    //     fields[column.key] = useRef(value?.[column.key])
-    //     // console.log('Item.fields', column.key, fields[column.key])
-    // }
 
     function add() {
         console.log('List add', item)
@@ -176,7 +172,7 @@ export function Item({index, columns, value, update, rm}) {
                     <div className="field">
                         {editing ? <p className="control is-expanded has-icons-left">
                             <input className="input" type="date" placeholder="开始"
-                                   defaultValue={start}/>
+                                   defaultValue={start} onChange={setItemByEvent('start', item, setItem, parseISO)}/>
                             <span className="icon is-small is-left">
                                         <FaStepBackward/>
                                     </span>
