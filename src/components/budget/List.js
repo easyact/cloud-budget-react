@@ -46,8 +46,8 @@ export default function List(
             {columns.map(c => <b key={c.key} className="column">{c.title}</b>)}
             <span className="column"/>
         </section>
-        {items.map((value, index) =>
-            <Item key={index} index={index} columns={columns} value={value} update={put} rm={rm}/>
+        {items.map((item, index) =>
+            <Item key={index} index={index} columns={columns} value={item} update={put} rm={rm}/>
         )}
         <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>
         <section className="panel-block th">

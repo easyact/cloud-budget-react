@@ -6,13 +6,13 @@ phases:
   build:
     commands:
       - echo "\$CI=$CI"
-#      - npm version prepatch
 #      - git push #no .git on codebuild
 #      - git config --global user.email "zhaolei@easyact.cn"
 #      - git config --global user.name "CI"
 #      - echo "https://$git_user:$git_pass@example.com" > .git-credentials
 #      - git config --global credential.helper store
       - npm i
+      - npm version patch
       - ./deploy.sh
 artifacts:
   files:

@@ -96,12 +96,13 @@ export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
     const cleaned = R.cond([
+        [R.isNil, R.identity],
         [R.propSatisfies(R.isNil, FIELD_DURATION), R.always(DEFAULT_DURATION)],
         [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
+        [R.T, R.identity],
     ])(value)
+    // console.log('Cleaned', value, 'to', cleaned)
     const [item, setItem] = useState(cleaned)
-
-    // log('Item')(item)
 
     function add() {
         console.log('List add', item)
@@ -125,11 +126,8 @@ export function Item({index, columns, value, update, rm}) {
         ? <input type={type} className="input is-small" defaultValue={defaultValue}
                  onChange={setItemByEvent(key, item, setItem)}/>
         : defaultValue)
-    // console.log('div', value, columns)
-    // if (!folded)
-    //     return <div>
     const opTd = <div key={`td${index}`} className="column">
-        {value ?
+        {item ?
             <div className="field has-addons">
                 {editing ?
                     <div className="control">
@@ -147,7 +145,7 @@ export function Item({index, columns, value, update, rm}) {
                     </div>
                 }
                 <div className="control">
-                    <button className="button is-small" onClick={() => rm(value.id)} title={'删除'}><FaTrash/></button>
+                    <button className="button is-small" onClick={() => rm(item.id)} title={'删除'}><FaTrash/></button>
                 </div>
                 <div className="control">
                     <button className="button is-small" onClick={() => setFolded(!folded)}>
@@ -164,7 +162,7 @@ export function Item({index, columns, value, update, rm}) {
             </div>}
     </div>
     const mainCells = columns.map(c => <div className="column" key={c.key + index}>
-        {td(c.type, editing)(value?.[c.key], c.key)}</div>)
+        {td(c.type, editing)(item?.[c.key], c.key)}</div>)
     const tr = <section className="panel-block columns">
         {mainCells}
         {opTd}
