@@ -29,7 +29,7 @@ const DEFAULT_DURATION = {months: 1}
 function DurationControl(item, setItem) {
     return {
         duration: {
-            false: flow(R.defaultTo(DEFAULT_DURATION), formatDurationWithOptions({locale})),
+            false: formatDurationWithOptions({locale}),
             true: DurationEditor
         }
     }
@@ -90,10 +90,16 @@ function DateControl({editing, field, item, setItem, label}) {
     </div>
 }
 
+const FIELD_DURATION = 'duration'
+
 export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
-    const [item, setItem] = useState(value)
+    const cleaned = R.cond([
+        [R.propSatisfies(R.isNil, FIELD_DURATION), R.always(DEFAULT_DURATION)],
+        [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
+    ])(value)
+    const [item, setItem] = useState(cleaned)
 
     // log('Item')(item)
 
@@ -109,9 +115,9 @@ export function Item({index, columns, value, update, rm}) {
     }
 
     function cancel() {
-        console.log('Item cancel', item, value)
+        console.log('Item cancel', item, cleaned)
         setEditing(false)
-        setItem(value)
+        setItem(cleaned)
     }
 
     const durationControl = DurationControl(item, setItem)
