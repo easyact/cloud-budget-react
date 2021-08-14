@@ -41,7 +41,7 @@ function DurationControl(item, setItem) {
                 <div className="field has-addons">
                     <p className="control">
                         <input defaultValue={value} className="input is-small" type="number"
-                               onChange={setItemByEvent(key, item, setItem, parseInt)}/>
+                               onChange={setItemByEvent(key, item, setItem, R.pipe(parseInt, R.objOf(unit)))}/>
                     </p>
                     <p className="control">
                     <span className="select is-small is-narrow">
