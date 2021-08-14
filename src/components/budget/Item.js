@@ -1,7 +1,16 @@
 import {useState} from 'react'
 import {flow} from 'fp-ts/es6/function'
 import * as R from 'ramda'
-import {FaChevronDown, FaChevronUp, FaEdit, FaPlus, FaSave, FaStepBackward, FaTrash} from 'react-icons/all'
+import {
+    FaChevronDown,
+    FaChevronUp,
+    FaEdit,
+    FaPlus,
+    FaSave,
+    FaStepBackward,
+    FaStrikethrough,
+    FaTrash
+} from 'react-icons/all'
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
@@ -94,9 +103,15 @@ export function Item({index, columns, value, update, rm}) {
     }
 
     function save() {
-        console.log('List set', item)
+        console.log('Item set', item)
         setEditing(false)
         update(item)
+    }
+
+    function cancel() {
+        console.log('Item cancel', item, value)
+        setEditing(false)
+        setItem(value)
     }
 
     const durationControl = DurationControl(item, setItem)
@@ -112,18 +127,21 @@ export function Item({index, columns, value, update, rm}) {
             <div className="field has-addons">
                 {editing ?
                     <div className="control">
-                        <button className="button is-small" onClick={save}>
+                        <button className="button is-small" onClick={save} title={'保存'}>
                             <FaSave/>
+                        </button>
+                        <button className="button is-small" onClick={cancel} title="取消">
+                            <FaStrikethrough/>
                         </button>
                     </div> :
                     <div className="control">
-                        <button className="button is-small" onClick={() => setEditing(true)}>
+                        <button className="button is-small" onClick={() => setEditing(true)} title={'编辑'}>
                             <FaEdit/>
                         </button>
                     </div>
                 }
                 <div className="control">
-                    <button className="button is-small" onClick={() => rm(value.id)}><FaTrash/></button>
+                    <button className="button is-small" onClick={() => rm(value.id)} title={'删除'}><FaTrash/></button>
                 </div>
                 <div className="control">
                     <button className="button is-small" onClick={() => setFolded(!folded)}>
@@ -145,14 +163,11 @@ export function Item({index, columns, value, update, rm}) {
         {mainCells}
         {opTd}
     </section>
-    if (folded) {
+    if (folded)
         return tr
-    }
-    // const start = formatDate(value.start)
-    // const end = formatDate(value.end)
     return <section>
         {tr}
-        <div className="columns">
+        <div className="columns card">
             <DateControl editing={editing} item={item} setItem={setItem} field="start" label="开始"/>
             <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
         </div>
