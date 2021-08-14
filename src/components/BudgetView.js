@@ -58,16 +58,6 @@ function BudgetView() {
         <StreamViz budget={budget} height={window.innerHeight / 2}/>
         <div className="columns">
             <div className="column">
-                <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
-                <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
-                      dispatch={dispatch}
-                      columns={[{title: '负债', type: 'text', key: 'name'}, {
-                          title: '总数',
-                          type: 'number',
-                          key: 'amount'
-                      }, {title: '已还', type: 'number', key: 'amortized'}]}/>
-            </div>
-            <div className="column">
                 <List name={'incomes'} title="收入" items={budget.incomes}
                       dispatch={dispatch}
                       columns={[{title: '收入', type: 'text', key: 'name'}, {
@@ -82,6 +72,16 @@ function BudgetView() {
                           type: 'number',
                           key: 'amount'
                       }, {title: '周期', type: 'duration', key: 'duration'}]}/>
+            </div>
+            <div className="column">
+                <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
+                <List name={'liabilities'} title="负债" hint="从口袋掏钱出去" items={budget.liabilities}
+                      dispatch={dispatch}
+                      columns={[{title: '负债', type: 'text', key: 'name'}, {
+                          title: '总数',
+                          type: 'number',
+                          key: 'amount'
+                      }, {title: '已还', type: 'number', key: 'amortized'}]}/>
             </div>
         </div>
         <div className=" field is-grouped is-grouped-multiline">
