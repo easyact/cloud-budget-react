@@ -19,6 +19,7 @@ import {
 import {FaCaretSquareDown, FaCaretSquareUp, FaCompressAlt, FaExpandAlt} from 'react-icons/all'
 import 'd3-transition'
 import {legendColor} from 'd3-svg-legend'
+import {format} from 'date-fns/fp'
 
 function Switch(
     {
@@ -204,8 +205,7 @@ export function StreamViz(
         .map((d, i) => <path id={d.key} key={`stack${i}`} d={stackArea(d)} style={{
             fill: fillScale(d.key), stroke: 'black', strokeOpacity: 0.25, opacity: .5
         }}/>)
-    const xAxis = axisTop().scale(xScale)
-    // .tickFormat(formatISOWithOptions({representation: 'date'}))
+    const xAxis = axisTop().scale(xScale).tickFormat(format('yy/M'))
     const yAxis = axisRight().scale(yScale)
     const LEGEND_WIDTH = width / keys.length
     const legendA = legendColor().scale(fillScale).orient('horizontal').shapeWidth(LEGEND_WIDTH)
