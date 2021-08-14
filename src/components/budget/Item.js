@@ -65,8 +65,8 @@ function DateControl({editing, field, item, setItem, label}) {
     const defaultValue = item[field]
     console.log('defaultValue', defaultValue)
     label = label ?? field
-    return <div className="field is-horizontal">
-        <div className="field-label is-normal">
+    return <div className="field is-horizontal column">
+        <div className="field-label">
             <label className="label">{label}</label>
         </div>
         <div className="field-body">
@@ -152,7 +152,7 @@ export function Item({index, columns, value, update, rm}) {
     // const end = formatDate(value.end)
     return <section>
         {tr}
-        <div className="panel-block">
+        <div className="columns">
             <DateControl editing={editing} item={item} setItem={setItem} field="start" label="开始"/>
             <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
         </div>
