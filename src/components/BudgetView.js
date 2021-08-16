@@ -55,8 +55,7 @@ function History({eventStore, uid, dispatch}) {
 }
 
 function BudgetView() {
-    const [{budget, error, eventStore, uid}, dispatch] = useBudget('current')
-    const [showHistory, setShowHistory] = useState()
+    const [{budget, error, eventStore, uid, showHistory}, dispatch] = useBudget('current')
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -110,7 +109,7 @@ function BudgetView() {
             <div className="dropdown is-right is-active">
                 <div className="dropdown-trigger">
                     <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
-                            onClick={() => setShowHistory(!showHistory)}>
+                            onClick={() => dispatch({type: 'SHOW_HISTORY', payload: !showHistory})}>
                         <span>修改历史</span>
                         <FaAngleDown/>
                     </button>

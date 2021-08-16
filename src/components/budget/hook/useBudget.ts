@@ -20,7 +20,8 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         saving: false,
         eventStore,
         apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn`,
-        syncNeeded: true
+        syncNeeded: true,
+        showHistory: false,
     })
     const notifyError = <E>(payload: E) => {
         // alert(JSON.stringify(payload))

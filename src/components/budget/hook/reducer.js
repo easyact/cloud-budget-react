@@ -45,6 +45,7 @@ function handle(state, action) {
                 error: undefined,
                 budget,
                 kpi: kpi(budget),
+                showHistory: false,
             }
         case 'CMD_SUCCESS':
             return {
@@ -73,6 +74,12 @@ function handle(state, action) {
             return {
                 ...state,
                 error: undefined
+            }
+
+        case 'SHOW_HISTORY':
+            return {
+                ...state,
+                showHistory: action.payload
             }
 
         default:
