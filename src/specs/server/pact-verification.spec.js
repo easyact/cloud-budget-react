@@ -6,7 +6,10 @@ const providerName = 'stage'
 const providerBaseUrl = `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn/`
 // const providerBaseUrl = `https://m99jy17a13.execute-api.cn-northwest-1.amazonaws.com.cn/dev`
 describe('Pact Verification', () => {
+    const timeout = 80000
+
     const opts = {
+        timeout,
         provider: providerName,
         providerBaseUrl,
         pactUrls: [path.resolve(process.cwd(), 'pacts', 'budgetwebsite-budgetapigateway.json')],
@@ -39,8 +42,7 @@ describe('Pact Verification', () => {
                 }))
         }
     }
-
     it('should validate the expectations of Order Web', () => {
         return new Verifier(opts).verifyProvider()
-    }, 80000)
+    }, timeout)
 })
