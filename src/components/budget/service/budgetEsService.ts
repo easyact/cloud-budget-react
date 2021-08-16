@@ -3,6 +3,7 @@ import * as TE from 'fp-ts/lib/TaskEither'
 import * as RTE from 'fp-ts/lib/ReaderTaskEither'
 import * as RT from 'fp-ts/lib/ReaderTask'
 import * as T from 'fp-ts/lib/Task'
+import * as O from 'fp-ts/lib/Option'
 import {pipe} from 'fp-ts/lib/function'
 import {BEvent, DBEventStore, ErrorM, EventStore, UnUploadedCommands} from '../../es/lib/eventStore'
 import * as R from 'ramda'
@@ -14,6 +15,7 @@ import {TaskEither} from 'fp-ts/TaskEither'
 import {Lens} from 'monocle-ts'
 import EXAMPLE from './example.json'
 import log from '../../log'
+import {BUDGET_SNAPSHOT} from '../../es/lib/es'
 
 type CommandType = 'IMPORT_BUDGET' | 'PUT_ITEM' | 'DELETE_ITEM'
 export type Command = {
@@ -72,6 +74,28 @@ export const getBudgetE = (uid: string, version: string): ReaderTaskEither<Event
     // )),
     RTE.map(versions => log(`getBudgetE ${uid} ${version}`)(versions.get(version))),
     RTE.chain(budget => budget ? RTE.right(budget) : RTE.left('none')),
+)
+const fromOption: <T>(o: O.Option<T>) => ReaderTaskEither<EventStore, ErrorM, T> = RTE.fromOption(R.always('none'))
+
+const getValueFromMap = <T>(versions: Map<string, T>, version: string) => pipe(
+    versions.get(version),
+    O.fromNullable,
+    fromOption)
+
+export const getBudgetFromEvents = (events: BEvent[], uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, {
+    budget: Budget, events: BEvent[], versions: Map<string, Budget>, userVersions: BUDGET_SNAPSHOT<Budget>
+}> => pipe(
+    RTE.of(events),
+    RTE.bindTo('events'),
+    RTE.bind('userVersions', ({events}) => RTE.fromEither(budgetSnapshot(events))),
+    RTE.bind('versions', ({userVersions}) => getValueFromMap(userVersions, uid)),
+    RTE.bind('budget', ({versions}) => getValueFromMap(versions, version)),
+)
+export const getBudget = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, {
+    budget: Budget, events: BEvent[], versions: Map<string, Budget>, userVersions: BUDGET_SNAPSHOT<Budget>
+}> => pipe(
+    getEvents(uid),
+    RTE.chain(events => getBudgetFromEvents(events, uid, version)),
 )
 
 export const getBudgetOrImportExampleIfNone = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(

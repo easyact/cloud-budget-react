@@ -37,15 +37,16 @@ function handle(state, action) {
             }
 
         case 'FETCH_BUDGET_SUCCESS':
-            const budget = action.payload
+            const budgetState = action.payload
             return {
                 ...state,
                 isLoading: false,
                 // saving: false,
                 error: undefined,
-                budget,
-                kpi: kpi(budget),
+                // budget,
+                kpi: kpi(budgetState.budget),
                 showHistory: false,
+                ...budgetState,
             }
         case 'CMD_SUCCESS':
             return {
@@ -58,8 +59,8 @@ function handle(state, action) {
         case 'SYNC_SUCCESS':
             return {
                 ...state,
+                ...action.payload,
                 syncNeeded: false,
-                budget: action.payload,
                 error: undefined,
             }
 
@@ -82,8 +83,19 @@ function handle(state, action) {
                 showHistory: action.payload
             }
 
+        case 'SET_LAST_EVENT_ID':
+            return {
+                ...state,
+                showHistory: false,
+                lastEventId: action.payload,
+            }
+
         default:
-            return {...state, cmd: {user: {id: state.uid}, to: {version: state.version},
-                    error: undefined, ...action}}
+            return {
+                ...state, cmd: {
+                    user: {id: state.uid}, to: {version: state.version},
+                    error: undefined, ...action
+                }
+            }
     }
 }

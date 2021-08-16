@@ -3,59 +3,56 @@ import useBudget from './budget/hook/useBudget'
 import EXAMPLE from './budget/service/example.json'
 import {Link} from 'react-router-dom'
 import {StreamViz} from './StreamViz'
-import {useEffect, useState} from 'react'
-import {getEvents} from './budget/service/budgetEsService'
-import * as E from 'fp-ts/Either'
-import {budgetSnapshot} from './budget/service/snapshot'
-import {pipe} from 'fp-ts/function'
-import * as R from 'ramda'
-import log from './log'
 import {FaAngleDown} from 'react-icons/all'
 
 const AMOUNT = '数额'
 
-function History({eventStore, uid, dispatch}) {
-    const [events, setEvents] = useState([])
-    const [err, setErr] = useState()
-    const [last, setLast] = useState()
-    useEffect(function settingEvents() {
-        // TODO 这里得用state
-        getEvents(uid)(eventStore)().then(E.fold(setErr, setEvents))
-    }, [eventStore, uid])
-    useEffect(function previewVersion() {
-        console.log(' history deps', events, last, uid,)
+function History({dispatch, state: {events, error}}) {
+    // const [events, setEvents] = useState([])
+    // const [err, setErr] = useState()
+    // const [last, setLast] = useState()
+    // useEffect(function settingEvents() {
+    //     getEvents(uid)(eventStore)().then(E.fold(setErr, setEvents))
+    // }, [eventStore, uid])
+    // useEffect(function previewVersion() {
+    //     console.log(' history deps', events, lastEventId, uid, eventStore)
+    //
+    //     function setBudget(payload) {
+    //         return dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})
+    //     }
+    //
+    //     if (!lastEventId) {
+    //         console.log('Ignore history preview')
+    //         return
+    //     }
+    //     pipe(events,
+    //         R.filter(e => e.id <= lastEventId),
+    //         budgetSnapshot,
+    //         E.map(m => m?.get(uid)?.get('current')),
+    //         E.map(log('History snapshot')),
+    //         E.fold(setError, setBudget)
+    //     )
+    // }, [dispatch, events])
+    if (error)
+        return <p className="message is-danger">{error}</p>
 
-        function setBudget(payload) {
-            return dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})
-        }
+    function setLast(id) {
+        dispatch({type: 'SET_LAST_EVENT_ID', payload: id})
+    }
 
-        if (!last) {
-            console.log('Ignore history preview')
-            return
-        }
-        pipe(events,
-            R.filter(e => e.id <= last),
-            budgetSnapshot,
-            E.map(m => m?.get(uid)?.get('current')),
-            E.map(log('History snapshot')),
-            E.fold(setErr, setBudget)
-        )
-    }, [dispatch, events, last, uid])
-    if (err)
-        return <p className="message is-danger">{err}</p>
     return <div className="dropdown-content history">
         {events.map((e, i) => <div className="dropdown-item" key={i}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={() => setLast(e.id)}>{e.type} 分支: {e.to?.version}
                 <div className="ea-content">{JSON.stringify(e.payload)}</div>
-                {/*    */}
             </a>
         </div>)}
     </div>
 }
 
 function BudgetView() {
-    const [{budget, error, eventStore, uid, showHistory}, dispatch] = useBudget('current')
+    const [state, dispatch] = useBudget('current')
+    const {budget, error, showHistory} = state
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -115,7 +112,7 @@ function BudgetView() {
                     </button>
                 </div>
                 <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
-                    {showHistory && <History eventStore={eventStore} uid={uid} dispatch={dispatch}/>}
+                    {showHistory && <History state={state} dispatch={dispatch}/>}
                 </div>
             </div>
         </div>
@@ -148,7 +145,7 @@ function BudgetView() {
                       }, {title: '已还', type: 'number', key: 'amortized'}]}/>
             </div>
         </div>
-        <div className=" field is-grouped is-grouped-multiline">
+        <div className="field is-grouped is-grouped-multiline">
             {/*<div className=" field has-addons control">*/}
             {/*    <p className=" control is-expanded">*/}
             {/*        <input id="ver" className="input is-small"/>*/}

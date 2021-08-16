@@ -11,4 +11,5 @@ export interface BudgetState {
     apiBase: string
     syncNeeded: boolean
     error: string
+    lastEventId: number | null
 }

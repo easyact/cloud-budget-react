@@ -1,12 +1,13 @@
 import {Dispatch, Reducer, ReducerAction, useEffect, useReducer} from 'react'
 import reducer from './reducer'
-import {exec, getBudgetE, sync} from '../service/budgetEsService'
+import {exec, getBudget, getBudgetFromEvents, getEvents, sync} from '../service/budgetEsService'
 import {BudgetState} from './budgetState'
 import * as E from 'fp-ts/Either'
-import {DBEventStore} from '../../es/lib/eventStore'
+import {BEvent, DBEventStore} from '../../es/lib/eventStore'
 import useUser from './useUser'
 import {pipe} from 'fp-ts/lib/function'
 import * as RTE from 'fp-ts/ReaderTaskEither'
+import * as R from 'ramda'
 
 const eventStore = new DBEventStore()
 export default function useBudget(version: string): [BudgetState, Dispatch<ReducerAction<any>>] {
@@ -22,12 +23,14 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         apiBase: `https://grac2ocq56.execute-api.cn-northwest-1.amazonaws.com.cn`,
         syncNeeded: true,
         showHistory: false,
+        history: [],
+        lastEventId: null,
     })
     const notifyError = <E>(payload: E) => {
         // alert(JSON.stringify(payload))
         dispatch({type: 'FETCH_BUDGET_ERROR', payload})
     }
-    const {cmd, apiBase, syncNeeded}: BudgetState = state
+    const {cmd, apiBase, syncNeeded, lastEventId}: BudgetState = state
     // console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function userChange() {
         if (error)
@@ -39,7 +42,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         if (!(isAuthenticated && syncNeeded)) return
         // alert('whenLoggedIn')
         console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
-        pipe(sync(apiBase, uid), RTE.chain(() => getBudgetE(uid, version)))(eventStore)()
+        pipe(sync(apiBase, uid), RTE.chain(() => getBudget(uid, version)))(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
     }, [apiBase, uid, isAuthenticated, syncNeeded, version])
     useEffect(function execCmd() {
@@ -52,8 +55,12 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function load() {
         // console.log('useBudget.loading', isLoading, uid, version, eventStore)
         if (isLoading) return
-        getBudgetE(uid, version)(eventStore)()
+        pipe(
+            getEvents(uid),
+            lastEventId ? RTE.map(R.filter((e: BEvent) => (e.id || 0) <= lastEventId)) : R.identity,
+            RTE.chain(events => getBudgetFromEvents(events, uid, version)),
+        )(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})))
-    }, [version, uid, isLoading])
+    }, [version, uid, isLoading, lastEventId])
     return [state, dispatch]
 }
