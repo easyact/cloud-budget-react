@@ -22,3 +22,21 @@
 .b-list .th.panel-block {
     background-color: #ffffff;
 }
+
+.history {
+    position: absolute;
+    top: 3rem;
+    width: 15rem;
+    right: 0;
+    z-index: 3;
+    background-color: white;
+}
+
+.history:not(:hover) {
+    right: -13rem;
+}
+
+.history .ea-content {
+    max-height: 5em;
+    overflow: auto;
+}

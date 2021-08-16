@@ -39,7 +39,6 @@ export default function List(
         dispatch({type, payload: {id, from: name}})
     }
 
-    // let sum = 0;
     return <div className="panel b-list">
         <p className="panel-heading">{title}<small className="has-text-grey">{hint}</small></p>
         <section className="panel-block columns th">

@@ -215,7 +215,7 @@ export function StreamViz(
     const callRef = f => node => node && select(node).call(f)
     return <section>
         <Switch hiding={hiding} overlaying={overlaying}/>
-        <svg width={width} height={height}>
+        <svg width={width} height={height} style={{overflowX: 'auto'}}>
             <g>{stacks}</g>
             <g id="legend" ref={callRef(legendA)} transform="translate(0, 0)"/>
             <g id="xAxisG" ref={callRef(xAxis)} transform={`translate(0,${height})`}/>

@@ -3,11 +3,58 @@ import useBudget from './budget/hook/useBudget'
 import EXAMPLE from './budget/service/example.json'
 import {Link} from 'react-router-dom'
 import {StreamViz} from './StreamViz'
+import {useEffect, useState} from 'react'
+import {getEvents} from './budget/service/budgetEsService'
+import * as E from 'fp-ts/Either'
+import {budgetSnapshot} from './budget/service/snapshot'
+import {pipe} from 'fp-ts/function'
+import * as R from 'ramda'
+import log from './log'
 
 const AMOUNT = '数额'
 
+function History({eventStore, uid, dispatch}) {
+    const [events, setEvents] = useState([])
+    const [err, setErr] = useState()
+    const [last, setLast] = useState()
+    useEffect(function settingEvents() {
+        // TODO 这里得用state
+        getEvents(uid)(eventStore)().then(E.fold(setErr, setEvents))
+    }, [eventStore, uid])
+    useEffect(function previewVersion() {
+        console.log(' history deps', events, last, uid,)
+
+        function setBudget(payload) {
+            return dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})
+        }
+
+        if (!last) {
+            console.log('Ignore history preview')
+            return
+        }
+        pipe(events,
+            R.filter(e => e.id <= last),
+            budgetSnapshot,
+            E.map(m => m?.get(uid)?.get('current')),
+            E.map(log('History snapshot')),
+            E.fold(setErr, setBudget)
+        )
+    }, [dispatch, events, last, uid])
+    if (err)
+        return <p className="message is-danger">{err}</p>
+    return <ul className="">
+        {events.map((e, i) => <li key={i} className="panel-block">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a onClick={() => setLast(e.id)}>{e.type} 分支: {e.to?.version}
+                <div className="ea-content">{JSON.stringify(e.payload)}</div>
+                {/*    */}
+            </a>
+        </li>)}
+    </ul>
+}
+
 function BudgetView() {
-    const [{budget, error}, dispatch] = useBudget('current')
+    const [{budget, error, eventStore, uid}, dispatch] = useBudget('current')
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -28,7 +75,7 @@ function BudgetView() {
             <section className="hero-body block">
                 <p className="subtitle">第一次使用?</p>
                 <p className="title">是否需要在示例的基础上创建预算?</p>
-                <p>钱越少越要精打细算, 因为你的未来就在你的资源分配中可见一斑.</p>
+                <p>钱越少越要精打细算, 因为你的未来部分取决于你目前的资源分配.</p>
                 <p>财务报告包含资产/负债/收入/支出部分.</p>
                 <p>记账太繁琐, 做好每月预算, 然后月底看看实际和预算的大致偏差, 就能把大部分问题都暴露了. </p>
                 <p>然后针对问题调整重要项目的投入比例, 你的未来便掌握在你自己的手中. </p>
@@ -107,6 +154,12 @@ function BudgetView() {
                 <input id="import-file" type="file" name=" name" style={{display: 'none'}} onChange={importBudget}/>
             </div>
         </div>
+        <aside className="history panel is-link is-right">
+            <p className="panel-heading">
+                历史
+            </p>
+            <History eventStore={eventStore} uid={uid} dispatch={dispatch}/>
+        </aside>
     </div>
 }
 
