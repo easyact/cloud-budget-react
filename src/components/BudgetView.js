@@ -10,6 +10,7 @@ import {budgetSnapshot} from './budget/service/snapshot'
 import {pipe} from 'fp-ts/function'
 import * as R from 'ramda'
 import log from './log'
+import {FaAngleDown} from 'react-icons/all'
 
 const AMOUNT = '数额'
 
@@ -42,19 +43,20 @@ function History({eventStore, uid, dispatch}) {
     }, [dispatch, events, last, uid])
     if (err)
         return <p className="message is-danger">{err}</p>
-    return <ul className="">
-        {events.map((e, i) => <li key={i} className="panel-block">
+    return <div className="dropdown-content history">
+        {events.map((e, i) => <div className="dropdown-item" key={i}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a onClick={() => setLast(e.id)}>{e.type} 分支: {e.to?.version}
                 <div className="ea-content">{JSON.stringify(e.payload)}</div>
                 {/*    */}
             </a>
-        </li>)}
-    </ul>
+        </div>)}
+    </div>
 }
 
 function BudgetView() {
     const [{budget, error, eventStore, uid}, dispatch] = useBudget('current')
+    const [showHistory, setShowHistory] = useState()
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -89,10 +91,10 @@ function BudgetView() {
     </div>
 
     return <div>
-        {error ? <div className="notification is-danger">
+        {error && <div className="notification is-danger">
             <button className="delete" onClick={() => dispatch({type: 'CLOSE_ERROR'})}/>
             {error}
-        </div> : <div/>}
+        </div>}
         <div className="level is-mobile">
             <div className="level-item has-text-centered">
                 {/*R.sum(expenses.map(e => e[AMOUNT]))*/}
@@ -103,6 +105,22 @@ function BudgetView() {
             {/*</div>*/}
         </div>
         <StreamViz budget={budget} height={window.innerHeight / 2}/>
+        <div className="buttons has-addons is-right">
+            {/*<button className="button" onClick={() => setShowHistory(!showHistory)}>修改历史</button>*/}
+            <div className="dropdown is-right is-active">
+                <div className="dropdown-trigger">
+                    <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
+                            onClick={() => setShowHistory(!showHistory)}>
+                        <span>修改历史</span>
+                        <FaAngleDown/>
+                    </button>
+                </div>
+                <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
+                    {showHistory && <History eventStore={eventStore} uid={uid} dispatch={dispatch}/>}
+                </div>
+            </div>
+        </div>
+
         <div className="columns">
             <div className="column">
                 <List name={'incomes'} title="收入" items={budget.incomes}
@@ -154,12 +172,6 @@ function BudgetView() {
                 <input id="import-file" type="file" name=" name" style={{display: 'none'}} onChange={importBudget}/>
             </div>
         </div>
-        <aside className="history panel is-link is-right">
-            <p className="panel-heading">
-                历史
-            </p>
-            <History eventStore={eventStore} uid={uid} dispatch={dispatch}/>
-        </aside>
     </div>
 }
 

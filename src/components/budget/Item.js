@@ -101,9 +101,10 @@ export function Item({index, columns, value, update, rm}) {
         [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
         [R.T, R.identity],
     ])
-    const clean = R.any(R.propEq('name', FIELD_DURATION))(columns) ? cleanDuration : R.identity
+    const hasDurationColumn = R.any(R.propEq('name', FIELD_DURATION))(columns)
+    const clean = hasDurationColumn ? cleanDuration : R.identity
     const cleaned = clean(value)
-    console.log('Cleaned', value, 'to', cleaned)
+    // console.log('Cleaned', value, 'to', cleaned)
     const [item, setItem] = useState(cleaned)
 
     function add() {
