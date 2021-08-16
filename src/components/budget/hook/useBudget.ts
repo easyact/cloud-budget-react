@@ -57,8 +57,11 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         if (isLoading) return
         pipe(
             getEvents(uid),
-            lastEventId ? RTE.map(R.filter((e: BEvent) => (e.id || 0) <= lastEventId)) : R.identity,
-            RTE.chain(events => getBudgetFromEvents(events, uid, version)),
+            RTE.chain(events => pipe(events,
+                lastEventId ? R.filter((e: BEvent) => (e.id || 0) <= lastEventId) : R.identity,
+                filtered => getBudgetFromEvents(filtered, uid, version),
+                RTE.map(R.set(R.lensProp('events'), events))
+            )),
         )(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})))
     }, [version, uid, isLoading, lastEventId])
