@@ -95,13 +95,15 @@ const FIELD_DURATION = 'duration'
 export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
-    const cleaned = R.cond([
+    const cleanDuration = R.cond([
         [R.isNil, R.identity],
-        [R.propSatisfies(R.isNil, FIELD_DURATION), R.always(DEFAULT_DURATION)],
+        [R.propSatisfies(R.isNil, FIELD_DURATION), R.assoc(FIELD_DURATION, DEFAULT_DURATION)],
         [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
         [R.T, R.identity],
-    ])(value)
-    // console.log('Cleaned', value, 'to', cleaned)
+    ])
+    const clean = R.any(R.propEq('name', FIELD_DURATION))(columns) ? cleanDuration : R.identity
+    const cleaned = clean(value)
+    console.log('Cleaned', value, 'to', cleaned)
     const [item, setItem] = useState(cleaned)
 
     function add() {
