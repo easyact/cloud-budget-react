@@ -82,7 +82,7 @@ function DateControl({editing, field, item, setItem, label}) {
             <div className="field">
                 {editing ? <p className="control is-expanded has-icons-left">
                     <input className="input is-small" type="date" placeholder={label}
-                           defaultValue={defaultValue} onChange={setItemByEvent('start', item, setItem)}/>
+                           defaultValue={defaultValue} onChange={setItemByEvent(field, item, setItem)}/>
                     <span className="icon is-small is-left"><FaStepBackward/></span>
                 </p> : <p className="control">{defaultValue}</p>}
             </div>
@@ -132,21 +132,21 @@ export function Item({index, columns, value, update, rm}) {
     const opTd = <div key={`td${index}`} className="column">
         {item ?
             <div className="field has-addons">
-                {editing ?
-                    <div className="control">
-                        <button className="button is-small" onClick={save} title={'保存'}>
-                            <FaSave/>
-                        </button>
-                        <button className="button is-small" onClick={cancel} title="取消">
-                            <FaStrikethrough/>
-                        </button>
-                    </div> :
-                    <div className="control">
-                        <button className="button is-small" onClick={() => setEditing(true)} title={'编辑'}>
-                            <FaEdit/>
-                        </button>
-                    </div>
-                }
+                {editing && <div className="control">
+                    <button className="button is-small" onClick={save} title={'保存'}>
+                        <FaSave/>
+                    </button>
+                </div>}
+                {editing && <div className="control">
+                    <button className="button is-small" onClick={cancel} title="取消">
+                        <FaStrikethrough/>
+                    </button>
+                </div>}
+                {editing || <div className="control">
+                    <button className="button is-small" onClick={() => setEditing(true)} title={'编辑'}>
+                        <FaEdit/>
+                    </button>
+                </div>}
                 <div className="control">
                     <button className="button is-small" onClick={() => rm(item.id)} title={'删除'}><FaTrash/></button>
                 </div>
