@@ -7,39 +7,8 @@ import {FaAngleDown} from 'react-icons/all'
 
 const AMOUNT = '数额'
 
-function History({dispatch, state: {events, error}}) {
-    // const [events, setEvents] = useState([])
-    // const [err, setErr] = useState()
-    // const [last, setLast] = useState()
-    // useEffect(function settingEvents() {
-    //     getEvents(uid)(eventStore)().then(E.fold(setErr, setEvents))
-    // }, [eventStore, uid])
-    // useEffect(function previewVersion() {
-    //     console.log(' history deps', events, lastEventId, uid, eventStore)
-    //
-    //     function setBudget(payload) {
-    //         return dispatch({type: 'FETCH_BUDGET_SUCCESS', payload})
-    //     }
-    //
-    //     if (!lastEventId) {
-    //         console.log('Ignore history preview')
-    //         return
-    //     }
-    //     pipe(events,
-    //         R.filter(e => e.id <= lastEventId),
-    //         budgetSnapshot,
-    //         E.map(m => m?.get(uid)?.get('current')),
-    //         E.map(log('History snapshot')),
-    //         E.fold(setError, setBudget)
-    //     )
-    // }, [dispatch, events])
-    if (error)
-        return <p className="message is-danger">{error}</p>
-
-    function setLast(id) {
-        dispatch({type: 'SET_LAST_EVENT_ID', payload: id})
-    }
-
+function History({dispatch, events}) {
+    const setLast = id => dispatch({type: 'SET_LAST_EVENT_ID', payload: id})
     return <div className="dropdown-content history">
         {events.map((e, i) => <div className="dropdown-item" key={i}>
             {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -52,7 +21,7 @@ function History({dispatch, state: {events, error}}) {
 
 function BudgetView() {
     const [state, dispatch] = useBudget('current')
-    const {budget, error, showHistory} = state
+    const {budget, error, showHistory, events} = state
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -112,7 +81,7 @@ function BudgetView() {
                     </button>
                 </div>
                 <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
-                    {showHistory && <History state={state} dispatch={dispatch}/>}
+                    {showHistory && <History events={events} dispatch={dispatch}/>}
                 </div>
             </div>
         </div>
