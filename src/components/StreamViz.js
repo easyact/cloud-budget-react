@@ -88,7 +88,7 @@ function toStackData(budget = {}) {
             const occurredThisDay = R.pluck(0, occurredThisDayPairs)
             // console.log('occurredThisDay', occurredThisDay,)
             const dailyData = R.pipe(
-                R.filter(i => !isAfter(parseISO(i.start), date)),
+                R.filter(i => !isAfter(parseISO(i.start), date) && !isBefore(parseISO(i.end), date)),
                 // R.filter(i => i.amount > 0),
                 R.map(R.props(['name', 'amount'])),
                 R.fromPairs,
