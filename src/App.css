@@ -15,12 +15,20 @@
     margin-bottom: 0;
 }
 
-.b-list .panel-block:nth-child(2n) {
-    background-color: #fafafa;
-}
+/*.b-list .panel-block:nth-child(2n) {*/
+/*    background-color: #fafafa;*/
+/*}*/
 
 .b-list .th.panel-block {
     background-color: #ffffff;
+}
+
+.b-list .overdue {
+    background-color: gray;
+}
+
+.b-list .unstarted {
+    background-color: lightgoldenrodyellow;
 }
 
 /*.history {*/

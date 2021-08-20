@@ -2,7 +2,7 @@ import {Event} from './es'
 import * as TE from 'fp-ts/TaskEither'
 import {TaskEither} from 'fp-ts/TaskEither'
 import * as T from 'fp-ts/Task'
-import * as RR from 'fp-ts/Record'
+import * as Record from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import {flow, pipe} from 'fp-ts/lib/function'
 import Dexie from 'dexie'
@@ -129,7 +129,7 @@ export class DBEventStore extends EventStore {
     // }
 
     unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
-        console.log('unUploadedCommands')
+        // console.log('unUploadedCommands')
         const beginAtOption = pipe(
             () => this.table.filter((e: BEvent) => !!e.at && e.user.id === uid).last(),
             T.map(flow(O.fromNullable,
@@ -141,7 +141,7 @@ export class DBEventStore extends EventStore {
         return pipe(
             sequenceT(T.ApplicativeSeq)(beginAtOption, commandsOption),
             T.map(([beginAt, commands]) => ({beginAt, commands})),
-            T.map(r => RR.compact<any>(r) as UnUploadedCommands),
+            T.map(r => Record.compact<any>(r) as UnUploadedCommands),
             T.map(log('unUploadedCommands return')),
             x => TE.fromTask(x),
         )

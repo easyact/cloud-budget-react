@@ -14,6 +14,7 @@ import {
 import {formatDurationWithOptions} from 'date-fns/esm/fp'
 import locale from 'date-fns/locale/zh-CN/index'
 import log from '../log'
+import {isAfter, isBefore, parseISO} from 'date-fns'
 
 const setItemByEvent = (key, item, setItem, change = R.identity) => flow(
     R.path(['target', 'value']),
@@ -166,7 +167,11 @@ export function Item({index, columns, value, update, rm}) {
     </div>
     const mainCells = columns.map(c => <div className="column" key={c.key + index}>
         {td(c.type, editing)(item?.[c.key], c.key)}</div>)
-    const tr = <section className="panel-block columns">
+    const today = new Date()
+    // console.log(isBefore(today, parseISO(item?.start)), parseISO(item?.start), item?.start, today)
+    console.log(isAfter(today, parseISO(item?.end)), parseISO(item?.end), item?.end, today)
+    const tr = <section
+        className={`panel-block columns ${isBefore(today, parseISO(item?.start)) && 'unstarted'} ${isAfter(today, parseISO(item?.end)) && 'overdue'}`}>
         {mainCells}
         {opTd}
     </section>
