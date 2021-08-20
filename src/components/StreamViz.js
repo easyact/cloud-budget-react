@@ -122,7 +122,7 @@ const fontSize = 10
 // }
 
 const preventFirst = func => event => {
-    event.preventDefault()
+    // event.preventDefault()
     func(event)
 }
 
