@@ -125,11 +125,17 @@ export function Item({index, columns, value, update, rm}) {
         setItem(cleaned)
     }
 
+    const today = new Date()
+    const unstarted = isBefore(today, parseISO(item?.start))
+    const overdue = isAfter(today, parseISO(item?.end))
+    let tags = []
+    unstarted && tags.push('未来')
+    overdue && tags.push('过期')
     const durationControl = DurationControl(item, setItem)
     const td = (type, editing) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
         ? <input type={type} className="input is-small" defaultValue={defaultValue}
                  onChange={setItemByEvent(key, item, setItem)}/>
-        : defaultValue)
+        : <p>{defaultValue}{key === 'name' && tags.map(t => <span className="tag">{t}</span>)}</p>)
     const opTd = <div key={`td${index}`} className="column">
         {item ?
             <div className="field has-addons">
@@ -167,11 +173,10 @@ export function Item({index, columns, value, update, rm}) {
     </div>
     const mainCells = columns.map(c => <div className="column" key={c.key + index}>
         {td(c.type, editing)(item?.[c.key], c.key)}</div>)
-    const today = new Date()
     // console.log(isBefore(today, parseISO(item?.start)), parseISO(item?.start), item?.start, today)
-    console.log(isAfter(today, parseISO(item?.end)), parseISO(item?.end), item?.end, today)
+    // console.log(isAfter(today, parseISO(item?.end)), parseISO(item?.end), item?.end, today)
     const tr = <section
-        className={`panel-block columns ${isBefore(today, parseISO(item?.start)) && 'unstarted'} ${isAfter(today, parseISO(item?.end)) && 'overdue'}`}>
+        className={`panel-block columns ${unstarted && 'unstarted'} ${overdue && 'overdue'}`}>
         {mainCells}
         {opTd}
     </section>
