@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import {Item} from './Item'
 import {timesPerMonth} from './util'
-import {track} from './service/analytics'
+import {track} from '../../util/analytics'
 
 export const initValue = {text: '空', number: 0, duration: {months: 1}}
 

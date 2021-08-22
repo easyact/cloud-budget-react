@@ -7,11 +7,11 @@ import {useState} from 'react'
 import Profile from './auth/Profile'
 import {useAuth0} from '@auth0/auth0-react'
 import {LoggedIn} from './auth/LoggedIn'
-import {init} from './components/budget/service/analytics'
+import {init} from './util/analytics'
 import {Price} from './components/price/Price'
 import {Pay} from './components/price/Pay'
 import {Sync} from './components/Sync'
-import {useSegmentPages} from './components/budget/service/segment'
+import {useSegmentPages} from './util/segment'
 
 function App() {
     init()

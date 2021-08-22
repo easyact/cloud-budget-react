@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import {track} from '../../../util/analytics'
 
 const kpi = R.pipe(
     R.prop('expenses'),
@@ -15,6 +16,7 @@ const kpi = R.pipe(
 export default function reducer(state, action) {
     // alert(`${JSON.stringify(action)}`)
     console.log('reducing', action, state)
+    track(action.type, action.payload)
     const r = handle(state, action)
     console.log('reduced', r)
     return r

@@ -11,8 +11,8 @@ import * as io from 'fp-ts/IO'
 import {IO} from 'fp-ts/IO'
 import {getItem, setItem} from 'fp-ts-local-storage'
 import {useEffect, useState} from 'react'
-import {sign_up} from '../service/analytics'
-import {identify} from '../service/segment'
+import {sign_up} from '../../../util/analytics'
+import {identify} from '../../../util/segment'
 
 export const uidKey = 'user.id'
 const loadUser = (): IO<Option<string>> => getItem(uidKey)
