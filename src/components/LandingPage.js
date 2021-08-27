@@ -9,7 +9,8 @@ export function LandingPage() {
                 <div className="container is-full-desktop">
                     <h1 className="title">
                         {/*从996到财务自由*/}
-                        没有出头之日?
+                        {/*没有出头之日?*/}
+                        记账太繁琐?
                     </h1>
                     <h2 className="subtitle">
                         利用预算的力量, 开始投资你的未来.
