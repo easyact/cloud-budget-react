@@ -10,10 +10,12 @@ export function LandingPage() {
                     <h1 className="title">
                         {/*从996到财务自由*/}
                         {/*没有出头之日?*/}
-                        记账太繁琐?
+                        没有好用的个人财务管理软件?
                     </h1>
                     <h2 className="subtitle">
-                        利用预算的力量, 开始投资你的未来.
+                        利用EasyAct云预算管理资产负债与收入支出.
+                        {/*利用EasyAct云预算管理资产组合与被动收入.*/}
+                        {/*利用预算的力量, 开始投资你的未来.*/}
                         {/*利用预算的力量, 提升理财效率.*/}
                     </h2>
                     {/*<p>无需记账, 只需每月比对估算与实际的偏差, 调整计划.</p>*/}
@@ -36,7 +38,8 @@ export function LandingPage() {
                 <div className="container is-full-desktop">
                     <div className="columns">
                         <article className="content column is-3">
-                            <p className="subtitle">理财难?</p>
+                            <p className="subtitle">记账太繁琐?</p>
+                            {/*<p className="subtitle">理财难?</p>*/}
                             <p className="title">极简预算管理</p>
                             <p className="">怎样分配每月的收入才算合理? 利用预算工具仔细管理重要事项的投入比例. </p>
                             <Link to="/budget" className="button is-large  is-primary">探索预算管理<FaAngleRight/></Link>
