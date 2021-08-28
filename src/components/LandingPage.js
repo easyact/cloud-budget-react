@@ -41,7 +41,7 @@ export function LandingPage() {
                             <p className="subtitle">记账太繁琐?</p>
                             {/*<p className="subtitle">理财难?</p>*/}
                             <p className="title">极简预算管理</p>
-                            <p className="">怎样分配每月的收入才算合理? 利用预算工具仔细管理重要事项的投入比例. </p>
+                            <p className="">怎样分配每月的支出才算合理? 利用预算工具仔细管理重要事项的投入比例. </p>
                             <Link to="/budget" className="button is-large  is-primary">探索预算管理<FaAngleRight/></Link>
                         </article>
                         <article className="column is-7 is-offset-1">
