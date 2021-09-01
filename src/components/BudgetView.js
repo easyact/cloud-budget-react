@@ -12,7 +12,7 @@ const AMOUNT = '数额'
 
 function BudgetView() {
     const [state, dispatch] = useBudget('current')
-    const {budget, error, showHistory, events} = state
+    const {budget, error, showHistory, events, version, versions = new Map()} = state
     const hiding = useState()
     const overlayingState = useState(false)
 
@@ -81,24 +81,31 @@ function BudgetView() {
                 </div>
             </p>
         </nav>
+        <div className="tabs">
+            <ul>
+                <li>版本</li>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                {[...(versions.keys())].map(v => <li className={v === version && 'is-active'}><a>{v}</a></li>)}
+                {/*<li>*/}
+                {/*    /!* eslint-disable-next-line jsx-a11y/anchor-is-valid *!/*/}
+                {/*    <a className="button is-ghost" onClick={() => console.log('Adding version!!!!!')}><FaPlus/></a>*/}
+                {/*</li>*/}
+            </ul>
+        </div>
         {hiding[0] || <StreamViz budget={budget} height={window.innerHeight / 2} overlaying={overlayingState[0]}/>}
 
         <div className="columns">
             <div className="column">
                 <List name={'incomes'} title="收入" items={budget.incomes}
                       dispatch={dispatch}
-                      columns={[{title: '收入', type: 'text', key: 'name'}, {
-                          title: AMOUNT,
-                          type: 'number',
-                          key: 'amount'
-                      }, {title: '周期', type: 'duration', key: 'duration'}]}/>
+                      columns={[{title: '收入', type: 'text', key: 'name'}
+                          , {title: AMOUNT, type: 'number', key: 'amount'}
+                          , {title: '周期', type: 'duration', key: 'duration'}]}/>
                 <List name={'expenses'} title="支出" items={budget.expenses}
                       dispatch={dispatch}
-                      columns={[{title: '支出', type: 'text', key: 'name'}, {
-                          title: AMOUNT,
-                          type: 'number',
-                          key: 'amount'
-                      }, {title: '周期', type: 'duration', key: 'duration'}]}/>
+                      columns={[{title: '支出', type: 'text', key: 'name'}
+                          , {title: AMOUNT, type: 'number', key: 'amount'}
+                          , {title: '周期', type: 'duration', key: 'duration'}]}/>
             </div>
             <div className="column">
                 <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
