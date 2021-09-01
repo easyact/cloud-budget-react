@@ -5,7 +5,7 @@ export const Switch = (
         hiding: [hiding, setHiding],
         overlaying: [overlaying, setOverlaying] = [true, () => console.log('No setOverlaying')]
     }
-) => <div className="buttons has-addons is-left">
+) => <div className="buttons has-addons">
     <button onClick={() => setHiding(!hiding)} className="button">
         现金流图{hiding ? <FaCaretSquareDown/> : <FaCaretSquareUp/>}
     </button>

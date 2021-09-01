@@ -1,6 +1,9 @@
 // import mixpanel from 'mixpanel-browser'
 
 export function track(action: string = 'PUT_ITEM', otherParams = {}) {
+    if (process.env.NODE_ENV !== 'production') {
+        return console.log('Ignore track because NODE_ENV', process.env.NODE_ENV)
+    }
     const params = {
         'event_category': 'engagement',
         'event_label': 'action'

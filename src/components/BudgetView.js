@@ -48,21 +48,6 @@ function BudgetView() {
         </div>
     </div>
 
-    const historyButton = <div className="buttons has-addons is-right">
-        {/*<button className="button" onClick={() => setShowHistory(!showHistory)}>修改历史</button>*/}
-        <div className="dropdown is-right is-active">
-            <div className="dropdown-trigger">
-                <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
-                        onClick={() => dispatch({type: 'SHOW_HISTORY', payload: !showHistory})}>
-                    <span>修改历史</span>
-                    <FaAngleDown/>
-                </button>
-            </div>
-            <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
-                {showHistory && <History events={events} dispatch={dispatch}/>}
-            </div>
-        </div>
-    </div>
     return <div>
         {error && <div className="notification is-danger">
             <button className="delete" onClick={() => dispatch({type: 'CLOSE_ERROR'})}/>
@@ -77,17 +62,26 @@ function BudgetView() {
             {/*    <Progress/>*/}
             {/*</div>*/}
         </div>
-        {(hiding[0]) ?
-            <section className="buttons">
+        <nav className="field is-grouped">
+            <p className="control">
                 <Switch hiding={hiding} overlaying={overlayingState}/>
-                {historyButton}
-            </section>
-            : <section className="buttons">
-                <Switch hiding={hiding} overlaying={overlayingState}/>
-                {historyButton}
-                <StreamViz budget={budget} height={window.innerHeight / 2} overlaying={overlayingState[0]}/>
-            </section>
-        }
+            </p>
+            <p className="control buttons">
+                <div className="dropdown is-active">
+                    <div className="dropdown-trigger">
+                        <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
+                                onClick={() => dispatch({type: 'SHOW_HISTORY', payload: !showHistory})}>
+                            <span>操作历史</span>
+                            <FaAngleDown/>
+                        </button>
+                    </div>
+                    <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
+                        {showHistory && <History events={events} dispatch={dispatch}/>}
+                    </div>
+                </div>
+            </p>
+        </nav>
+        {hiding[0] || <StreamViz budget={budget} height={window.innerHeight / 2} overlaying={overlayingState[0]}/>}
 
         <div className="columns">
             <div className="column">
