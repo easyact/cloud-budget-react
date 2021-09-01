@@ -19,7 +19,6 @@ import {
 import 'd3-transition'
 import {legendColor} from 'd3-svg-legend'
 import {format} from 'date-fns/fp'
-import {Switch} from './Switch'
 
 function toStackKeys(items) {
     const pluck = R.pluck('name')
@@ -159,14 +158,11 @@ export function StreamViz(
     {
         budget,
         width = window.innerWidth,
-        height = 500
+        height = 500,
+        overlaying,
     }) {
-    const hiding = useState()
-    const overlaying = useState(false)
-    if (hiding[0])
-        return <Switch hiding={hiding} overlaying={overlaying}/>
     const {data, keys, max} = toStackData(budget)
-    const stackLayout = stack().keys(keys).offset(overlaying[0] ? stackOffsetNone : stackOffsetDiverging)
+    const stackLayout = stack().keys(keys).offset(overlaying ? stackOffsetNone : stackOffsetDiverging)
     const xScale = scaleTime().domain([data[0].date, R.last(data)?.date]).range([0, width])
     const yScale = scaleLinear().domain([-max, max]).range([height, 0])
     const stackArea = area()
@@ -193,14 +189,11 @@ export function StreamViz(
         .labels(({i, generatedLabels,}) => generatedLabels[i].split('').join(' '))
         .labelWrap(LEGEND_WIDTH)
     const callRef = f => node => node && select(node).call(f)
-    return <section>
-        <Switch hiding={hiding} overlaying={overlaying}/>
-        <svg width={width} height={height} style={{overflowX: 'auto'}}>
-            <g>{stacks}</g>
-            <g id="legend" ref={callRef(legendA)} transform="translate(0, 0)"/>
-            <g id="xAxisG" ref={callRef(xAxis)} transform={`translate(0,${height})`}/>
-            <g id="yAxisG" ref={callRef(yAxis)}/>
-            <CursorLine width={width} height={height} data={data} stackLayout={stackLayout} yScale={yScale}/>
-        </svg>
-    </section>
+    return <svg width={width} height={height} style={{overflowX: 'auto'}}>
+        <g>{stacks}</g>
+        <g id="legend" ref={callRef(legendA)} transform="translate(0, 0)"/>
+        <g id="xAxisG" ref={callRef(xAxis)} transform={`translate(0,${height})`}/>
+        <g id="yAxisG" ref={callRef(yAxis)}/>
+        <CursorLine width={width} height={height} data={data} stackLayout={stackLayout} yScale={yScale}/>
+    </svg>
 }

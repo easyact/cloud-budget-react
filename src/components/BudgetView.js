@@ -4,24 +4,17 @@ import EXAMPLE from './budget/service/example.json'
 import {Link} from 'react-router-dom'
 import {StreamViz} from './StreamViz'
 import {FaAngleDown} from 'react-icons/all'
+import {useState} from 'react'
+import {Switch} from './Switch'
+import {History} from './History'
 
 const AMOUNT = '数额'
-
-function History({dispatch, events}) {
-    const setLast = id => dispatch({type: 'SET_LAST_EVENT_ID', payload: id})
-    return <div className="dropdown-content history">
-        {events.map((e, i) => <div className="dropdown-item" key={i}>
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a onClick={() => setLast(e.id)}>{e.type} 分支: {e.to?.version}
-                <div className="ea-content">{JSON.stringify(e.payload)}</div>
-            </a>
-        </div>)}
-    </div>
-}
 
 function BudgetView() {
     const [state, dispatch] = useBudget('current')
     const {budget, error, showHistory, events} = state
+    const hiding = useState()
+    const overlayingState = useState(false)
 
     function importBudget(e) {
         const file = e.target.files[0]
@@ -55,6 +48,21 @@ function BudgetView() {
         </div>
     </div>
 
+    const historyButton = <div className="buttons has-addons is-right">
+        {/*<button className="button" onClick={() => setShowHistory(!showHistory)}>修改历史</button>*/}
+        <div className="dropdown is-right is-active">
+            <div className="dropdown-trigger">
+                <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
+                        onClick={() => dispatch({type: 'SHOW_HISTORY', payload: !showHistory})}>
+                    <span>修改历史</span>
+                    <FaAngleDown/>
+                </button>
+            </div>
+            <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
+                {showHistory && <History events={events} dispatch={dispatch}/>}
+            </div>
+        </div>
+    </div>
     return <div>
         {error && <div className="notification is-danger">
             <button className="delete" onClick={() => dispatch({type: 'CLOSE_ERROR'})}/>
@@ -69,22 +77,17 @@ function BudgetView() {
             {/*    <Progress/>*/}
             {/*</div>*/}
         </div>
-        <StreamViz budget={budget} height={window.innerHeight / 2}/>
-        <div className="buttons has-addons is-right">
-            {/*<button className="button" onClick={() => setShowHistory(!showHistory)}>修改历史</button>*/}
-            <div className="dropdown is-right is-active">
-                <div className="dropdown-trigger">
-                    <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
-                            onClick={() => dispatch({type: 'SHOW_HISTORY', payload: !showHistory})}>
-                        <span>修改历史</span>
-                        <FaAngleDown/>
-                    </button>
-                </div>
-                <div className="dropdown-menu" id="dropdown-menu6" role="menu" style={{width: '20rem'}}>
-                    {showHistory && <History events={events} dispatch={dispatch}/>}
-                </div>
-            </div>
-        </div>
+        {(hiding[0]) ?
+            <section className="buttons">
+                <Switch hiding={hiding} overlaying={overlayingState}/>
+                {historyButton}
+            </section>
+            : <section className="buttons">
+                <Switch hiding={hiding} overlaying={overlayingState}/>
+                {historyButton}
+                <StreamViz budget={budget} height={window.innerHeight / 2} overlaying={overlayingState[0]}/>
+            </section>
+        }
 
         <div className="columns">
             <div className="column">
