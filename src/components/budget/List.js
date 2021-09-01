@@ -3,13 +3,12 @@ import {Item} from './Item'
 import {timesPerMonth} from './util'
 import {track} from '../../util/analytics'
 
-export const initValue = {text: '空', number: 0, duration: {months: 1}}
+// export const initValue = {text: '空', number: 0, duration: {months: 1}}
 
 function sum(items, columns) {
     const amountKey = columns[1].key
     const unitKey = 'duration'
-    // console.log(items)
-    const numbers = items.map(item => item[amountKey] * timesPerMonth(item[unitKey]))
+    const numbers = items.map(i => i[amountKey] * timesPerMonth(i[unitKey]))
     return R.sum(numbers)
 }
 
