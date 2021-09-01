@@ -3,8 +3,8 @@ import useBudget from './budget/hook/useBudget'
 import EXAMPLE from './budget/service/example.json'
 import {Link} from 'react-router-dom'
 import {StreamViz} from './StreamViz'
-import {FaAngleDown} from 'react-icons/all'
-import {useState} from 'react'
+import {FaAngleDown, FaPlus} from 'react-icons/all'
+import {useRef, useState} from 'react'
 import {Switch} from './Switch'
 import {History} from './History'
 
@@ -13,6 +13,7 @@ const AMOUNT = '数额'
 function BudgetView() {
     const [state, dispatch] = useBudget('current')
     const {budget, error, showHistory, events, version, versions = new Map()} = state
+    const newVersion = useRef()
     const hiding = useState()
     const overlayingState = useState(false)
 
@@ -63,10 +64,10 @@ function BudgetView() {
             {/*</div>*/}
         </div>
         <nav className="field is-grouped">
-            <p className="control">
+            <div className="control">
                 <Switch hiding={hiding} overlaying={overlayingState}/>
-            </p>
-            <p className="control buttons">
+            </div>
+            <div className="control buttons">
                 <div className="dropdown is-active">
                     <div className="dropdown-trigger">
                         <button className="button" aria-haspopup="true" aria-controls="dropdown-menu6"
@@ -79,17 +80,32 @@ function BudgetView() {
                         {showHistory && <History events={events} dispatch={dispatch}/>}
                     </div>
                 </div>
-            </p>
+            </div>
         </nav>
         <div className="tabs">
             <ul>
                 <li>版本</li>
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                {[...(versions.keys())].map(v => <li className={v === version && 'is-active'}><a>{v}</a></li>)}
-                {/*<li>*/}
-                {/*    /!* eslint-disable-next-line jsx-a11y/anchor-is-valid *!/*/}
-                {/*    <a className="button is-ghost" onClick={() => console.log('Adding version!!!!!')}><FaPlus/></a>*/}
-                {/*</li>*/}
+                {[...(versions.keys())].map(v =>
+                    <li key={`ver${v}`} className={v === version ? 'is-active' : undefined}>
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        <a onClick={() => dispatch({type: 'SELECT_VERSION', payload: v})}>{v}</a>
+                    </li>)}
+                <li className="field has-addons">
+                    <div className="control">
+                        <input className="input is-small" ref={newVersion} placeholder="新版本名称"/>
+                    </div>
+                    <div className="control">
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                        <a className="button is-info is-small" onClick={() => {
+                            dispatch({
+                                type: 'NEW_VERSION',
+                                to: {version: newVersion.current.value},
+                                payload: version
+                            })
+                            newVersion.current.value = null
+                        }}><FaPlus/></a>
+                    </div>
+                </li>
             </ul>
         </div>
         {hiding[0] || <StreamViz budget={budget} height={window.innerHeight / 2} overlaying={overlayingState[0]}/>}

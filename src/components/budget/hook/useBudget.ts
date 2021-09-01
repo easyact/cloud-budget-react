@@ -50,7 +50,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
         // alert('execCmd')
         console.log('useBudget.setting', cmd, version, eventStore)
         exec(uid, cmd)(eventStore)()
-            .then(payload => dispatch({type: 'CMD_SUCCESS', payload}))
+            .then(E.fold(notifyError, payload => dispatch({type: 'CMD_SUCCESS', payload})))
     }, [version, cmd, uid])
     useEffect(function load() {
         // console.log('useBudget.loading', isLoading, uid, version, eventStore)

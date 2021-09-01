@@ -1,7 +1,6 @@
 import {Budget} from '../Model'
 import * as TE from 'fp-ts/lib/TaskEither'
 import * as RTE from 'fp-ts/lib/ReaderTaskEither'
-import * as RT from 'fp-ts/lib/ReaderTask'
 import * as T from 'fp-ts/lib/Task'
 import * as O from 'fp-ts/lib/Option'
 import {pipe} from 'fp-ts/lib/function'
@@ -10,10 +9,10 @@ import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
 import {budgetSnapshot} from './snapshot'
+import * as RT from 'fp-ts/ReaderTask'
 import {ReaderTask} from 'fp-ts/ReaderTask'
 import {TaskEither} from 'fp-ts/TaskEither'
 import {Lens} from 'monocle-ts'
-import EXAMPLE from './example.json'
 import log from '../../log'
 import {BUDGET_SNAPSHOT} from '../../es/lib/es'
 
@@ -44,26 +43,33 @@ export class BudgetEsService {
     importBudget = (uid: string, payload: Budget, version: string = '0'): Promise<Budget> =>
         importBudget(uid, payload, version)(this.eventStore)()
 
-    exec = (command: Command): Promise<Budget> => exec(this.uid, command)(this.eventStore)()
+    exec = (command: Command): Promise<Budget> => pipe(
+        exec(this.uid, command),
+        RTE.map(a => a.budget),
+        RTE.getOrElse(_ => RT.of({}))
+    )(this.eventStore)()
 
 }
 
 export const importBudget = (uid: string, payload: Budget, version: string = 'current'): ReaderTask<EventStore, Budget> =>
-    exec(uid, {
-        type: 'IMPORT_BUDGET',
-        user: {id: uid},
-        to: {version},
-        payload
-    })
+    pipe(
+        exec(uid, {
+            type: 'IMPORT_BUDGET',
+            user: {id: uid},
+            to: {version},
+            payload
+        }),
+        RTE.map(a => a.budget),
+        RTE.getOrElse(_ => RT.of({}))
+    )
 
-export function exec(uid: string, command: Command): ReaderTask<EventStore, Budget> {
+export function exec(uid: string, command: Command): ReaderTaskEither<EventStore, ErrorM, AllPhases> {
     console.log('executing command', command)
     const {to: {version}} = command
     // return this.cache =
     return pipe(
         handleCommand(command),
-        RTE.chain(() => getBudgetE(uid, version)),
-        RTE.getOrElse(_ => RT.of({}))
+        RTE.chain(() => getBudget(uid, version)),
     )
 }
 
@@ -82,27 +88,26 @@ const getValueFromMap = <T>(versions: Map<string, T>, version: string) => pipe(
     O.fromNullable,
     fromOption)
 
-export const getBudgetFromEvents = (events: BEvent[], uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, {
+type AllPhases = {
     budget: Budget, events: BEvent[], versions: Map<string, Budget>, userVersions: BUDGET_SNAPSHOT<Budget>
-}> => pipe(
+}
+export const getBudgetFromEvents = (events: BEvent[], uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, AllPhases> => pipe(
     RTE.of(events),
     RTE.bindTo('events'),
     RTE.bind('userVersions', ({events}) => RTE.fromEither(budgetSnapshot(events))),
     RTE.bind('versions', ({userVersions}) => getValueFromMap(userVersions, uid)),
     RTE.bind('budget', ({versions}) => getValueFromMap(versions, version)),
 )
-export const getBudget = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, {
-    budget: Budget, events: BEvent[], versions: Map<string, Budget>, userVersions: BUDGET_SNAPSHOT<Budget>
-}> => pipe(
+export const getBudget = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, AllPhases> => pipe(
     getEvents(uid),
     RTE.chain(events => getBudgetFromEvents(events, uid, version)),
 )
 
-export const getBudgetOrImportExampleIfNone = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
-    getBudgetE(uid, version),
-    RTE.orElse(e => ('none' === e) ? RTE.rightReaderTask(importBudget(uid, EXAMPLE)) : RTE.left(e)),
-    // RTE.chain(() => getBudgetE(uid, version)),
-)
+// export const getBudgetOrImportExampleIfNone = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, Budget> => pipe(
+//     getBudgetE(uid, version),
+//     RTE.orElse(e => ('none' === e) ? RTE.rightReaderTask(importBudget(uid, EXAMPLE)) : RTE.left(e)),
+//     // RTE.chain(() => getBudgetE(uid, version)),
+// )
 
 export const getEvents = (uid: string): ReaderTaskEither<EventStore, string, BEvent[]> =>
     pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.events(uid)))
@@ -134,10 +139,8 @@ function fixCommand(command: Command): BEvent {
             const lens = R.lensProp<string, any>('id')
             const item = R.over(lens, R.defaultTo(uuid()))(payload)
             return {...command, payload: item}
-        case 'DELETE_ITEM':
-            return {...command}
         default:
-            throw new Error('不支持的命令')
+            return command
     }
 }
 

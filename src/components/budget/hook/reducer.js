@@ -22,6 +22,20 @@ export default function reducer(state, action) {
     return r
 }
 
+function setAllPhases(action, state) {
+    const budgetState = action.payload
+    return {
+        ...state,
+        isLoading: false,
+        // saving: false,
+        error: undefined,
+        // budget,
+        kpi: kpi(budgetState.budget),
+        showHistory: false,
+        ...budgetState,
+    }
+}
+
 function handle(state, action) {
     switch (action.type) {
         case 'USER_CHANGE':
@@ -38,25 +52,14 @@ function handle(state, action) {
                 budget: {}
             }
 
+        case 'SELECT_VERSION':
+            return {...state, version: action.payload}
         case 'FETCH_BUDGET_SUCCESS':
-            const budgetState = action.payload
-            return {
-                ...state,
-                isLoading: false,
-                // saving: false,
-                error: undefined,
-                // budget,
-                kpi: kpi(budgetState.budget),
-                showHistory: false,
-                ...budgetState,
-            }
+            return setAllPhases(action, state)
         case 'CMD_SUCCESS':
             return {
-                ...state,
+                ...setAllPhases(action, state),
                 syncNeeded: true,
-                budget: action.payload,
-                kpi: kpi(action.payload),
-                error: undefined,
             }
         case 'SYNC_SUCCESS':
             return {
@@ -93,11 +96,12 @@ function handle(state, action) {
             }
 
         default:
-            return {
-                ...state, cmd: {
-                    user: {id: state.uid}, to: {version: state.version},
-                    error: undefined, ...action
-                }
+            const cmd = {
+                user: {id: state.uid},
+                to: {version: state.version},
+                error: undefined,
+                ...action
             }
+            return {...state, cmd, version: cmd.to.version}
     }
 }

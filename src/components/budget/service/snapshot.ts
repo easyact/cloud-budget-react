@@ -4,19 +4,18 @@ import {Either} from 'fp-ts/Either'
 import * as R from 'ramda'
 import {formatISO, parseISO} from 'date-fns'
 
-export const budgetSnapshot = (es: Event[]): Either<string, BUDGET_SNAPSHOT<Budget>> =>
-    snapshot(updateState, es)
+export const budgetSnapshot = (es: Event[]): Either<string, BUDGET_SNAPSHOT<Budget>> => snapshot(updateState, es)
 
 function updateState(initial: BUDGET_SNAPSHOT<Budget>, e: Event): BUDGET_SNAPSHOT<Budget> {
     const {user: {id}, to: {version}} = e
     const versions = initial.get(id) ?? new Map<string, Budget>()
-    const budget = versions.get(version) ?? {}
-    const updatedBudget = updateBudget(e, budget)
+    const updatedBudget = e.type === 'NEW_VERSION' ? versions.get(e.payload) ?? {}
+        : updateBudget(e, versions.get(version) ?? {})
     return initial.set(id, versions.set(version, updatedBudget))
 }
 
-function getAt(e: Event) {
-    return e.at ? parseISO(e.at) : undefined
+function getAt({at}: Event) {
+    return at ? parseISO(at) : undefined
 }
 
 function updateBudget(e: Event, budget: Budget): Budget {
@@ -36,7 +35,7 @@ function updateBudget(e: Event, budget: Budget): Budget {
     }
 }
 
-const importBudget = (budget: Budget, importing: Budget, at = new Date()) => {
+const importBudget = (budget: Budget, beingImported: Budget, at = new Date()) => {
     const clean = (budget: Budget, list = 'assets') => R.over<Budget, any>(
         R.lensProp(list),
         R.pipe(R.defaultTo([]),
@@ -44,6 +43,6 @@ const importBudget = (budget: Budget, importing: Budget, at = new Date()) => {
                 ...item, start, amount: R.when(s => R.type(s) === 'String', parseFloat, amount)
             })))
     )(budget)
-    const y = BUDGET_KEYS.reduce(clean, importing)
-    return budgetAdditionMonoid.concat(budget, y)
+    const cleanBudgetBeingImported = BUDGET_KEYS.reduce(clean, beingImported)
+    return budgetAdditionMonoid.concat(budget, cleanBudgetBeingImported)
 }
