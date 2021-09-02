@@ -33,27 +33,29 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     const {cmd, apiBase, syncNeeded, lastEventId}: BudgetState = state
     // console.log('useBudgeting', uid, version, state, eventStore)
     useEffect(function userChange() {
-        if (error)
-            return dispatch({type: 'FETCH_BUDGET_ERROR', payload: error})
-        // alert('userChange')
+        if (error) {
+            dispatch({type: 'FETCH_BUDGET_ERROR', payload: error})
+            return
+        }
         dispatch({type: 'USER_CHANGE', payload: uid})
     }, [error, uid])
-    useEffect(function whenLoggedIn() {
-        if (!(isAuthenticated && syncNeeded)) return
-        // alert('whenLoggedIn')
-        console.log('useBudget.syncing', version, uid, isAuthenticated, syncNeeded)
-        pipe(sync(apiBase, uid), RTE.chain(() => getBudget(uid, version)))(eventStore)()
-            .then(E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
+    useEffect(function doSync() {
+        if (isAuthenticated && syncNeeded) {
+            console.log('useBudget.syncing', version, uid, isAuthenticated, syncNeeded)
+            pipe(
+                sync(apiBase, uid),
+                RTE.chain(() => getBudget(uid, version))
+            )(eventStore)().then(
+                E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
+        }
     }, [apiBase, uid, isAuthenticated, syncNeeded, version])
     useEffect(function execCmd() {
         if (!cmd) return
-        // alert('execCmd')
-        console.log('useBudget.setting', cmd, version, eventStore)
+        console.log('useBudget.execCmd', cmd, version, eventStore)
         exec(uid, cmd)(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'CMD_SUCCESS', payload})))
     }, [version, cmd, uid])
     useEffect(function load() {
-        // console.log('useBudget.loading', isLoading, uid, version, eventStore)
         if (isLoading) return
         pipe(
             getEvents(uid),

@@ -27,9 +27,7 @@ function setAllPhases(action, state) {
     return {
         ...state,
         isLoading: false,
-        // saving: false,
         error: undefined,
-        // budget,
         kpi: kpi(budgetState.budget),
         showHistory: false,
         ...budgetState,

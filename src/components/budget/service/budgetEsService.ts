@@ -81,7 +81,7 @@ export const getBudgetE = (uid: string, version: string): ReaderTaskEither<Event
     RTE.map(versions => log(`getBudgetE ${uid} ${version}`)(versions.get(version))),
     RTE.chain(budget => budget ? RTE.right(budget) : RTE.left('none')),
 )
-const fromOption: <T>(o: O.Option<T>) => ReaderTaskEither<EventStore, ErrorM, T> = RTE.fromOption(R.always('none'))
+const fromOption = RTE.fromOption(R.always('none'))
 
 const getValueFromMap = <T>(versions: Map<string, T>, version: string) => pipe(
     versions.get(version),
