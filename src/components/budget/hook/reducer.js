@@ -65,7 +65,8 @@ function handle(state, action) {
             return {
                 ...newState,
                 version: state.version,
-                syncNeeded: state.version !== newState.version,
+                budget: newState.versions?.get(state.version),
+                syncNeeded: false,
             }
 
         case 'FETCH_BUDGET_ERROR':
