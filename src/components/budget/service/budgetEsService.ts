@@ -4,7 +4,7 @@ import * as RTE from 'fp-ts/lib/ReaderTaskEither'
 import * as T from 'fp-ts/lib/Task'
 import * as O from 'fp-ts/lib/Option'
 import {pipe} from 'fp-ts/lib/function'
-import {BEvent, DBEventStore, ErrorM, EventStore, UnUploadedCommands} from '../../es/lib/eventStore'
+import {BEvent, CommandList, DBEventStore, ErrorM, EventStore} from '../../es/lib/eventStore'
 import * as R from 'ramda'
 import {v4 as uuid} from 'uuid'
 import {ReaderTaskEither} from 'fp-ts/ReaderTaskEither'
@@ -112,7 +112,7 @@ export const getBudget = (uid: string, version: string): ReaderTaskEither<EventS
 export const getEvents = (uid: string): ReaderTaskEither<EventStore, string, BEvent[]> =>
     pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.events(uid)))
 
-export const unUploadedCommands = (uid: string): ReaderTaskEither<EventStore, any, UnUploadedCommands> =>
+export const unUploadedCommands = (uid: string): ReaderTaskEither<EventStore, any, CommandList> =>
     pipe(RTE.ask<EventStore>(), RTE.chainTaskEitherK(eventStore => eventStore.unUploadedCommands(uid)))
 
 const getVersions = (uid: string): ReaderTaskEither<EventStore, string, Map<string, Budget>> => pipe(
@@ -155,19 +155,19 @@ export const post = (url: string, obj: any) => fetch(url, {
     body: JSON.stringify(obj)
 })
 
-export const uploadEvents = (url: string, uid: string, events: UnUploadedCommands): TaskEither<string, BEvent[]> => pipe(
-    TE.tryCatch(() => post(`${url}/v0/users/${uid}/events`, events),
-        e => `上传事件失败因为: ${e}`),
-    TE.chain(resp => resp.ok ? TE.rightTask(() => resp.json()) :
-        TE.left(`${resp.status}: ${resp.statusText}: ${resp.body}`)),
+export const uploadEvents = (url: string, uid: string, events: CommandList): TaskEither<string, BEvent[]> => pipe(
+    TE.tryCatch(() => post(`${url}/v0/users/${uid}/events`, events), e => `上传事件失败因为: ${e}`),
+    TE.chain(resp => resp.ok ?
+        TE.rightTask(() => resp.json()) :
+        TE.left(`上传事件失败因为服务端返回: ${resp.status}: ${resp.statusText}: ${resp.body}`)),
 )
-type SyncResult = { commands: UnUploadedCommands; events: BEvent[] }
+type SyncResult = { commands: CommandList; events: BEvent[] }
 
-const id = Lens.fromProp<BEvent>()('id')
+const idLens = Lens.fromProp<BEvent>()('id')
 const updateEvents = (uid: string) => (r: SyncResult): ReaderTaskEither<EventStore, string, any> => pipe(
     RTE.ask<EventStore>(),
     RTE.chainFirst(store => RTE.fromTaskEither(store.deleteList(uid, r.commands))),
-    RTE.chainFirst(store => RTE.fromTaskEither(store.putList(uid, r.events.map(id.set(undefined))))),
+    RTE.chainFirst(store => RTE.fromTaskEither(store.putList(uid, r.events.map(idLens.set(undefined))))),
 )
 
 export const sync = (baseUrl: string, uid: string): ReaderTaskEither<EventStore, string, SyncResult> => pipe(

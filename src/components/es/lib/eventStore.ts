@@ -15,12 +15,12 @@ import log from '../../log'
 export type ErrorM = string
 export type BEvent = Event & Command
 
-export type UnUploadedCommands = { commands: BEvent[]; beginAt?: string }
+export type CommandList = { commands: BEvent[]; beginAt?: string }
 
 export abstract class EventStore {
     put = (id: string, event: BEvent): TaskEither<ErrorM, any> => this.putList(id, [event])
 
-    abstract unUploadedCommands(uid: string): TE.TaskEither<ErrorM, UnUploadedCommands>
+    abstract unUploadedCommands(uid: string): TE.TaskEither<ErrorM, CommandList>
 
     abstract events(id: string): TaskEither<ErrorM, BEvent[]>
 
@@ -30,7 +30,7 @@ export abstract class EventStore {
 
     abstract putList(uid: string, events: BEvent[]): TaskEither<ErrorM, any>
 
-    abstract deleteList(uid: string, commands: UnUploadedCommands): TE.TaskEither<never, any>
+    abstract deleteList(uid: string, commands: CommandList): TE.TaskEither<never, any>
 }
 
 const id = Lens.fromPath<BEvent>()(['user', 'id'])
@@ -58,7 +58,7 @@ export class MemEventStore extends EventStore {
         )
     }
 
-    unUploadedCommands = (uid: string): TaskEither<ErrorM, UnUploadedCommands> => pipe(
+    unUploadedCommands = (uid: string): TaskEither<ErrorM, CommandList> => pipe(
         this.events(uid), TE.bindTo('events'),
         TE.bind('commands', ({events}) => TE.right(events.filter(e => !e.at))),
         TE.map(({events, commands}) => pipe(
@@ -71,7 +71,7 @@ export class MemEventStore extends EventStore {
         // TE.chain(() => TE.left('test error'))
     )
 
-    deleteList(uid: string, commands: UnUploadedCommands): TaskEither<never, any> {
+    deleteList(uid: string, commands: CommandList): TaskEither<never, any> {
         return pipe(
             this.events(uid),
             TE.map(filter(c => !commands.commands.includes(c))),
@@ -100,9 +100,7 @@ export class DBEventStore extends EventStore {
     private table = this.db.events
     private findByUid = (id: string) => this.table.where('user.id').equals(id)
 
-    events = (id: string): TaskEither<ErrorM, BEvent[]> => {
-        return TE.fromTask(() => this.findByUid(id).toArray())
-    }
+    events = (id: string): TaskEither<ErrorM, BEvent[]> => TE.fromTask(() => this.findByUid(id).toArray())
 
     put = (id: string, event: BEvent): TaskEither<ErrorM, any> => TE.fromTask(() => this.table.put(event))
 
@@ -128,7 +126,7 @@ export class DBEventStore extends EventStore {
     //     )
     // }
 
-    unUploadedCommands(uid: string): TaskEither<ErrorM, UnUploadedCommands> {
+    unUploadedCommands(uid: string): TaskEither<ErrorM, CommandList> {
         // console.log('unUploadedCommands')
         const beginAtOption = pipe(
             () => this.table.filter((e: BEvent) => !!e.at && e.user.id === uid).last(),
@@ -141,13 +139,13 @@ export class DBEventStore extends EventStore {
         return pipe(
             sequenceT(T.ApplicativeSeq)(beginAtOption, commandsOption),
             T.map(([beginAt, commands]) => ({beginAt, commands})),
-            T.map(r => Record.compact<any>(r) as UnUploadedCommands),
+            T.map(r => Record.compact<any>(r) as CommandList),
             T.map(log('unUploadedCommands return')),
             x => TE.fromTask(x),
         )
     }
 
-    deleteList(uid: string, commands: UnUploadedCommands): TaskEither<never, any> {
+    deleteList(uid: string, commands: CommandList): TaskEither<never, any> {
         const ids = commands.commands.map(c => c.id)
         return TE.fromTask(() => this.table.filter(c => uid === c.user.id && ids.includes(c.id)).delete())
     }

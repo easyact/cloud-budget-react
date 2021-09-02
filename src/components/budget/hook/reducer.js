@@ -52,7 +52,7 @@ function handle(state, action) {
 
         case 'SELECT_VERSION':
             const version = action.payload
-            return {...state, version, budget: state.versions?.get(version)}
+            return {...state, version, budget: state.versions?.get(version), syncNeeded: true}
         case 'FETCH_BUDGET_SUCCESS':
             return setAllPhases(action, state)
         case 'CMD_SUCCESS':
