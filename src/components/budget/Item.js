@@ -94,6 +94,7 @@ function DateControl({editing, field, item, setItem, label}) {
 const FIELD_DURATION = 'duration'
 
 export function Item({index, columns, value, update, rm}) {
+    // console.log(index, columns, value)
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
     const cleanDuration = R.cond([
@@ -105,8 +106,10 @@ export function Item({index, columns, value, update, rm}) {
     const hasDurationColumn = R.any(R.propEq('name', FIELD_DURATION))(columns)
     const clean = hasDurationColumn ? cleanDuration : R.identity
     const cleaned = clean(value)
+    // console.log(cleaned)
     // console.log('Cleaned', value, 'to', cleaned)
     const [item, setItem] = useState(cleaned)
+    // console.log(item)
 
     function add() {
         console.log('List add', item)

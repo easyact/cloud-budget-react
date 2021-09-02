@@ -25,6 +25,7 @@ export default function List(
         dispatch,
     }
 ) {
+    // console.log(name, title, columns, items)
     function put(item) {
         const type = 'PUT_ITEM'
         track(type)
@@ -45,7 +46,7 @@ export default function List(
             <span className="column"/>
         </section>
         {items.map((item, index) =>
-            <Item key={index} index={index} columns={columns} value={item} update={put} rm={rm}/>
+            <Item key={`${index}-${Object.entries(item)}`} index={index} columns={columns} value={item} update={put} rm={rm}/>
         )}
         <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>
         <section className="panel-block th">
