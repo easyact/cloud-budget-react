@@ -89,7 +89,7 @@ const getValueFromMap = <T>(versions: Map<string, T>, version: string) => pipe(
     fromOption)
 
 type AllPhases = {
-    budget: Budget, events: BEvent[], versions: Map<string, Budget>, userVersions: BUDGET_SNAPSHOT<Budget>
+    budget: Budget, events: BEvent[], versions: Map<string, Budget>, userVersions: BUDGET_SNAPSHOT<Budget>, version: string
 }
 export const getBudgetFromEvents = (events: BEvent[], uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, AllPhases> => pipe(
     RTE.of(events),
@@ -97,6 +97,7 @@ export const getBudgetFromEvents = (events: BEvent[], uid: string, version: stri
     RTE.bind('userVersions', ({events}) => RTE.fromEither(budgetSnapshot(events))),
     RTE.bind('versions', ({userVersions}) => getValueFromMap(userVersions, uid)),
     RTE.bind('budget', ({versions}) => getValueFromMap(versions, version)),
+    RTE.apS('version', RTE.right(version)),
 )
 export const getBudget = (uid: string, version: string): ReaderTaskEither<EventStore, ErrorM, AllPhases> => pipe(
     getEvents(uid),
