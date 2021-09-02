@@ -64,10 +64,8 @@ function handle(state, action) {
             }
         case 'SYNC_SUCCESS':
             return {
-                ...state,
-                ...action.payload,
+                ...setAllPhases(action, state),
                 syncNeeded: false,
-                error: undefined,
             }
 
         case 'FETCH_BUDGET_ERROR':
