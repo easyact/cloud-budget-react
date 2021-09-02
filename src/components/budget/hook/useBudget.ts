@@ -41,7 +41,7 @@ export default function useBudget(version: string): [BudgetState, Dispatch<Reduc
     useEffect(function whenLoggedIn() {
         if (!(isAuthenticated && syncNeeded)) return
         // alert('whenLoggedIn')
-        console.log('useBudget.syncing', uid, isAuthenticated, syncNeeded)
+        console.log('useBudget.syncing', version, uid, isAuthenticated, syncNeeded)
         pipe(sync(apiBase, uid), RTE.chain(() => getBudget(uid, version)))(eventStore)()
             .then(E.fold(notifyError, payload => dispatch({type: 'SYNC_SUCCESS', payload})))
     }, [apiBase, uid, isAuthenticated, syncNeeded, version])
