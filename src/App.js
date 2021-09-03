@@ -1,6 +1,6 @@
 import './App.css'
 import {Link, Route, Routes} from 'react-router-dom'
-import {FaChartPie, FaSync, FaUmbrellaBeach} from 'react-icons/all'
+import {FaChartPie, FaSync} from 'react-icons/all'
 import BudgetView from './components/BudgetView'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
@@ -46,10 +46,10 @@ function App() {
                             <FaChartPie/>
                             <span>预算</span>
                         </Link>
-                        <Link to="dream" className="navbar-item">
-                            <FaUmbrellaBeach/>
-                            <span>圆梦计划</span>
-                        </Link>
+                        {/*<Link to="dream" className="navbar-item">*/}
+                        {/*    <FaUmbrellaBeach/>*/}
+                        {/*    <span>圆梦计划</span>*/}
+                        {/*</Link>*/}
                         {isAuthenticated ? null : <Link to="sync" className="navbar-item">
                             <FaSync/>
                             <span>同步至云端</span>

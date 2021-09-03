@@ -6,8 +6,8 @@ export function DreamView() {
     let {t} = useTranslation()
     const [dreams, setDreams] = useState({
         Be: [{
-            name: '财务自由', cashFlow: 15340, incomes: [
-                {version: 'target', incomeId: '', assetId: ''}]
+            name: '财务自由', cashFlow: 15340,
+            incomes: [{version: 'target', incomeId: '', assetId: ''}]
         }]
     })
     const dreamTypes = ['Own', 'Be', 'Do']
