@@ -1,6 +1,6 @@
 import './App.css'
 import {Link, Route, Routes} from 'react-router-dom'
-import {FaCalendarAlt, FaSync} from 'react-icons/all'
+import {FaChartPie, FaSync, FaUmbrellaBeach} from 'react-icons/all'
 import BudgetView from './components/BudgetView'
 import {LandingPage} from './components/LandingPage'
 import {useState} from 'react'
@@ -12,6 +12,9 @@ import {Price} from './components/price/Price'
 import {Pay} from './components/price/Pay'
 import {Sync} from './components/Sync'
 import {useSegmentPages} from './util/segment'
+import {DreamView} from './components/DreamView'
+import './i18n'
+import {Privacy} from './Privacy'
 
 function App() {
     init()
@@ -40,13 +43,13 @@ function App() {
                 <div className={`navbar-menu ${active ? 'is-active' : null}`}>
                     <div className="navbar-start">
                         <Link to="budget" className="navbar-item">
-                            <FaCalendarAlt/>
+                            <FaChartPie/>
                             <span>预算</span>
                         </Link>
-                        {/*<Link to="target" className="navbar-item">*/}
-                        {/*    <FaDoorOpen/>*/}
-                        {/*    <span>目标</span>*/}
-                        {/*</Link>*/}
+                        <Link to="dream" className="navbar-item">
+                            <FaUmbrellaBeach/>
+                            <span>圆梦计划</span>
+                        </Link>
                         {isAuthenticated ? null : <Link to="sync" className="navbar-item">
                             <FaSync/>
                             <span>同步至云端</span>
@@ -68,18 +71,22 @@ function App() {
         <Routes>
             <Route path="" element={<LandingPage/>}/>
             <Route path="budget" element={<BudgetView/>}/>
-            <Route path="target" element={<BudgetView/>}/>
+            <Route path="dream" element={<DreamView/>}/>
             <Route path="sync" element={<Sync/>}/>
             <Route path="loggedIn" element={<LoggedIn/>}/>
             <Route path="price" element={<Price/>}/>
             <Route path="pay" element={<Pay/>}/>
+            <Route path="privacy" element={<Privacy/>}/>
         </Routes>
         <footer className="footer">
             <div className="columns">
-                <div className="column is-3">
+                <div className="column">
                     {/*<p className="bd-footer-link-title"></p>*/}
                     <p><a href="https://beian.miit.gov.cn/">沪ICP备2021014272号</a></p>
                     <p>v{process.env.REACT_APP_VERSION}-{process.env.NODE_ENV}</p>
+                </div>
+                <div className="column">
+                    <p><Link to="privacy">隐私政策</Link></p>
                 </div>
             </div>
         </footer>
