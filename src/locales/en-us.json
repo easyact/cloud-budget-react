@@ -1,2 +1,9 @@
 {
+  "IMPORT_BUDGET": "导入预算",
+  "PUT_ITEM": "编辑条目",
+  "DELETE_ITEM": "删除条目",
+  "NEW_VERSION": "新建版本",
+  "wantToOwn": "想拥有的东西",
+  "wantToBe": "想成为的人",
+  "wantToDo": "想做的事"
 }
