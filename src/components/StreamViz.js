@@ -107,33 +107,45 @@ const preventFirst = func => event => {
 
 function CursorLine({width, height, stackLayout, data, yScale}) {
     const [x, setX] = useState(100)
+    const [y, setY] = useState(100)
+    const setCoord = (e) => {
+        const ctm = e.target.getScreenCTM()
+        // console.log(ctm.f)
+        setX((e.clientX - ctm.e) / ctm.a)
+        setY((e.clientY - ctm.f) / ctm.d)
+    }
+
     const [highLight, setHighLight] = useState()
     // const index = scaleLinear().domain([0, data.length]).range([0, width]).invert(x)
     const index = x / (width / data.length)
     const {date, ...datum} = data[Math.floor(index)]
     const layout = stackLayout([datum])
-    // console.log('x', x, index, datum, layout)
-    const points = layout.map(({'0': d, key, index: i}) => {
-        // console.log(d, name, i, layout)
-        const y = yScale(d[1] || d[0])
-        return <circle key={`point${key}`} cx={x} cy={y} r={highLight === i ? 4 : 3}
-                       onMouseOver={preventFirst(() => setHighLight(i))}
-                       onTouchStart={preventFirst(() => setHighLight(i))}
-                       onTouchMove={preventFirst(() => setHighLight(i))}
-                       onTouchEnd={preventFirst(() => setHighLight(i))}
-                       onTouchCancel={preventFirst(() => setHighLight(i))}
-                       onMouseDown={preventFirst(() => setHighLight(highLight ? null : i))}
-                       fill={highLight === i ? 'white' : 'light-green'}
-                       stroke={highLight === i ? 'black' : 'white'}
-        />
-    })
+
+    function setHighLightAndXY(i, e) {
+        setHighLight(i)
+        setCoord(e)
+    }
+
+// console.log('x', x, index, datum, layout)
+    const points = layout.map(({'0': d, key, index: i}) => <circle
+        key={`point${key}`} cx={x} cy={yScale(d[1] || d[0])}
+        r={highLight === i ? 4 : 3}
+        onMouseOver={preventFirst((e) => setHighLightAndXY(i, e))}
+        onMouseMove={preventFirst((e) => setHighLightAndXY(i, e))}
+        onTouchStart={preventFirst(() => setHighLight(i))}
+        onTouchMove={preventFirst(() => setHighLight(i))}
+        onTouchEnd={preventFirst(() => setHighLight(i))}
+        onTouchCancel={preventFirst(() => setHighLight(i))}
+        onMouseDown={preventFirst(() => setHighLight(highLight ? null : i))}
+        fill={highLight === i ? 'white' : 'light-green'}
+        stroke={highLight === i ? 'black' : 'white'}
+    />)
     const texts = layout.map(({'0': d, key, index: i}) => {
         // console.log(d, name, i, layout)
-        const y = yScale(d[1] || d[0])
         const amount = d.data[key]
         const offset = i % 2 * -100
         const textX = 10 + x + (highLight === i ? -150 : offset)
-        return <text key={`text${i}`} x={textX} y={y}
+        return <text key={`text${i}`} x={textX} y={yScale(d[1] || d[0])}
                      fontSize={`${highLight === i ? fontSize << 2 : fontSize}px`}
                      fill={highLight === i ? '#ffffff' : 'black'}
                      stroke={highLight === i ? 'black' : null}
@@ -144,12 +156,14 @@ function CursorLine({width, height, stackLayout, data, yScale}) {
     return <g id="cursorLine" width={width} height={height}>
         {texts}
         <rect x={0} y={0} width={width} height={height} opacity={0}
-              onTouchMove={preventFirst(event => setX(event.touches[0].clientX))}
-              onTouchStart={preventFirst(event => setX(event.touches[0].clientX))}
-              onMouseMove={preventFirst(event => setX(event.clientX))}
-              onMouseOver={preventFirst(event => setX(event.clientX))}
+            // onTouchMove={preventFirst(event => setCoord(event.touches[0]))}
+            // onTouchStart={preventFirst(event => setCoord(event.touches[0]))}
+              onMouseMove={preventFirst(event => setCoord(event))}
+              onMouseOver={preventFirst(event => setCoord(event))}
         />
         <line x1={x} y1={0} x2={x} y2={height} style={{stroke: 'black'}} strokeDasharray="5, 5"/>
+        <line x1={0} y1={y} x2={width} y2={y} style={{stroke: 'black'}} strokeDasharray="5, 5"/>
+        <text x={50} y={y + 15}>{yScale.invert(y).toFixed(0)}</text>
         {points}
     </g>
 }
