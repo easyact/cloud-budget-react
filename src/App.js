@@ -83,10 +83,17 @@ function App() {
                 <div className="column">
                     {/*<p className="bd-footer-link-title"></p>*/}
                     <p><a href="https://beian.miit.gov.cn/">沪ICP备2021014272号</a></p>
-                    <p>v{process.env.REACT_APP_VERSION}-{process.env.NODE_ENV}</p>
+                    <div>
+                        <a target="_blank"
+                           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011502018266"
+                           rel="noreferrer">
+                            <img src="" style={{float: 'left'}} alt=""/>
+                            <p>沪公网安备 31011502018266号</p></a>
+                    </div>
                 </div>
                 <div className="column">
                     <p><Link to="privacy">隐私政策</Link></p>
+                    <p>v{process.env.REACT_APP_VERSION}-{process.env.NODE_ENV}</p>
                 </div>
             </div>
         </footer>
