@@ -87,7 +87,7 @@ function App() {
                         <a target="_blank"
                            href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011502018266"
                            rel="noreferrer">
-                            <img src="" style={{float: 'left'}} alt=""/>
+                            <img src="/beian.png" style={{float: 'left'}} alt=""/>
                             <p>沪公网安备 31011502018266号</p></a>
                     </div>
                 </div>
