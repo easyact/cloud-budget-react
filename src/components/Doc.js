@@ -1,8 +1,8 @@
 export function Doc() {
     return <div className="content">
-        <h1 className="page-header">
-            教程
-        </h1>
+        {/*<h1 className="page-header">*/}
+        {/*    教程*/}
+        {/*</h1>*/}
         {/*<a routerLink="/quickstart">快速开始</a>*/}
         <article id="financial-freedom">
             <h2>什么是财务自由？</h2>

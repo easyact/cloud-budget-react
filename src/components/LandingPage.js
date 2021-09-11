@@ -27,7 +27,7 @@ export function LandingPage() {
                             <Link to="/budget" className="button is-large is-primary">免费试用</Link>
                         </p>
                         <p className="control">
-                            <Link to="/budget" className="button is-large is-ghost">了解更多</Link>
+                            <Link to="/doc" className="button is-large is-ghost">了解更多</Link>
                         </p>
                     </div>
                 </div>
