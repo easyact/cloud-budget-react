@@ -15,6 +15,7 @@ import {useSegmentPages} from './util/segment'
 import {DreamView} from './components/DreamView'
 import './i18n'
 import {Privacy} from './Privacy'
+import {Doc} from './components/Doc'
 
 function App() {
     init()
@@ -60,6 +61,9 @@ function App() {
                         <Link to="price" className="navbar-item">
                             定价
                         </Link>
+                        <Link to="doc" className="navbar-item">
+                            文档
+                        </Link>
                     </div>
                     <div className="navbar-end"><Profile/></div>
                 </div>
@@ -77,6 +81,7 @@ function App() {
             <Route path="price" element={<Price/>}/>
             <Route path="pay" element={<Pay/>}/>
             <Route path="privacy" element={<Privacy/>}/>
+            <Route path="doc" element={<Doc/>}/>
         </Routes>
         <footer className="footer">
             <div className="columns">
