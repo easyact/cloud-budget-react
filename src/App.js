@@ -1,4 +1,4 @@
-import './App.css'
+import './App.scss'
 import {Link, Route, Routes} from 'react-router-dom'
 import {FaChartPie, FaSync} from 'react-icons/all'
 import BudgetView from './components/BudgetView'
@@ -16,6 +16,8 @@ import {DreamView} from './components/DreamView'
 import './i18n'
 import {Privacy} from './Privacy'
 import {Doc} from './components/Doc'
+
+// import 'bulma'
 
 function App() {
     init()

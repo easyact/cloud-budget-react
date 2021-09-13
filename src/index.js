@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import './../node_modules/bulma/css/bulma.css'
+// import './../node_modules/bulma/css/bulma.css'
 import {Auth0Provider} from '@auth0/auth0-react'
 import {BrowserRouter as Router} from 'react-router-dom'
 
