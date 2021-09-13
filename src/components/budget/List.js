@@ -39,8 +39,8 @@ export default function List(
         dispatch({type, payload: {id, from: name}})
     }
 
-    return <div className="panel b-list">
-        <p className="panel-heading">{title}<small className="has-text-grey">{hint}</small></p>
+    return <div className="panel b-list is-primary">
+        <p className="panel-heading">{title}<small className="has-text-warning">{hint}</small></p>
         <section className="panel-block columns th">
             {columns.map(c => <b key={c.key} className="column">{c.title}</b>)}
             <span className="column"/>
