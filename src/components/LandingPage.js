@@ -13,7 +13,8 @@ export function LandingPage() {
                         {/*没有好用的个人财务管理软件?*/}
                     </h1>
                     <h2 className="subtitle">
-                        利用预算的力量, 防止财务暴雷.
+                        按照富爸爸的理念, 管理个人财务报表.
+                        {/*利用预算的力量, 防止财务暴雷.*/}
                         {/*利用EasyAct云预算管理资产负债与收入支出.*/}
                         {/*利用EasyAct云预算管理资产组合与被动收入.*/}
                         {/*利用预算的力量, 开始投资你的未来.*/}
@@ -21,7 +22,10 @@ export function LandingPage() {
                     </h2>
                     {/*<p>无需记账, 只需每月比对估算与实际的偏差, 调整计划.</p>*/}
                     {/*<p>选择适合的投资, 开始行动.</p>*/}
-                    <p>利用可视化工具模拟未来的分期情况, 提前做好分期计划. </p>
+                    {/*<p>利用可视化工具模拟未来的分期情况, 提前做好分期计划. </p>*/}
+                    <p>管理适合的资产, 年轻退休.</p>
+                    <p>可视化未来的现金流, 避免财务暴雷. </p>
+                    {/*<p>按照富爸爸的理念, 管理个人财务报表</p>*/}
                     <div className="field is-grouped is-grouped-centered">
                         <p className="control">
                             <Link to="/budget" className="button is-large is-primary">免费试用</Link>
