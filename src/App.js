@@ -100,7 +100,7 @@ function App() {
                     {/*<p>chrome</p>*/}
                 </div>
                 <div className="column">
-                    <p><a href="https://jinshuju.net/f/KdziDP" className="button is-primary is-light">点击参与内测</a></p>
+                    <p><a href="https://jinshuju.net/f/KdziDP" className="button is-primary is-light">免费获得3年VIP</a></p>
                     <p>v{process.env.REACT_APP_VERSION}-{process.env.NODE_ENV}</p>
                 </div>
                 <div className="column">
