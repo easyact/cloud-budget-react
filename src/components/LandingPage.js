@@ -46,11 +46,29 @@ export function LandingPage() {
                             {/*<p className="subtitle">理财难?</p>*/}
                             <p className="title">极简预算管理</p>
                             <p className="">怎样分配每月的支出才算合理? 利用预算工具仔细管理重要事项的投入比例. </p>
-                            <Link to="/budget" className="button is-large  is-primary">探索预算管理<FaAngleRight/></Link>
+                            <Link to="/budget" className="button is-large is-primary">探索预算管理<FaAngleRight/></Link>
                         </article>
                         <article className="column is-7 is-offset-1">
                             <img alt="预算管理UI示例"
                                  src="https://s3.cn-northwest-1.amazonaws.com.cn/assets.easyact.cn/example.png"/>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section className="hero">
+            <div className="hero-body">
+                <div className="container is-full-desktop">
+                    <div className="columns">
+                        <article className="column is-7">
+                            <img alt="预算管理UI示例"
+                                 src="https://s3.cn-northwest-1.amazonaws.com.cn/assets.easyact.cn/streamViz.png"/>
+                        </article>
+                        <article className="content column is-3 is-offset-1">
+                            <p className="subtitle">害怕财务暴雷?</p>
+                            <p className="title">现金流可视化</p>
+                            <p className="">利用可视化工具模拟未来的分期情况, 提前做好分期计划. </p>
+                            <Link to="/budget" className="button is-large is-light is-primary">探索现金流可视化<FaAngleRight/></Link>
                         </article>
                     </div>
                 </div>
