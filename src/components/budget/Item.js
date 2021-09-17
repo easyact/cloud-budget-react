@@ -98,16 +98,15 @@ export function Item({index, columns, value, update, rm}) {
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
     const cleanDuration = R.cond([
-        [R.isNil, R.identity],
+        [R.isNil, R.always({duration: {months: 1}})],
         [R.propSatisfies(R.isNil, FIELD_DURATION), R.assoc(FIELD_DURATION, DEFAULT_DURATION)],
         [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
         [R.T, R.identity],
     ])
-    const hasDurationColumn = R.any(R.propEq('name', FIELD_DURATION))(columns)
+    const hasDurationColumn = R.any(R.propEq('key', FIELD_DURATION))(columns)
     const clean = hasDurationColumn ? cleanDuration : R.identity
     const cleaned = clean(value)
-    // console.log(cleaned)
-    // console.log('Cleaned', value, 'to', cleaned)
+    // console.log('Cleaned', value, 'to', cleaned, columns)
     const [item, setItem] = useState(cleaned)
     // console.log(item)
 
