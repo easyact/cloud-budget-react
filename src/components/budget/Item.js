@@ -92,13 +92,14 @@ function DateControl({editing, field, item, setItem, label}) {
 }
 
 const FIELD_DURATION = 'duration'
+const defaultDuration = R.over(R.lensProp('duration'), R.defaultTo(DEFAULT_DURATION))
 
 export function Item({index, columns, value, update, rm}) {
     // console.log(index, columns, value)
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
     const cleanDuration = R.cond([
-        [R.isNil, R.always({duration: {months: 1}})],
+        [R.isNil, R.identity],
         [R.propSatisfies(R.isNil, FIELD_DURATION), R.assoc(FIELD_DURATION, DEFAULT_DURATION)],
         [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
         [R.T, R.identity],
@@ -108,11 +109,12 @@ export function Item({index, columns, value, update, rm}) {
     const cleaned = clean(value)
     // console.log('Cleaned', value, 'to', cleaned, columns)
     const [item, setItem] = useState(cleaned)
+
     // console.log(item)
 
     function add() {
         console.log('List add', item)
-        update(item)
+        update(defaultDuration(item))
     }
 
     function save() {
@@ -139,7 +141,7 @@ export function Item({index, columns, value, update, rm}) {
                  onChange={setItemByEvent(key, item, setItem)}/>
         : <p>{defaultValue}{key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)}</p>)
     const opTd = <div key={`td${index}`} className="column">
-        {item ?
+        {value ?
             <div className="field has-addons">
                 {editing && <div className="control">
                     <button className="button is-small" onClick={save} title={'保存'}>
