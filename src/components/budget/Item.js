@@ -92,16 +92,17 @@ function DateControl({editing, field, item, setItem, label}) {
 }
 
 const FIELD_DURATION = 'duration'
-const defaultDuration = R.over(R.lensProp('duration'), R.defaultTo(DEFAULT_DURATION))
+const lensDuration = R.lensProp(FIELD_DURATION)
+const defaultDuration = R.over(lensDuration, R.defaultTo(DEFAULT_DURATION))
 
 export function Item({index, columns, value, update, rm}) {
     // console.log(index, columns, value)
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
     const cleanDuration = R.cond([
-        [R.isNil, R.identity],
+        [R.isNil, R.always({duration: DEFAULT_DURATION})],
         [R.propSatisfies(R.isNil, FIELD_DURATION), R.assoc(FIELD_DURATION, DEFAULT_DURATION)],
-        [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(R.lensProp(FIELD_DURATION), months => ({months}))],
+        [R.propSatisfies(R.is(Number), FIELD_DURATION), R.over(lensDuration, months => ({months}))],
         [R.T, R.identity],
     ])
     const hasDurationColumn = R.any(R.propEq('key', FIELD_DURATION))(columns)
