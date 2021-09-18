@@ -40,7 +40,7 @@ function BudgetView() {
                 <p>钱越少越要精打细算, 你的未来取决于你目前的资源分配.</p>
                 <p>财务报告包含资产/负债/收入/支出部分.</p>
                 <p>做好每月预算, 然后月底看看实际和预算的大致偏差, 校准预算. </p>
-                <p>然后按生活目标调整重要项目的投入比例, 未来便掌握在你自己的手中. </p>
+                <p>然后按生活目标调整各项支出的投入比例, 未来便掌握在你自己的手中. </p>
                 <div className="buttons">
                     <button className="button is-large is-success"
                             onClick={() => dispatch({type: 'IMPORT_BUDGET', payload: EXAMPLE})}>导入示例预算
