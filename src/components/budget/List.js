@@ -23,6 +23,7 @@ export default function List(
             {title: '首付', type: 'number', key: 'downPayment'}],
         items = [],
         dispatch,
+        detail,
     }
 ) {
     // console.log(name, title, columns, items)
@@ -46,7 +47,8 @@ export default function List(
             <span className="column"/>
         </section>
         {items.map((item, index) =>
-            <Item key={`${index}-${Object.entries(item)}`} index={index} columns={columns} value={item} update={put} rm={rm}/>
+            <Item key={`${index}-${Object.entries(item)}`} index={index} columns={columns} value={item} update={put}
+                  rm={rm} detail={detail}/>
         )}
         <Item key={`${name}-add`} index={-1} columns={columns} update={put}/>
         <section className="panel-block th">

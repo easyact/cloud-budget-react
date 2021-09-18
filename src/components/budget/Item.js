@@ -73,10 +73,10 @@ function DurationControl(item, setItem) {
 
 function DateControl({editing, field, item, setItem, label}) {
     const defaultValue = item[field]
-    console.log('defaultValue', defaultValue)
+    // console.log('defaultValue', defaultValue)
     label = label ?? field
-    return <div className="field is-horizontal column">
-        <div className="field-label">
+    return <div className="field is-horizontal">
+        <div className="field-label is-small">
             <label className="label">{label}</label>
         </div>
         <div className="field-body">
@@ -95,7 +95,7 @@ const FIELD_DURATION = 'duration'
 const lensDuration = R.lensProp(FIELD_DURATION)
 const defaultDuration = R.over(lensDuration, R.defaultTo(DEFAULT_DURATION))
 
-export function Item({index, columns, value, update, rm}) {
+export function Item({index, columns, value, update, rm, detail}) {
     // console.log(index, columns, value)
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
@@ -145,13 +145,13 @@ export function Item({index, columns, value, update, rm}) {
         {value ?
             <div className="field has-addons">
                 {editing && <div className="control">
-                    <button className="button is-small" onClick={save} title={'保存'}>
-                        <FaSave/>
+                    <button className="button is-small" onClick={cancel} title="取消">
+                        <FaStrikethrough/>
                     </button>
                 </div>}
                 {editing && <div className="control">
-                    <button className="button is-small" onClick={cancel} title="取消">
-                        <FaStrikethrough/>
+                    <button className="button is-small" onClick={save} title={'保存'}>
+                        <FaSave/>
                     </button>
                 </div>}
                 {editing || <div className="control">
@@ -189,9 +189,17 @@ export function Item({index, columns, value, update, rm}) {
         return tr
     return <section>
         {tr}
-        <div className="columns card">
-            <DateControl editing={editing} item={item} setItem={setItem} field="start" label="开始"/>
-            <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
+        <div className="card">
+            <div className="field is-horizontal">
+                <div className="field-label is-small">
+                    <label className="label">开始结束时间</label>
+                </div>
+                <div className="field-body">
+                    <DateControl editing={editing} item={item} setItem={setItem} field="start" label="开始"/>
+                    <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
+                </div>
+            </div>
+            {detail}
         </div>
     </section>
 }

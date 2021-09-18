@@ -49,6 +49,23 @@ function BudgetView() {
         </div>
     </div>
 
+    let incomeDetail = <div className="field is-horizontal">
+        <div className="field-label is-small">
+            <label className="label">关联资产</label>
+        </div>
+        <div className="field-body">
+            <div className="field">
+                <div className="control">
+                    <div className="select is-fullwidth is-small">
+                        <select>
+                            <option>余额宝</option>
+                            <option>房子</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     return <div>
         {error && <div className="notification is-danger">
             <button className="delete" onClick={() => dispatch({type: 'CLOSE_ERROR'})}/>
@@ -116,7 +133,9 @@ function BudgetView() {
                       dispatch={dispatch}
                       columns={[{title: '收入', type: 'text', key: 'name'}
                           , {title: AMOUNT, type: 'number', key: 'amount'}
-                          , {title: '周期', type: 'duration', key: 'duration'}]}/>
+                          , {title: '周期', type: 'duration', key: 'duration'}]}
+                      detail={incomeDetail}
+                />
                 <List name={'expenses'} title="支出" items={budget.expenses}
                       dispatch={dispatch}
                       columns={[{title: '支出', type: 'text', key: 'name'}
