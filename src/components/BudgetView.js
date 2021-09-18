@@ -7,6 +7,7 @@ import {FaAngleDown, FaPlus} from 'react-icons/all'
 import {useRef, useState} from 'react'
 import {Switch} from './Switch'
 import {History} from './History'
+import * as R from 'ramda'
 
 const AMOUNT = '数额'
 
@@ -49,8 +50,9 @@ function BudgetView() {
         </div>
     </div>
 
-    const incomeDetail = editing => {
-        const l = ['余额宝', '房子']
+    const incomeDetail = relatedList => (editing, relatedId, setRelatedId) => {
+        // console.log(l)
+        const name = R.pipe(R.find(R.propEq('id', relatedId)), R.propOr('无', 'name',))(relatedList)
         return <div className="field is-horizontal">
             <div className="field-label is-small">
                 <label className="label">关联资产</label>
@@ -59,12 +61,14 @@ function BudgetView() {
                 <div className="field">
                     {editing ? <div className="control">
                         <div className="select is-fullwidth is-small">
-                            <select>
+                            <select value={relatedId} onChange={e => setRelatedId(e.target.value)}>
                                 <option>无</option>
-                                {l.map(s => <option>{s}</option>)}
+                                {relatedList.map(item => <option
+                                    key={`assoc-${item.id}`}
+                                    value={item.id}>{item.name}</option>)}
                             </select>
                         </div>
-                    </div> : <p className="control"><small>{l[0]}</small></p>}
+                    </div> : <p className="control"><small>{name}</small></p>}
                 </div>
             </div>
         </div>
@@ -137,7 +141,7 @@ function BudgetView() {
                       columns={[{title: '收入', type: 'text', key: 'name'}
                           , {title: AMOUNT, type: 'number', key: 'amount'}
                           , {title: '周期', type: 'duration', key: 'duration'}]}
-                      detail={incomeDetail}
+                      detail={incomeDetail(budget.assets)}
                 />
                 <List name={'expenses'} title="支出" items={budget.expenses}
                       dispatch={dispatch}

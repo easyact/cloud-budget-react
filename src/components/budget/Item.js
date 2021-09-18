@@ -94,6 +94,8 @@ function DateControl({editing, field, item, setItem, label}) {
 const FIELD_DURATION = 'duration'
 const lensDuration = R.lensProp(FIELD_DURATION)
 const defaultDuration = R.over(lensDuration, R.defaultTo(DEFAULT_DURATION))
+const LENS_RELATED_ID = R.lensProp('relatedId')
+
 const ALWAYS_NULL = R.always(null)
 
 export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) {
@@ -110,25 +112,28 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
     const clean = hasDurationColumn ? cleanDuration : R.identity
     const cleaned = clean(value)
     // console.log('Cleaned', value, 'to', cleaned, columns)
+
     const [item, setItem] = useState(cleaned)
 
     // console.log(item)
-
     function add() {
         console.log('List add', item)
         update(defaultDuration(item))
+
     }
 
     function save() {
         console.log('Item set', item)
         setEditing(false)
         update(item)
+
     }
 
     function cancel() {
         console.log('Item cancel', item, cleaned)
         setEditing(false)
         setItem(cleaned)
+
     }
 
     const today = new Date()
@@ -186,8 +191,9 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
         {mainCells}
         {opTd}
     </section>
-    if (folded)
+    if (folded) {
         return tr
+    }
     return <section>
         {tr}
         <div className="card">
@@ -200,7 +206,7 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
                     <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
                 </div>
             </div>
-            {detail(editing)}
+            {detail(editing, item.relatedId, id => setItem(R.set(LENS_RELATED_ID, id, item)))}
         </div>
     </section>
 }
