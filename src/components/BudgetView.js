@@ -49,23 +49,26 @@ function BudgetView() {
         </div>
     </div>
 
-    let incomeDetail = <div className="field is-horizontal">
-        <div className="field-label is-small">
-            <label className="label">关联资产</label>
-        </div>
-        <div className="field-body">
-            <div className="field">
-                <div className="control">
-                    <div className="select is-fullwidth is-small">
-                        <select>
-                            <option>余额宝</option>
-                            <option>房子</option>
-                        </select>
-                    </div>
+    const incomeDetail = editing => {
+        const l = ['余额宝', '房子']
+        return <div className="field is-horizontal">
+            <div className="field-label is-small">
+                <label className="label">关联资产</label>
+            </div>
+            <div className="field-body">
+                <div className="field">
+                    {editing ? <div className="control">
+                        <div className="select is-fullwidth is-small">
+                            <select>
+                                <option>无</option>
+                                {l.map(s => <option>{s}</option>)}
+                            </select>
+                        </div>
+                    </div> : <p className="control"><small>{l[0]}</small></p>}
                 </div>
             </div>
         </div>
-    </div>
+    }
     return <div>
         {error && <div className="notification is-danger">
             <button className="delete" onClick={() => dispatch({type: 'CLOSE_ERROR'})}/>

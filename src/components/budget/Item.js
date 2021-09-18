@@ -94,8 +94,9 @@ function DateControl({editing, field, item, setItem, label}) {
 const FIELD_DURATION = 'duration'
 const lensDuration = R.lensProp(FIELD_DURATION)
 const defaultDuration = R.over(lensDuration, R.defaultTo(DEFAULT_DURATION))
+const ALWAYS_NULL = R.always(null)
 
-export function Item({index, columns, value, update, rm, detail}) {
+export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) {
     // console.log(index, columns, value)
     const [editing, setEditing] = useState(!value)
     const [folded, setFolded] = useState(true)
@@ -199,7 +200,7 @@ export function Item({index, columns, value, update, rm, detail}) {
                     <DateControl editing={editing} item={item} setItem={setItem} field="end" label="结束"/>
                 </div>
             </div>
-            {detail}
+            {detail(editing)}
         </div>
     </section>
 }
