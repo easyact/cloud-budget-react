@@ -50,12 +50,12 @@ function BudgetView() {
         </div>
     </div>
 
-    const incomeDetail = relatedList => (editing, relatedId, setRelatedId) => {
+    const relatedForm = (relatedList, listName = '资产') => (editing, relatedId, setRelatedId) => {
         // console.log(l)
         const name = R.pipe(R.find(R.propEq('id', relatedId)), R.propOr('无', 'name',))(relatedList)
         return <div className="field is-horizontal">
             <div className="field-label is-small">
-                <label className="label">关联资产</label>
+                <label className="label">关联{listName}</label>
             </div>
             <div className="field-body">
                 <div className="field">
@@ -141,13 +141,15 @@ function BudgetView() {
                       columns={[{title: '收入', type: 'text', key: 'name'}
                           , {title: AMOUNT, type: 'number', key: 'amount'}
                           , {title: '周期', type: 'duration', key: 'duration'}]}
-                      detail={incomeDetail(budget.assets)}
+                      detail={relatedForm(budget.assets)}
                 />
                 <List name={'expenses'} title="支出" items={budget.expenses}
                       dispatch={dispatch}
                       columns={[{title: '支出', type: 'text', key: 'name'}
                           , {title: AMOUNT, type: 'number', key: 'amount'}
-                          , {title: '周期', type: 'duration', key: 'duration'}]}/>
+                          , {title: '周期', type: 'duration', key: 'duration'}]}
+                      detail={relatedForm(budget.liabilities, '负债')}
+                />
             </div>
             <div className="column">
                 <List items={budget.assets} dispatch={dispatch} hint="带来被动收入"/>
