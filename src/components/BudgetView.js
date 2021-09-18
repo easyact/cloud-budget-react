@@ -37,10 +37,10 @@ function BudgetView() {
             <section className="hero-body block">
                 <p className="subtitle">第一次使用?</p>
                 <p className="title">是否需要在示例的基础上创建预算?</p>
-                <p>钱越少越要精打细算, 因为你的未来部分取决于你目前的资源分配.</p>
+                <p>钱越少越要精打细算, 你的未来取决于你目前的资源分配.</p>
                 <p>财务报告包含资产/负债/收入/支出部分.</p>
-                <p>记账太繁琐, 做好每月预算, 然后月底看看实际和预算的大致偏差, 就能把大部分问题都暴露了. </p>
-                <p>然后针对问题调整重要项目的投入比例, 你的未来便掌握在你自己的手中. </p>
+                <p>做好每月预算, 然后月底看看实际和预算的大致偏差, 校准预算. </p>
+                <p>然后按生活目标调整重要项目的投入比例, 未来便掌握在你自己的手中. </p>
                 <div className="buttons">
                     <button className="button is-large is-success"
                             onClick={() => dispatch({type: 'IMPORT_BUDGET', payload: EXAMPLE})}>导入示例预算
