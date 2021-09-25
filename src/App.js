@@ -129,7 +129,7 @@ function App() {
             'background': '#866892',
             'right': '0',
             'bottom': '240px',
-        }} href="https://jinshuju.net/f/KdziDP">内测用户报名</a>
+        }} href="https://jinshuju.net/f/KdziDP">内测用户邀请</a>
     </div>
 }
 
