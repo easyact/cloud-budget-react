@@ -109,10 +109,27 @@ function App() {
                 </div>
                 <div className="column">
                     <p><Link to="privacy">隐私政策</Link></p>
-                    <p>上海易习互联网科技有限公司  ©2021</p>
+                    <p>上海易习互联网科技有限公司 ©2021</p>
                 </div>
             </div>
         </footer>
+        <a target="_blank" style={{
+            'border': '1px solid white',
+            'box-shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.3)',
+            'border-radius': '2px 2px 2px 2px',
+            'font-size': '12px',
+            'line-height': '14px',
+            'position': 'fixed',
+            'z-index': 999,
+            'display': 'inline-block',
+            'width': '25px',
+            'word-wrap': 'break-word',
+            'padding': '10px 6px',
+            'color': '#FFFFFF',
+            'background': '#866892',
+            'right': '0',
+            'bottom': '240px',
+        }} href="https://jinshuju.net/f/KdziDP">内测用户报名</a>
     </div>
 }
 
