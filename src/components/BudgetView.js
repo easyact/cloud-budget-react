@@ -159,7 +159,7 @@ function BudgetView() {
                           title: '总数',
                           type: 'number',
                           key: 'amount'
-                      }, {title: '已还', type: 'number', key: 'amortized'}]}/>
+                      }, {title: '已还期数/总期数', type: 'text', key: 'amortized'}]}/>
             </div>
         </div>
         <div className="field is-grouped is-grouped-multiline">
