@@ -11,6 +11,8 @@ export function track(action: string = 'PUT_ITEM', otherParams = {}) {
     gtag('event', action, {...params, ...otherParams})
     // @ts-ignore
     window.analytics && window.analytics.track(action, otherParams)
+    // @ts-ignore
+    window.analytics && window.analytics.track('event', {action, otherParams})
     // mixpanel.track(action)
 }
 
