@@ -58,7 +58,7 @@ export function Price() {
                         <div className="level-item has-text-centered">
                             <div>
                                 <p className="title">PRO版</p>
-                                <p className="heading">每月15元</p>
+                                <p className="heading">每月10元</p>
                             </div>
                         </div>
                     </div>
