@@ -2,6 +2,8 @@ import LoginButton from '../../auth/LoginButton'
 import {FaCheck} from 'react-icons/all'
 
 export function Price() {
+    gtag('event', 'conversion', {'send_to': 'AW-1039816295/0NGXCLi0tdcCEOes6e8D'})
+
     return <div>
         <div className="hero is-light">
             <div className="hero-body has-text-centered">
