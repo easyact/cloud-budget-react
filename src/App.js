@@ -102,6 +102,7 @@ function App() {
                 <div className="column">
                     <p>技术支持电话/微信：17317767650</p>
                     <p>技术支持邮箱：support@easyact.cn</p>
+                    <p><a href="https://tieba.baidu.com/f?kw=easyact">百度贴吧</a></p>
                 </div>
                 <div className="column">
                     <p><a href="https://jinshuju.net/f/KdziDP" className="button is-primary is-light">免费获得3年VIP</a></p>
