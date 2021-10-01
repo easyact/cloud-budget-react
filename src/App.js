@@ -105,7 +105,7 @@ function App() {
                     <p><a href="https://tieba.baidu.com/f?kw=easyact">百度贴吧</a></p>
                 </div>
                 <div className="column">
-                    <p><a href="https://jinshuju.net/f/KdziDP" className="button is-primary is-light">免费获得3年VIP</a></p>
+                    <p><a href="https://jinshuju.net/f/KdziDP" className="button is-primary is-light">参与访谈成为内测用户</a></p>
                     <p>v{process.env.REACT_APP_VERSION}-{process.env.NODE_ENV}</p>
                 </div>
                 <div className="column">
