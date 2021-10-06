@@ -88,18 +88,6 @@ function App() {
         <footer className="footer">
             <div className="columns">
                 <div className="column">
-                    {/*<p className="bd-footer-link-title"></p>*/}
-                    <p><a href="https://beian.miit.gov.cn/">沪ICP备2021014272号</a></p>
-                    <div>
-                        <a target="_blank"
-                           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011502018266"
-                           rel="noreferrer">
-                            <img src="/beian.png" style={{float: 'left'}} alt=""/>
-                            <p>沪公网安备 31011502018266号</p></a>
-                    </div>
-                    {/*<p>chrome</p>*/}
-                </div>
-                <div className="column">
                     <p>技术支持电话/微信：17317767650</p>
                     <p>技术支持邮箱：support@easyact.cn</p>
                     <p><a href="https://tieba.baidu.com/f?kw=easyact">百度贴吧</a></p>
@@ -111,6 +99,18 @@ function App() {
                 <div className="column">
                     <p><Link to="privacy">隐私政策</Link></p>
                     <p>上海易习互联网科技有限公司 ©2021</p>
+                </div>
+                <div className="column">
+                    {/*<p className="bd-footer-link-title"></p>*/}
+                    <p><a href="https://beian.miit.gov.cn/">沪ICP备2021014272号</a></p>
+                    <div>
+                        <a target="_blank"
+                           href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011502018266"
+                           rel="noreferrer">
+                            <img src="/beian.png" style={{float: 'left'}} alt=""/>
+                            <p>沪公网安备 31011502018266号</p></a>
+                    </div>
+                    {/*<p>chrome</p>*/}
                 </div>
             </div>
         </footer>
