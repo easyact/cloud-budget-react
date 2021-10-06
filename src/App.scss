@@ -4,20 +4,20 @@ $primary: #866892;
 @import "../node_modules/bulma/bulma.sass";
 
 .App {
-    /*text-align: center;*/
+  /*text-align: center;*/
 }
 
 .b-list .columns {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .b-list .column {
-    padding: .25em .5em;
+  padding: .25em .5em;
 }
 
 .b-list .columns:not(:last-child) {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 /*.b-list .panel-block:nth-child(2n) {*/
@@ -25,15 +25,15 @@ $primary: #866892;
 /*}*/
 
 .b-list .th.panel-block {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 .b-list .overdue {
-    background-color: gray;
+  background-color: gray;
 }
 
 .b-list .unstarted {
-    background-color: lightgoldenrodyellow;
+  background-color: lightgoldenrodyellow;
 }
 
 /*.history {*/
@@ -50,7 +50,11 @@ $primary: #866892;
 /*}*/
 
 .history .ea-content {
-    /*max-width: 100%;*/
-    max-height: 5em;
-    overflow: auto;
+  /*max-width: 100%;*/
+  max-height: 5em;
+  overflow: auto;
+}
+
+.min-5 {
+  min-width: 5em
 }

@@ -39,12 +39,11 @@ function DurationControl(item, setItem) {
         // const current = item[key] = {value: duration}
         return Object.entries(duration).map(([unit, value], index) =>
             <div className="field has-addons" key={`duration-${index}`}>
-                <div className="field has-addons">
-                    <p className="control">
-                        <input defaultValue={value} className="input is-small" type="number"
-                               onChange={setItemByEvent(key, item, setItem, R.pipe(parseInt, R.objOf(unit)))}/>
-                    </p>
-                    <p className="control">
+                <p className="control">
+                    <input defaultValue={value} className="input is-small min-5" type="number"
+                           onChange={setItemByEvent(key, item, setItem, R.pipe(parseInt, R.objOf(unit)))}/>
+                </p>
+                <p className="control">
                     <span className="select is-small is-narrow">
                       <select defaultValue={unit} onChange={
                           // event => {
@@ -64,8 +63,7 @@ function DurationControl(item, setItem) {
                         <option value="seconds">秒</option>
                       </select>
                     </span>
-                    </p>
-                </div>
+                </p>
             </div>
         )
     }
@@ -144,7 +142,7 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
     overdue && tags.push('过期')
     const durationControl = DurationControl(item, setItem)
     const td = (type, editing) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
-        ? <input type={type} className="input is-small" defaultValue={defaultValue}
+        ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
                  onChange={setItemByEvent(key, item, setItem)}/>
         : <p>{defaultValue}{key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)}</p>)
     const opTd = <div key={`td${index}`} className="column">
