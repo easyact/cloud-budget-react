@@ -4,35 +4,41 @@ import {FaAngleRight} from 'react-icons/all'
 export function LandingPage() {
     // useScript('https://jinshuju.net/f/KdziDP/embedded.js?inner_redirect=false&banner=show&background=white&height=1326')
     return <div>
-        <section className="hero is-light is-bold has-text-centered">
+        <section className="hero is-light is-bold">
             <div className="hero-body">
                 <div className="container is-full-desktop">
-                    <h1 className="title">
-                        从996到财务自由
-                        {/*没有出头之日?*/}
-                        {/*没有好用的个人财务管理软件?*/}
-                    </h1>
-                    <h2 className="subtitle">
-                        按照富爸爸的理念, 管理个人财务报表.
-                        {/*利用预算的力量, 防止财务暴雷.*/}
-                        {/*利用EasyAct云预算管理资产负债与收入支出.*/}
-                        {/*利用EasyAct云预算管理资产组合与被动收入.*/}
-                        {/*利用预算的力量, 开始投资你的未来.*/}
-                        {/*利用预算的力量, 提升理财效率.*/}
-                    </h2>
-                    {/*<p>无需记账, 只需每月比对估算与实际的偏差, 调整计划.</p>*/}
-                    {/*<p>选择适合的投资, 开始行动.</p>*/}
-                    {/*<p>利用可视化工具模拟未来的分期情况, 提前做好分期计划. </p>*/}
-                    <p>管理适合的资产, 年轻退休.</p>
-                    <p>可视化未来的现金流, 避免财务暴雷. </p>
-                    {/*<p>按照富爸爸的理念, 管理个人财务报表</p>*/}
-                    <div className="field is-grouped is-grouped-centered">
-                        <p className="control">
-                            <Link to="/budget" className="button is-large is-primary">免费试用</Link>
-                        </p>
-                        <p className="control">
-                            <Link to="/doc" className="button is-large is-ghost">了解更多</Link>
-                        </p>
+                    <div className="columns is-vcentered">
+                        <div className="column is-5">
+                            <h1 className="title" style={{'font-size': '4em'}}>
+                                从996到财务自由
+                                {/*没有出头之日?*/}
+                                {/*没有好用的个人财务管理软件?*/}
+                            </h1>
+                            <h2 className="subtitle" style={{'font-size': '2em'}}>
+                                按照富爸爸的理念, 管理个人财务报表.
+                                {/*利用预算的力量, 防止财务暴雷.*/}
+                                {/*利用EasyAct云预算管理资产负债与收入支出.*/}
+                                {/*利用EasyAct云预算管理资产组合与被动收入.*/}
+                                {/*利用预算的力量, 开始投资你的未来.*/}
+                                {/*利用预算的力量, 提升理财效率.*/}
+                            </h2>
+                            {/*<p>无需记账, 只需每月比对估算与实际的偏差, 调整计划.</p>*/}
+                            {/*<p>选择适合的投资, 开始行动.</p>*/}
+                            {/*<p>利用可视化工具模拟未来的分期情况, 提前做好分期计划. </p>*/}
+                            <p>管理适合的资产, 年轻退休.</p>
+                            <p>可视化未来的现金流, 避免财务暴雷. </p>
+                            {/*<p>按照富爸爸的理念, 管理个人财务报表</p>*/}
+                            <div className="field is-grouped ">
+                                <p className="control">
+                                    <Link to="/budget" className="button is-large is-primary">免费试用</Link>
+                                </p>
+                                <p className="control">
+                                    <Link to="/doc" className="button is-large is-ghost">了解更多</Link>
+                                </p>
+                            </div>
+                        </div>
+                        <img className="column is-6"
+                             src="https://s3.cn-northwest-1.amazonaws.com.cn/assets.easyact.cn/main-title1.jpg"/>
                     </div>
                 </div>
             </div>
@@ -68,7 +74,8 @@ export function LandingPage() {
                             <p className="subtitle">害怕财务暴雷?</p>
                             <p className="title">现金流可视化</p>
                             <p className="">利用可视化工具模拟未来的分期情况, 提前做好分期计划. </p>
-                            <Link to="/budget" className="button is-large is-light is-primary">探索现金流可视化<FaAngleRight/></Link>
+                            <Link to="/budget"
+                                  className="button is-large is-light is-primary">探索现金流可视化<FaAngleRight/></Link>
                         </article>
                     </div>
                 </div>

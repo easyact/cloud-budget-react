@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next'
 
 export function DreamView() {
     let {t} = useTranslation()
-    const [dreams, setDreams] = useState({
+    const [dreams, /*setDreams*/] = useState({
         Be: [{
             name: '财务自由', cashFlow: 15340,
             incomes: [{version: 'target', incomeId: '', assetId: ''}]

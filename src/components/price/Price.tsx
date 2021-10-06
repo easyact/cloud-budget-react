@@ -1,5 +1,6 @@
 import LoginButton from '../../auth/LoginButton'
 import {FaCheck} from 'react-icons/all'
+import {track} from '../../util/analytics'
 
 export function Price() {
     gtag('event', 'conversion', {'send_to': 'AW-1039816295/0NGXCLi0tdcCEOes6e8D'})
@@ -84,7 +85,8 @@ export function Price() {
                             </li>
                         </ul>
                         {/*<Link to="/pay" className="button is-fullwidth is-primary">马上购买</Link>*/}
-                        <a href="https://jinshuju.net/f/KdziDP" className="button is-fullwidth is-primary">马上购买</a>
+                        <a href="https://jinshuju.net/f/KdziDP" className="button is-fullwidth is-primary"
+                           onClick={() => track('Pay')}>马上购买</a>
                     </div>
                 </div>
             </div>
