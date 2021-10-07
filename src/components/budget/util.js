@@ -17,4 +17,6 @@ export const timesPerMonth = (duration, today = new Date()) => {
     return getDaysInMonth(today) / _days
 }
 
+export const monthlyAmountCalc = (unitKey, amountKey) => item => item[amountKey] * timesPerMonth(item[unitKey])
+
 export const formatDate = R.unless(R.isNil, formatISOWithOptions({representation: 'date'}))

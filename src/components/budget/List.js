@@ -1,16 +1,14 @@
 import * as R from 'ramda'
 import {Item} from './Item'
-import {timesPerMonth} from './util'
+import {monthlyAmountCalc} from './util'
 import {track} from '../../util/analytics'
 
 // export const initValue = {text: '空', number: 0, duration: {months: 1}}
 
-function sum(items, columns) {
-    const amountKey = columns[1].key
-    const unitKey = 'duration'
-    const numbers = items.map(i => i[amountKey] * timesPerMonth(i[unitKey]))
-    return R.sum(numbers)
-}
+const sumFn = columns => R.pipe(
+    R.map(monthlyAmountCalc('duration', columns[1].key)),
+    R.sum
+)
 
 export default function List(
     {
@@ -56,7 +54,7 @@ export default function List(
                 总{title}
             </b>
             <b className="column">
-                ¥{sum(items, columns).toFixed(2)}
+                ¥{sumFn(columns)(items).toFixed(2)}
             </b>
             {/*<td className="column">*/}
             {/*</td>*/}
