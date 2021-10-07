@@ -144,7 +144,9 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
     const td = (type, editing, addition) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
         ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
                  onChange={setItemByEvent(key, item, setItem)}/>
-        : <p>{defaultValue}{addition && <small className="has-text-grey">({addition})</small>}{
+        : <p>{defaultValue}{
+            addition && defaultValue !== addition && <small className="has-text-grey">({addition.toFixed(2)})</small>
+        }{
             key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)
         }</p>)
     const opTd = <div key={`td${index}`} className="column">
