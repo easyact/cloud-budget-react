@@ -114,22 +114,22 @@ function App() {
                 </div>
             </div>
         </footer>
-        <a target="_blank" style={{
-            'border': '1px solid white',
-            'box-shadow': '0 1px 3px 0 rgba(0, 0, 0, 0.3)',
-            'border-radius': '2px 2px 2px 2px',
-            'font-size': '12px',
-            'line-height': '14px',
-            'position': 'fixed',
-            'z-index': 999,
-            'display': 'inline-block',
-            'width': '25px',
-            'word-wrap': 'break-word',
-            'padding': '10px 6px',
-            'color': '#FFFFFF',
-            'background': '#866892',
-            'right': '0',
-            'bottom': '240px',
+        <a target="_blank" rel="noreferrer" style={{
+            border: '1px solid white',
+            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.3)',
+            borderRadius: '2px 2px 2px 2px',
+            fontSize: '12px',
+            lineHeight: '14px',
+            position: 'fixed',
+            zIndex: 999,
+            display: 'inline-block',
+            width: '25px',
+            wordWrap: 'break-word',
+            padding: '10px 6px',
+            color: '#FFFFFF',
+            background: '#866892',
+            right: '0',
+            bottom: '240px',
         }} href="https://jinshuju.net/f/KdziDP">内测用户邀请</a>
     </div>
 }

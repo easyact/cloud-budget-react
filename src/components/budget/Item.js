@@ -147,7 +147,7 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
             ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
                      onChange={setItemByEvent(key, item, setItem)}/>
             : <p>{defaultValue}{
-                additionValue && <small className="has-text-grey">({additionValue})</small>
+                additionValue && <small className="has-text-grey"><br/>{additionValue}</small>
             }{
                 key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)
             }</p>
@@ -187,7 +187,7 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
                 </div>
             </div>}
     </div>
-    console.log('c.addition && c.addition(value)', columns, value)
+    // console.log('c.addition && c.addition(value)', columns, value)
     const mainCells = columns.map(c => <div className="column" key={c.key + index}>
         {td(c.type, editing, c.addition && value && c.addition(value))(item?.[c.key], c.key)}</div>)
     // console.log(isBefore(today, parseISO(item?.start)), parseISO(item?.start), item?.start, today)
