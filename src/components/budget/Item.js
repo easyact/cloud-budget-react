@@ -141,10 +141,12 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
     unstarted && tags.push('未来')
     overdue && tags.push('过期')
     const durationControl = DurationControl(item, setItem)
-    const td = (type, editing) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
+    const td = (type, editing, addition) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
         ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
                  onChange={setItemByEvent(key, item, setItem)}/>
-        : <p>{defaultValue}{key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)}</p>)
+        : <p>{defaultValue}{addition && <small className="has-text-grey">({addition})</small>}{
+            key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)
+        }</p>)
     const opTd = <div key={`td${index}`} className="column">
         {value ?
             <div className="field has-addons">
@@ -180,8 +182,9 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
                 </div>
             </div>}
     </div>
+    console.log('c.addition && c.addition(value)', columns, value)
     const mainCells = columns.map(c => <div className="column" key={c.key + index}>
-        {td(c.type, editing)(item?.[c.key], c.key)}</div>)
+        {td(c.type, editing, c.addition && value && c.addition(value))(item?.[c.key], c.key)}</div>)
     // console.log(isBefore(today, parseISO(item?.start)), parseISO(item?.start), item?.start, today)
     // console.log(isAfter(today, parseISO(item?.end)), parseISO(item?.end), item?.end, today)
     const tr = <section

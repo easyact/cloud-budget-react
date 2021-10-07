@@ -8,8 +8,12 @@ import {useRef, useState} from 'react'
 import {Switch} from './Switch'
 import {History} from './History'
 import * as R from 'ramda'
+import {monthlyAmountCalc} from './budget/util'
 
 const AMOUNT = '数额'
+const DURATION = 'duration'
+
+const monthlyAddition = item => monthlyAmountCalc(DURATION, 'amount', item).toFixed(0) + '/月'
 
 function BudgetView() {
     const [state, dispatch] = useBudget('current')
@@ -139,15 +143,23 @@ function BudgetView() {
                 <List name={'incomes'} title="收入" items={budget.incomes}
                       dispatch={dispatch}
                       columns={[{title: '收入', type: 'text', key: 'name'}
-                          , {title: AMOUNT, type: 'number', key: 'amount'}
-                          , {title: '周期', type: 'duration', key: 'duration'}]}
+                          , {
+                              title: AMOUNT, type: 'number', key: 'amount',
+                              addition: monthlyAddition
+                          }
+                          , {title: '周期', type: DURATION, key: DURATION}]}
                       detail={relatedForm(budget.assets)}
                 />
                 <List name={'expenses'} title="支出" items={budget.expenses}
                       dispatch={dispatch}
                       columns={[{title: '支出', type: 'text', key: 'name'}
-                          , {title: AMOUNT, type: 'number', key: 'amount'}
-                          , {title: '周期', type: 'duration', key: 'duration'}]}
+                          , {
+                              title: AMOUNT,
+                              type: 'number',
+                              key: 'amount',
+                              addition: monthlyAddition
+                          }
+                          , {title: '周期', type: DURATION, key: DURATION}]}
                       detail={relatedForm(budget.liabilities, '负债')}
                 />
             </div>
