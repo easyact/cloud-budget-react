@@ -141,14 +141,17 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
     unstarted && tags.push('未来')
     overdue && tags.push('过期')
     const durationControl = DurationControl(item, setItem)
-    const td = (type, editing, addition) => durationControl[type]?.[editing] ?? ((defaultValue, key) => editing
-        ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
-                 onChange={setItemByEvent(key, item, setItem)}/>
-        : <p>{defaultValue}{
-            addition && addition(defaultValue) && <small className="has-text-grey">({addition(defaultValue)})</small>
-        }{
-            key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)
-        }</p>)
+    const td = (type, editing, addition) => durationControl[type]?.[editing] ?? ((defaultValue, key) => {
+        const additionValue = addition && addition(defaultValue)
+        return editing
+            ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
+                     onChange={setItemByEvent(key, item, setItem)}/>
+            : <p>{defaultValue}{
+                additionValue && <small className="has-text-grey">({additionValue})</small>
+            }{
+                key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)
+            }</p>
+    })
     const opTd = <div key={`td${index}`} className="column">
         {value ?
             <div className="field has-addons">
