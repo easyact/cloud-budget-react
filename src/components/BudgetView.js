@@ -14,7 +14,12 @@ const AMOUNT = '数额'
 const DURATION = 'duration'
 
 // const monthlyAddition = item => monthlyAmountCalc(DURATION, 'amount', item).toFixed(0) + '/月'
-const monthlyAddition = monthlyAmountCalc(DURATION, 'amount')
+const monthlyAddition = item => mainValue => {
+    const calc = monthlyAmountCalc(DURATION, 'amount', item)
+    return mainValue === calc ? null : calc.toFixed(0) + '/月'
+}
+
+// const monthlyAddition = monthlyAmountCalc(DURATION, 'amount')
 
 function BudgetView() {
     const [state, dispatch] = useBudget('current')

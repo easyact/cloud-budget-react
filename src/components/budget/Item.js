@@ -145,7 +145,7 @@ export function Item({index, columns, value, update, rm, detail = ALWAYS_NULL}) 
         ? <input type={type} className="input is-small min-5" defaultValue={defaultValue}
                  onChange={setItemByEvent(key, item, setItem)}/>
         : <p>{defaultValue}{
-            addition && defaultValue !== addition && <small className="has-text-grey">({addition.toFixed(2)})</small>
+            addition && addition(defaultValue) && <small className="has-text-grey">({addition(defaultValue)})</small>
         }{
             key === 'name' && tags.map(t => <span className="tag" key={t}>{t}</span>)
         }</p>)
