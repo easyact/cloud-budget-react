@@ -8,8 +8,8 @@ export function LandingPage() {
             <div className="hero-body">
                 <div className="container is-full-desktop">
                     <div className="columns is-vcentered">
-                        <div className="column is-5">
-                            <h1 className="title" style={{'font-size': '4em'}}>
+                        <div className="column is-6">
+                            <h1 className="title" style={{'font-size': '5em'}}>
                                 从996到财务自由
                                 {/*没有出头之日?*/}
                                 {/*没有好用的个人财务管理软件?*/}
@@ -37,7 +37,7 @@ export function LandingPage() {
                                 </p>
                             </div>
                         </div>
-                        <img className="column is-6"
+                        <img className="column is-5"
                              src="https://s3.cn-northwest-1.amazonaws.com.cn/assets.easyact.cn/main-title1.jpg"/>
                     </div>
                 </div>
